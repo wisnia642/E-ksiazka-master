@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main_activity"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_vertical_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:orientation="vertical"
+    android:background="@color/truscar_background">
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:layout_marginTop="14dp"
+        android:id="@+id/model"
+        android:layout_below="@+id/marka"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:hint="Model" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:layout_marginTop="23dp"
+        android:id="@+id/rocznik"
+        android:layout_below="@+id/model"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:hint="Rocznik" />
+
+    <Button
+        android:text="Dodaj"
+        android:id="@+id/zapisz_p"
+        android:background="@drawable/button_style"
+        android:layout_height="50dp"
+        android:layout_width="100dp"
+        android:textColor="@android:color/background_light"
+        android:layout_marginBottom="27dp"
+        android:layout_marginLeft="36dp"
+        android:layout_marginStart="36dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:text="Powrót"
+        android:textColor="@android:color/background_light"
+        android:background="@drawable/button_style"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_alignTop="@+id/zapisz_p"
+        android:layout_toRightOf="@+id/qr_code"
+        android:layout_toEndOf="@+id/qr_code"
+        android:id="@+id/powrot" />
+
+    <TextView
+        android:text="Dodawanie nowego pojazdu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:id="@+id/textView8"
+        android:textSize="18sp"
+        android:textColor="@android:color/background_dark"
+        android:layout_alignParentTop="true"
+        android:layout_alignLeft="@+id/zapisz_p"
+        android:layout_alignStart="@+id/zapisz_p" />
+
+    <Button
+        android:text="Skanuj"
+        android:layout_height="50dp"
+        android:id="@+id/skanuj"
+        android:background="@drawable/button_style2"
+        android:layout_width="100dp"
+        android:layout_alignBaseline="@+id/qr_code"
+        android:layout_alignBottom="@+id/qr_code"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:id="@+id/silnik"
+        android:hint="Silnik"
+        android:layout_below="@+id/rocznik"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="13dp" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:id="@+id/qr_code"
+        android:hint="QR kod"
+        android:layout_below="@+id/silnik"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="20dp" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:layout_marginTop="14dp"
+        android:id="@+id/marka"
+        android:hint="Marka"
+        android:layout_below="@+id/textView8"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+
+</RelativeLayout>

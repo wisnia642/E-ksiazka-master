@@ -3,8 +3,6 @@ package com.example.strzala.e_ksiazaka1;
         import android.content.DialogInterface;
         import android.content.Intent;
         import android.content.pm.PackageManager;
-        import android.hardware.Camera;
-        import android.net.Uri;
         import android.os.Build;
         import android.support.v4.app.ActivityCompat;
         import android.support.v4.content.ContextCompat;
@@ -12,11 +10,11 @@ package com.example.strzala.e_ksiazaka1;
         import android.support.v7.app.AppCompatActivity;
         import android.os.Bundle;
         import android.util.Log;
+        import android.widget.EditText;
+        import android.widget.LinearLayout;
         import android.widget.Toast;
 
         import com.google.zxing.Result;
-
-        import org.json.JSONObject;
 
         import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
@@ -32,7 +30,7 @@ public class BarCodeScaner extends AppCompatActivity implements ZXingScannerView
     public String ekran="";
     public String dane[] = new String[10];
   //  private static int camId = Camera.CameraInfo.CAMERA_FACING_BACK;
-    MainActivity main = new MainActivity();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +46,7 @@ public class BarCodeScaner extends AppCompatActivity implements ZXingScannerView
         {
             Log.i("BarCode",""+e);
         }
+
 
         try {
             scannerView = new ZXingScannerView(BarCodeScaner.this);
@@ -158,11 +157,12 @@ public class BarCodeScaner extends AppCompatActivity implements ZXingScannerView
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (myResult.equals("https://vicards.pl/pUcJCNC2")) {
-                            Intent i = new Intent(BarCodeScaner.this, Menu.class);
+                            Intent i = new Intent(BarCodeScaner.this, dane_pojazd.class);
                             i.putExtra("kod",myResult);
                             startActivity(i);
                         } else {
-                            main.showToast("Twój QR code nie działa");
+                            Toast.makeText(getApplicationContext(), "Nie prawidłowy kod QR", Toast.LENGTH_LONG).show();
+                            scannerView.resumeCameraPreview(BarCodeScaner.this);
                         }
 
                     }
@@ -183,16 +183,63 @@ public class BarCodeScaner extends AppCompatActivity implements ZXingScannerView
             {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle("Twój zeskanowany kod to:");
+                builder.setMessage("Podaj kod zabezpieczający:");
+
+                final EditText input = new EditText(BarCodeScaner.this);
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.MATCH_PARENT);
+                input.setLayoutParams(lp);
+                input.setHint("Wpisz kod zabezpieczający");
+                builder.setView(input);
+
+
                 builder.setPositiveButton("Dodaj", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        dane[4] = input.getText().toString();
+
+                        if(dane[4].equals("1234")) {
                             Intent i = new Intent(BarCodeScaner.this, New_user.class);
-                            i.putExtra("kod",myResult);
-                            i.putExtra("email",dane[0]);
+                            i.putExtra("kod", dane[4]);
+                            i.putExtra("email", dane[0]);
                             i.putExtra("haslo", dane[1]);
-                            i.putExtra("haslo_pow",dane[2]);
-                            i.putExtra("qrcode",dane[3]);
+                            i.putExtra("haslo_pow", dane[2]);
+                            i.putExtra("qrcode", dane[3]);
                             startActivity(i);
+                        }else
+                        {
+                            Toast.makeText(getApplicationContext(), "Nie prawidłowy kod zabezpieczający", Toast.LENGTH_LONG).show();
+                            scannerView.resumeCameraPreview(BarCodeScaner.this);
+
+                        }
+
+                    }
+                });
+                builder.setNeutralButton("Skanuj ponownie", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        scannerView.resumeCameraPreview(BarCodeScaner.this);
+                    }
+                });
+                builder.setMessage(result.getText());
+                AlertDialog alert1 = builder.create();
+                alert1.show();
+            }
+            else if(ekran.equals("pojazd_dane"))
+            {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Twój zeskanowany kod to:");
+                builder.setPositiveButton("Dodaj", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent i = new Intent(BarCodeScaner.this, New_user.class);
+                        i.putExtra("qrCode",myResult);
+                        i.putExtra("marka",dane[0]);
+                        i.putExtra("model", dane[1]);
+                        i.putExtra("rocznik",dane[2]);
+                        i.putExtra("silnik",dane[3]);
+                        startActivity(i);
 
                     }
                 });
