@@ -156,11 +156,12 @@ public class BarCodeScaner extends AppCompatActivity implements ZXingScannerView
                 builder.setPositiveButton("Zaloguj", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if (myResult.equals("https://vicards.pl/pUcJCNC2")) {
-                            Intent i = new Intent(BarCodeScaner.this, dane_pojazd.class);
-                            i.putExtra("kod",myResult);
+                        if (myResult.equals("https://vicards.pl/pUcJCNC2")) {       // https://vicards.pl/pUcJCNC2
+                            Intent i = new Intent(BarCodeScaner.this, MainMenu.class);
+                            i.putExtra("qrkod",myResult);
                             startActivity(i);
-                        } else {
+                        }
+                        else {
                             Toast.makeText(getApplicationContext(), "Nie prawidłowy kod QR", Toast.LENGTH_LONG).show();
                             scannerView.resumeCameraPreview(BarCodeScaner.this);
                         }
@@ -173,7 +174,14 @@ public class BarCodeScaner extends AppCompatActivity implements ZXingScannerView
                         scannerView.resumeCameraPreview(BarCodeScaner.this);
                     }
                 });
-                builder.setMessage(result.getText());
+
+                if(myResult.equals("https://vicards.pl")){
+                    String new_result = myResult.replace("https://vicards.pl/","");
+                    builder.setMessage(new_result);
+                }else
+                {
+                    builder.setMessage(result.getText());
+                }
                 AlertDialog alert1 = builder.create();
                 alert1.show();
 
@@ -183,36 +191,17 @@ public class BarCodeScaner extends AppCompatActivity implements ZXingScannerView
             {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle("Twój zeskanowany kod to:");
-                builder.setMessage("Podaj kod zabezpieczający:");
-
-                final EditText input = new EditText(BarCodeScaner.this);
-                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.MATCH_PARENT);
-                input.setLayoutParams(lp);
-                input.setHint("Wpisz kod zabezpieczający");
-                builder.setView(input);
-
 
                 builder.setPositiveButton("Dodaj", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        dane[4] = input.getText().toString();
 
-                        if(dane[4].equals("1234")) {
                             Intent i = new Intent(BarCodeScaner.this, New_user.class);
-                            i.putExtra("kod", dane[4]);
                             i.putExtra("email", dane[0]);
                             i.putExtra("haslo", dane[1]);
                             i.putExtra("haslo_pow", dane[2]);
-                            i.putExtra("qrcode", dane[3]);
+                            i.putExtra("qrcode", myResult);
                             startActivity(i);
-                        }else
-                        {
-                            Toast.makeText(getApplicationContext(), "Nie prawidłowy kod zabezpieczający", Toast.LENGTH_LONG).show();
-                            scannerView.resumeCameraPreview(BarCodeScaner.this);
-
-                        }
 
                     }
                 });
@@ -222,7 +211,13 @@ public class BarCodeScaner extends AppCompatActivity implements ZXingScannerView
                         scannerView.resumeCameraPreview(BarCodeScaner.this);
                     }
                 });
-                builder.setMessage(result.getText());
+                if(myResult.equals("https://vicards.pl")){
+                    String new_result = myResult.replace("https://vicards.pl/","");
+                    builder.setMessage(new_result);
+                }else
+                {
+                    builder.setMessage(result.getText());
+                }
                 AlertDialog alert1 = builder.create();
                 alert1.show();
             }
@@ -234,7 +229,7 @@ public class BarCodeScaner extends AppCompatActivity implements ZXingScannerView
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         Intent i = new Intent(BarCodeScaner.this, New_user.class);
-                        i.putExtra("qrCode",myResult);
+                        i.putExtra("qrcode",myResult);
                         i.putExtra("marka",dane[0]);
                         i.putExtra("model", dane[1]);
                         i.putExtra("rocznik",dane[2]);
@@ -249,7 +244,13 @@ public class BarCodeScaner extends AppCompatActivity implements ZXingScannerView
                         scannerView.resumeCameraPreview(BarCodeScaner.this);
                     }
                 });
-                builder.setMessage(result.getText());
+                if(myResult.equals("https://vicards.pl")){
+                    String new_result = myResult.replace("https://vicards.pl/","");
+                    builder.setMessage(new_result);
+                }else
+                {
+                    builder.setMessage(result.getText());
+                }
                 AlertDialog alert1 = builder.create();
                 alert1.show();
             }
