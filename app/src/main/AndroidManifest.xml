@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.strzala.e_ksiazaka1">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+
+    <application
+        android:allowBackup="true"
+        android:hardwareAccelerated="false"
+        android:icon="@drawable/logo"
+        android:label="@string/app_name"
+        android:largeHeap="true"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity android:name=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".dane_pojazd" />
+        <activity android:name=".Custom_row" />
+        <activity android:name=".Custom_row_zgloszenie" />
+        <activity android:name=".Custom_row_pojazd" />
+        <activity android:name=".BarCodeScaner" />
+        <activity android:name=".New_user" />
+        <activity
+            android:name=".MainMenu"
+            android:label="@string/title_activity_main_menu"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".lista_pojazd" />
+        <activity android:name=".Custom_row_kategoriaNaprawy" />
+        <activity android:name=".koniec_pojazd" />
+        <activity android:name=".Regulamin"></activity>
+    </application>
+
+</manifest>

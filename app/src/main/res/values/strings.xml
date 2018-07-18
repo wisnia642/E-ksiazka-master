@@ -1,0 +1,20 @@
+<resources>
+
+    <!--  Layout Main activity -->
+    <string name="app_name">TRUST SERWIS BOOK</string>
+    <string name="login">Adres email</string>>
+    <string name="haslo">Hasło </string>>
+    <string name="przypomnienie_hasla">Przypomnienie hasła</string>>
+    <string name="utworz_konto">Nowe Konto</string>
+
+    <string name="button_login">Logowanie - Email</string>>
+    <string name="button_login_qr">Logowanie - QR</string>
+    <string name="title_activity_main_menu">MainMenu</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="regulamin_serwisu">Regulamin serwisu TrustCar</string>>
+
+    <string name="action_settings">Settings</string>
+
+</resources>
