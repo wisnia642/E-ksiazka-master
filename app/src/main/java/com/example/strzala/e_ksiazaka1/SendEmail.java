@@ -111,7 +111,7 @@ public class SendEmail extends AsyncTask<Void,Void,Void> {
             mm.setFrom(new InternetAddress("1wymiana1@gmail.com"));
 
             //Adding receiver
-            mm.addRecipient(Message.RecipientType.TO, new InternetAddress("wisnia642@gmail.com")); //"m.wisniewski@hit-kody.com.pl"
+            mm.addRecipient(Message.RecipientType.TO, new InternetAddress(email)); //"m.wisniewski@hit-kody.com.pl"
 
             //Adding subject
             mm.setSubject(subject);

@@ -1,6 +1,7 @@
 package com.example.strzala.e_ksiazaka1;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,8 +19,13 @@ public class New_user extends AppCompatActivity {
     public TextView rekulamin_akceptacja;
     public Button skan,ok,anuluj;
     public CheckBox checkBox;
-    public int status;
+    public boolean status =true;
     public String hash;
+
+    String subject = "";
+    String message = "";
+
+    SQLiteDatabase sampleDB;
 
     String dane[] = new String[8];
 
@@ -34,7 +40,7 @@ public class New_user extends AppCompatActivity {
     public void InsertLoginDataSqligt() {
 
         try {
-            SQLiteDatabase sampleDB = this.openOrCreateDatabase(SAMPLE_DB_NAME, MODE_PRIVATE, null);
+            sampleDB = this.openOrCreateDatabase(SAMPLE_DB_NAME, MODE_PRIVATE, null);
             sampleDB.execSQL("CREATE TABLE IF NOT EXISTS uzytkownik (Id INTEGER PRIMARY KEY AUTOINCREMENT,data_dod VARCHAR," +
                     "email VARCHAR, haslo VARCHAR, zapisz_haslo VARCHAR, qr_code VARCHAR, punkty VARCHAR,admin VARCHAR)");
             sampleDB.execSQL("INSERT INTO uzytkownik (email,haslo,qr_code) VALUES ('"+dane[0]+"','"+hash+"','"+dane[3]+"') ");
@@ -43,6 +49,59 @@ public class New_user extends AppCompatActivity {
             Log.i("new user", "" + e);
         }
     }
+
+    private void SelectDataUser()
+    {
+        try{
+
+            sampleDB = this.openOrCreateDatabase(SAMPLE_DB_NAME, MODE_PRIVATE,null);
+
+            Cursor c = sampleDB.rawQuery("Select * from uzytkownik where email = '"+dane[0]+"' ",null);
+
+            while(c.moveToNext())
+            {
+                String pamiec = String.valueOf(c.getString(1));
+                if(pamiec != null)
+                {
+                    status = false;
+                }else
+                {
+                    status = true;
+                }
+            }
+
+            sampleDB.close();
+
+        }catch (Exception e)
+        {
+            Log.i("baza",""+e);
+        }
+    }
+
+    private void sendemail_execiut() {
+        //Getting content for email
+
+        dane[0] = email.getText().toString();
+
+            message = "Witaj "+dane[0]+",\n" +
+                    "\n"+
+                    " Utworzyłeś konto w Trust Serwis Book, Od teraz będziesz \n" +
+                    " mógł przeglądać historię napraw pojazdów w swoim telefonie\n"+
+                    "\n"+
+                    " Pozdrawiam Zespół TrustCar \n";
+            subject = "Utworzenie konta Trust Serwis Book";
+            //Creating SendMail object
+
+            try {
+                SendEmail sm = new SendEmail(this, dane[0], subject, message);
+
+                //Executing sendmail to send email
+                sm.execute();
+            } catch (Exception e) {
+                Log.i("MainActivity", "" + e);
+            }
+        }
+
 
     private void hash()
     {
@@ -102,47 +161,46 @@ public class New_user extends AppCompatActivity {
                 dane[3] = qrcode.getText().toString();
 
 
+                SelectDataUser();
+
                 //sprawdzanie czy pole email jest uzupełnione
-                if(dane[0].contains("@"))
-                {
-                    if(!dane[1].equals("") & !dane[2].equals(""))
-                    {
+                if(dane[0].contains("@") ) {
+                    if (status == true) {
+                        if (!dane[1].equals("") & !dane[2].equals("")) {
 
-                        if(dane[1].equals(dane[2]))
-                        {
-                             if (!dane[3].equals(""))
-                             {
-                                 if(checkBox.isChecked()) {
-                                     hash();
-                                     InsertLoginDataSqligt();
-                                     Intent i = new Intent(New_user.this, MainMenu.class);
-                                     i.putExtra("email", dane[0]);
-                                     startActivity(i);
-                                     showToast("Konto zostało utworzone");
-                                 }else
-                                 {
-                                     showToast("Założenie konta wymaga potwierdzenia regulaminu serwisu");
-                                 }
+                            if (dane[1].equals(dane[2])) {
+                                if (!dane[3].equals("")) {
+                                    if (checkBox.isChecked()) {
+                                        hash();
+                                        InsertLoginDataSqligt();
+                                        sendemail_execiut();
+                                        Intent i = new Intent(New_user.this, MainMenu.class);
+                                        i.putExtra("email", dane[0]);
+                                        startActivity(i);
+                                        showToast("Konto zostało utworzone");
+                                    } else {
+                                        showToast("Założenie konta wymaga potwierdzenia regulaminu serwisu");
+                                    }
 
-                            }else
-                            {
-                            showToast("Podaj kod zabezpieczający kodu QE");
-                             }
-                        }else
-                        {
-                            showToast("Hasła nie są identyczne");
+                                } else {
+                                    showToast("Podaj kod zabezpieczający kodu QE");
+                                }
+                            } else {
+                                showToast("Hasła nie są identyczne");
+                            }
+
+                        } else {
+                            showToast("Uzupełnij hasło");
                         }
 
-                    }else
-                    {
-                        showToast("Uzupełnij hasło");
+
+                    } else {
+                        showToast("Email już istnieje");
                     }
 
-
-                }else
-                {
+                    }else {
                     showToast("Uzupełnij poprawnie email");
-                }
+                     }
 
             }
         });
