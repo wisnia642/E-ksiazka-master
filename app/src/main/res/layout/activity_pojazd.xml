@@ -12,28 +12,25 @@
     android:background="@color/truscar_background">
 
     <EditText
+        android:id="@+id/model"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:inputType="textPersonName"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="118dp"
+        android:layout_toStartOf="@+id/powrot"
         android:ems="10"
-        android:layout_marginTop="14dp"
-        android:id="@+id/model"
-        android:layout_below="@+id/marka"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:hint="Model" />
+        android:hint="Model"
+        android:inputType="textPersonName" />
 
     <EditText
+        android:id="@+id/rocznik"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:inputType="textPersonName"
-        android:ems="10"
-        android:layout_marginTop="23dp"
-        android:id="@+id/rocznik"
+        android:layout_alignStart="@+id/model"
         android:layout_below="@+id/model"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:hint="Rocznik" />
+        android:ems="10"
+        android:hint="Rocznik"
+        android:inputType="textPersonName" />
 
     <Button
         android:text="Dodaj"
@@ -61,63 +58,67 @@
         android:id="@+id/powrot" />
 
     <TextView
-        android:text="Dodawanie nowego pojazdu"
+        android:id="@+id/textView8"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="18dp"
-        android:id="@+id/textView8"
-        android:textSize="18sp"
-        android:textColor="@android:color/background_dark"
         android:layout_alignParentTop="true"
-        android:layout_alignLeft="@+id/zapisz_p"
-        android:layout_alignStart="@+id/zapisz_p" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
+        android:text="Dodawanie nowego pojazdu"
+        android:textColor="@android:color/background_dark"
+        android:textSize="18sp" />
 
     <Button
-        android:text="Skanuj"
-        android:layout_height="50dp"
         android:id="@+id/skanuj"
-        android:background="@drawable/button_style2"
         android:layout_width="100dp"
-        android:layout_alignBaseline="@+id/qr_code"
+        android:layout_height="50dp"
         android:layout_alignBottom="@+id/qr_code"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="19dp"
+        android:background="@drawable/button_style2"
+        android:text="Skanuj" />
 
     <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="textPersonName"
-        android:ems="10"
-        android:id="@+id/silnik"
-        android:hint="Silnik"
-        android:layout_below="@+id/rocznik"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="13dp" />
-
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="textPersonName"
-        android:ems="10"
         android:id="@+id/qr_code"
-        android:hint="QR kod"
-        android:layout_below="@+id/silnik"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="20dp" />
-
-    <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:inputType="textPersonName"
+        android:layout_alignParentBottom="true"
+        android:layout_alignStart="@+id/silnik"
+        android:layout_marginBottom="106dp"
         android:ems="10"
-        android:layout_marginTop="14dp"
+        android:hint="QR kod"
+        android:inputType="textPersonName" />
+
+    <EditText
+        android:id="@+id/rejestracyjny"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/model"
+        android:layout_below="@+id/qr_code4"
+        android:ems="10"
+        android:hint="Nr_rejestracyjny"
+        android:inputType="textPersonName" />
+
+    <EditText
+        android:id="@+id/qr_code4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/model"
+        android:layout_centerVertical="true"
+        android:ems="10"
+        android:hint="Silnik"
+        android:inputType="textPersonName" />
+
+    <EditText
         android:id="@+id/marka"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignStart="@+id/model"
+        android:layout_marginTop="66dp"
+        android:ems="10"
         android:hint="Marka"
-        android:layout_below="@+id/textView8"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:inputType="textPersonName" />
 
 
 </RelativeLayout>

@@ -96,6 +96,9 @@ public class MainMenu extends AppCompatActivity
             // Handle the camera action
         } else if (id == R.id.nav_slideshow) {
             // Handle the camera action
+        }else if (id == R.id.historia) {
+            Intent i = new Intent(MainMenu.this,Historia_pojazd.class);
+            startActivity(i);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

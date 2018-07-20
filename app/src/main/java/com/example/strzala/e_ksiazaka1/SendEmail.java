@@ -2,6 +2,8 @@ package com.example.strzala.e_ksiazaka1;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.StrictMode;
@@ -10,6 +12,10 @@ import android.widget.Toast;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.SocketAddress;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -47,6 +53,8 @@ public class SendEmail extends AsyncTask<Void,Void,Void> {
     //Progressdialog to show while sending email
     private ProgressDialog progressDialog;
 
+
+
     //Class Constructor
     public SendEmail(Context context, String email, String subject, String message){
         //Initializing variables
@@ -55,6 +63,8 @@ public class SendEmail extends AsyncTask<Void,Void,Void> {
         this.subject = subject;
         this.message = message;
     }
+
+
 
     @Override
     protected void onPreExecute() {
@@ -71,9 +81,6 @@ public class SendEmail extends AsyncTask<Void,Void,Void> {
         //Showing a success message
         if(!stan) {
             Toast.makeText(context, "Wiadomość wysłana", Toast.LENGTH_LONG).show();
-        }else
-        {
-            Toast.makeText(context, "Wiadomość nie została wysłana", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -81,50 +88,51 @@ public class SendEmail extends AsyncTask<Void,Void,Void> {
     protected Void doInBackground(Void... params) {
         //Creating properties
 
-        Properties props = new Properties();
+            Properties props = new Properties();
 
-        //Configuring properties for gmail
-        //If you are not using gmail you may need to change the values
-        props.put("mail.smtp.host","smtp.gmail.com"); //"smtp.gmail.com"
-        props.put("mail.smtp.socketFactory.port", "465"); //"465"
-        props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory"); //"javax.net.ssl.SSLSocketFactory"
-        props.put("mail.smtp.auth", "true"); //"true"
-        props.put("mail.smtp.port", "465"); //"465"
-
-
-        //Creating a new session
-        session = Session.getDefaultInstance(props,
-                new javax.mail.Authenticator() {
-                    //Authenticating the password
-                    protected PasswordAuthentication getPasswordAuthentication() {
-                        return new PasswordAuthentication("1wymiana1@gmail.com", "Enov@1990");
-                    }
-                });
-
-        try {
+            //Configuring properties for gmail
+            //If you are not using gmail you may need to change the values
+            props.put("mail.smtp.host", "smtp.gmail.com"); //"smtp.gmail.com"
+            props.put("mail.smtp.socketFactory.port", "465"); //"465"
+            props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory"); //"javax.net.ssl.SSLSocketFactory"
+            props.put("mail.smtp.auth", "true"); //"true"
+            props.put("mail.smtp.port", "465"); //"465"
 
 
-            //Creating MimeMessage object
-            MimeMessage mm = new MimeMessage(session);
-            stan=true;
-            //Setting sender address
-            mm.setFrom(new InternetAddress("1wymiana1@gmail.com"));
+            //Creating a new session
+            session = Session.getDefaultInstance(props,
+                    new javax.mail.Authenticator() {
+                        //Authenticating the password
+                        protected PasswordAuthentication getPasswordAuthentication() {
+                            return new PasswordAuthentication("1wymiana1@gmail.com", "Enov@1990");
+                        }
+                    });
 
-            //Adding receiver
-            mm.addRecipient(Message.RecipientType.TO, new InternetAddress(email)); //"m.wisniewski@hit-kody.com.pl"
-
-            //Adding subject
-            mm.setSubject(subject);
-            mm.setText(message);
-
-            //Sending email
-            Transport.send(mm);
+            try {
 
 
-        } catch (MessagingException e) {
-            Log.i("email",""+e);
-            stan=false;
-        }
+                //Creating MimeMessage object
+                MimeMessage mm = new MimeMessage(session);
+                stan = true;
+                //Setting sender address
+                mm.setFrom(new InternetAddress("1wymiana1@gmail.com"));
+
+                //Adding receiver
+                mm.addRecipient(Message.RecipientType.TO, new InternetAddress(email)); //"m.wisniewski@hit-kody.com.pl"
+
+                //Adding subject
+                mm.setSubject(subject);
+                mm.setText(message);
+
+                //Sending email
+                Transport.send(mm);
+
+
+            } catch (MessagingException e) {
+                Log.i("email", "" + e);
+                stan = false;
+            }
+
         return null;
     }
 }

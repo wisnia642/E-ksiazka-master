@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
@@ -14,29 +15,66 @@
         android:icon="@drawable/logo"
         android:label="@string/app_name"
         android:largeHeap="true"
+        android:screenOrientation="portrait"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".MainActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".dane_pojazd" />
-        <activity android:name=".Custom_row" />
-        <activity android:name=".Custom_row_zgloszenie" />
-        <activity android:name=".Custom_row_pojazd" />
-        <activity android:name=".BarCodeScaner" />
-        <activity android:name=".New_user" />
+        <activity
+            android:name=".dane_pojazd"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Custom_row"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Custom_row_zgloszenie"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Custom_row_pojazd"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".BarCodeScaner"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".New_user"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".MainMenu"
+            android:configChanges="orientation"
             android:label="@string/title_activity_main_menu"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".lista_pojazd" />
-        <activity android:name=".Custom_row_kategoriaNaprawy" />
-        <activity android:name=".koniec_pojazd" />
-        <activity android:name=".Regulamin"></activity>
+        <activity
+            android:name=".lista_pojazd"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Custom_row_kategoriaNaprawy"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".koniec_pojazd"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Regulamin"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
+        <activity android:name=".Historia_pojazd"></activity>
     </application>
 
 </manifest>

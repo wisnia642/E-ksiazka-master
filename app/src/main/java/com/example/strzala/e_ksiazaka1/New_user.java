@@ -1,8 +1,11 @@
 package com.example.strzala.e_ksiazaka1;
 
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -41,8 +44,6 @@ public class New_user extends AppCompatActivity {
 
         try {
             sampleDB = this.openOrCreateDatabase(SAMPLE_DB_NAME, MODE_PRIVATE, null);
-            sampleDB.execSQL("CREATE TABLE IF NOT EXISTS uzytkownik (Id INTEGER PRIMARY KEY AUTOINCREMENT,data_dod VARCHAR," +
-                    "email VARCHAR, haslo VARCHAR, zapisz_haslo VARCHAR, qr_code VARCHAR, punkty VARCHAR,admin VARCHAR)");
             sampleDB.execSQL("INSERT INTO uzytkownik (email,haslo,qr_code) VALUES ('"+dane[0]+"','"+hash+"','"+dane[3]+"') ");
             sampleDB.close();
         } catch (Exception e) {
@@ -86,10 +87,10 @@ public class New_user extends AppCompatActivity {
             message = "Witaj "+dane[0]+",\n" +
                     "\n"+
                     " Utworzyłeś konto w Trust Serwis Book, Od teraz będziesz \n" +
-                    " mógł przeglądać historię napraw pojazdów w swoim telefonie\n"+
+                    " mógł przeglądać historię napraw pojazdów w swoim telefonie.\n"+
                     "\n"+
-                    " Pozdrawiam Zespół TrustCar \n";
-            subject = "Utworzenie konta Trust Serwis Book";
+                    " Pozdrawiam Zespół TrustCar. \n";
+            subject = "Utworzenie konta Trust Serwis Book.";
             //Creating SendMail object
 
             try {
@@ -101,6 +102,17 @@ public class New_user extends AppCompatActivity {
                 Log.i("MainActivity", "" + e);
             }
         }
+
+    public boolean activeNetwork () {
+        ConnectivityManager cm = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnected();
+
+        return isConnected;
+
+    }
 
 
     private void hash()
@@ -146,6 +158,7 @@ public class New_user extends AppCompatActivity {
             haslo.setText(dane[1]);
             haslo_pow.setText(dane[2]);
             qrcode.setText(dane[3]);
+
         }catch (Exception e)
         {
             Log.i("BarCode",""+e);
@@ -171,9 +184,15 @@ public class New_user extends AppCompatActivity {
                             if (dane[1].equals(dane[2])) {
                                 if (!dane[3].equals("")) {
                                     if (checkBox.isChecked()) {
+                                        dane[0].replace(" ","");
                                         hash();
                                         InsertLoginDataSqligt();
-                                        sendemail_execiut();
+                                        if(activeNetwork()) {
+                                            sendemail_execiut();
+                                        }else
+                                        {
+                                            showToast("Brak dostępu do internetu");
+                                        }
                                         Intent i = new Intent(New_user.this, MainMenu.class);
                                         i.putExtra("email", dane[0]);
                                         startActivity(i);

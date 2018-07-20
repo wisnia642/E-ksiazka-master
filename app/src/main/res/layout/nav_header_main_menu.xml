@@ -46,15 +46,15 @@
             android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Twój@adres.email"
-            android:textSize="16sp"
-            android:textStyle="normal|bold"
-            android:layout_marginLeft="28dp"
-            android:layout_marginStart="28dp"
             android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:paddingBottom="10dp" />
+            android:layout_marginLeft="28dp"
+            android:layout_marginStart="28dp"
+            android:paddingBottom="10dp"
+            android:text="@string/email"
+            android:textSize="16sp"
+            android:textStyle="normal|bold" />
     </RelativeLayout>
 
 </LinearLayout>

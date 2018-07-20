@@ -38,10 +38,20 @@ public class BarCodeScaner extends AppCompatActivity implements ZXingScannerView
 
         try {
             ekran = getIntent().getStringExtra("ekran");
-            dane[0] = getIntent().getStringExtra("email");
-            dane[1] = getIntent().getStringExtra("haslo");
-            dane[2] = getIntent().getStringExtra("haslo_pow");
-            dane[3] = getIntent().getStringExtra("qrcode");
+            if(ekran.equals("uzytkownik")) {
+                dane[0] = getIntent().getStringExtra("email");
+                dane[1] = getIntent().getStringExtra("haslo");
+                dane[2] = getIntent().getStringExtra("haslo_pow");
+                dane[3] = getIntent().getStringExtra("qrcode");
+            } else if(ekran.equals("pojazd_dane"))
+            {
+                dane[0] = getIntent().getStringExtra("marka");
+                dane[1] = getIntent().getStringExtra("model");
+                dane[2] = getIntent().getStringExtra("rocznik");
+                dane[3] = getIntent().getStringExtra("silnik");
+                dane[3] = getIntent().getStringExtra("rejestracyjny");
+            }
+
         }catch (Exception e)
         {
             Log.i("BarCode",""+e);
@@ -234,6 +244,7 @@ public class BarCodeScaner extends AppCompatActivity implements ZXingScannerView
                         i.putExtra("model", dane[1]);
                         i.putExtra("rocznik",dane[2]);
                         i.putExtra("silnik",dane[3]);
+                        i.putExtra("rejestracyjny",dane[5]);
                         startActivity(i);
 
                     }
