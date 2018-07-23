@@ -2,15 +2,12 @@ package com.example.strzala.e_ksiazaka1;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.hardware.Camera;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
+import android.os.Handler;
+import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,16 +16,16 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.net.SocketAddress;
-
-import me.dm7.barcodescanner.zxing.ZXingScannerView;
-
-import static android.Manifest.permission.CAMERA;
+import java.io.FileInputStream;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -42,7 +39,22 @@ public class MainActivity extends AppCompatActivity {
 
     String subject = "";
     String message = "";
+    public int polaczenie=0;
 
+    static ResultSet rs;
+    static Statement st;
+    PreparedStatement ps;
+    FileInputStream fis = null;
+    Connection connection = null;
+
+    ProgressBar simpleProgressBar = null;
+    private Handler handler = new Handler();
+    boolean StartLog=false;
+
+    String dane[] = new String[35];
+
+    //konstruktor
+    private static MainActivity instance;
 
     public void showToast(String message) {
         Toast.makeText(getApplicationContext(),
@@ -52,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    private void hash()
+        private void hash()
     {
             if(!password_act.equals("%02320%xwc48")) {
                 try {
@@ -64,6 +76,224 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
+
+    }
+
+    public void podlaczenieDB()
+    {
+        if(activeNetwork()) {
+            //tworzenie polaczenia z baza danych
+            String url ="jdbc:mysql://s56.linuxpl.com:3306/trustcar_app";
+            String user = "trustcar_admin";
+            String pass = "Kubamobile2001!";
+          //  Log.i("login", getResources().getString(R.string.loginMySQL));
+           // Log.i("haslo", getResources().getString(R.string.hasloMySQL));
+           // Log.i("url", getResources().getString(R.string.url));
+
+
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+            polaczenie = 1;
+
+            try {
+                Class.forName("com.mysql.jdbc.Driver");
+            } catch (ClassNotFoundException e) {
+                //   showToast("brak polaczenia z internetem");
+                Log.i("aaa", String.valueOf(e));
+                polaczenie = 0;
+            }
+
+            try {
+                connection = DriverManager.getConnection(url, user, pass);
+            } catch (SQLException e) {
+                showToast("brak polaczenia z internetem");
+                Log.i("aaa", String.valueOf(e));
+                polaczenie = 0;
+            }
+
+        }else
+       {
+           connection = null;
+           // showToast("Brak podłączenia do intrernetu");
+       }
+
+    }
+
+    public void ImportLogin(String msg_login)
+    {
+        podlaczenieDB();
+
+        if (connection != null) {
+
+            sampleDB = this.openOrCreateDatabase(SAMPLE_DB_NAME, MODE_PRIVATE, null);
+
+            try {
+                st = connection.createStatement();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+                Log.i("myTag", "1" + e1);
+            }
+
+            try {
+                PreparedStatement stmt = connection.prepareStatement("select * from uzytkownik where email='"+msg_login+"' ");
+                rs = stmt.executeQuery();
+
+                //tworzenie tabeli uzytkownik jezeli nie istnieje
+                sampleDB.execSQL("CREATE TABLE IF NOT EXISTS uzytkownik (Id INTEGER PRIMARY KEY AUTOINCREMENT,data_dod VARCHAR," +
+                        " email VARCHAR, haslo VARCHAR, zapisz_haslo VARCHAR, qr_code VARCHAR, punkty VARCHAR,admin VARCHAR,czy_zapis VARCHAR)");
+
+                sampleDB.execSQL("Delete from uzytkownik where email='"+msg_login+"' ");
+
+                while (rs.next()) {
+                    String zm = rs.getString("email");
+
+                    if (zm != null) {
+                        dane[0] = rs.getString("data_dod");
+                        dane[1] = rs.getString("email");
+                        dane[2] = rs.getString("haslo");
+                        dane[3] = rs.getString("zapisz_haslo");
+                        dane[4] = rs.getString("qr_code");
+                        dane[5] = rs.getString("punkty");
+                        dane[6] = rs.getString("admin");
+                        dane[7] = rs.getString("czy_zapis");
+
+                        hash = "%02320%xwc48" + String.valueOf(dane[2].hashCode());
+
+                        sampleDB.execSQL("INSERT INTO uzytkownik (data_dod,email,haslo,zapisz_haslo,qr_code," +
+                                "punkty,admin,czy_zapis) VALUES ('"+dane[0]+"','"+dane[1]+"','"+hash+"'," +
+                                "'"+dane[3]+"','"+dane[4]+"','"+dane[5]+"','"+dane[6]+"','"+dane[7]+"') ");
+                    }
+
+                }
+
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+                Log.i("myTag", "3" + e1);
+            }
+
+            try {
+                if (connection != null)
+                    sampleDB.close();
+                connection.close();
+            } catch (SQLException se) {
+                Log.i("myTag", "4" + se);
+                showToast("brak polaczenia z internetem");
+            }
+
+        }
+    }
+
+
+    public void ImportDataMySql()
+    {
+        podlaczenieDB();
+
+        if (connection != null) {
+
+            sampleDB = this.openOrCreateDatabase(SAMPLE_DB_NAME, MODE_PRIVATE, null);
+
+            try {
+                st = connection.createStatement();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+                Log.i("myTag", "1" + e1);
+            }
+
+            try {
+
+
+                PreparedStatement stmt2 = connection.prepareStatement("select * from kategoria ");
+                rs = stmt2.executeQuery();
+
+                sampleDB.execSQL("Delete from kategoria ");
+
+                while (rs.next()) {
+                    String zm = rs.getString("nazwa");
+
+                    if (zm != null) {
+                        dane[10] = rs.getString("nazwa");
+                        dane[11] = rs.getString("punkty");
+                        dane[12] = rs.getString("kat_1");
+                        dane[13] = rs.getString("kat_2");
+                        dane[14] = rs.getString("aktywne");
+
+                        sampleDB.execSQL("INSERT INTO kategoria (nazwa,punkty,kat_1,kat_2,aktywne) " +
+                                "VALUES ('"+dane[10]+"','"+dane[11]+"','"+dane[12]+"'," +
+                                "'"+dane[13]+"','"+dane[14]+"') ");
+                    }
+
+                }
+
+                PreparedStatement stmt3 = connection.prepareStatement("select * from zgloszenie where qr_code='"+dane[4]+"' ");
+                rs = stmt3.executeQuery();
+
+                sampleDB.execSQL("Delete from zgloszenie where qr_code='"+dane[4]+"' ");
+
+                while (rs.next()) {
+                    String zm = rs.getString("kod");
+
+                    if (zm != null) {
+                        dane[15] = rs.getString("zdjecie_prze");
+                        dane[16] = rs.getString("zdjecie_po");
+                        dane[17] = rs.getString("cena_czesci");
+                        dane[18] = rs.getString("cena_uslugi");
+                        dane[19] = rs.getString("uwagi");
+                        dane[20] = rs.getString("data_dod");
+                        dane[21] = rs.getString("data_wykonania");
+                        dane[22] = rs.getString("status");
+                        dane[23] = rs.getString("qr_code");
+                        dane[24] = rs.getString("akceptacja");
+
+                        sampleDB.execSQL("INSERT INTO zgloszenie (zdjecie_prze,zdjecie_po,cena_czesci," +
+                                "cena_uslugi,uwagi,data_dod,data_wykonania,status,qr_code,akceptacja) " +
+                                "VALUES ('"+dane[15]+"','"+dane[16]+"','"+dane[17]+"'," +
+                                "'"+dane[18]+"','"+dane[19]+"','"+dane[18]+"','"+dane[19]+"','"+dane[20]+"'," +
+                                "'"+dane[21]+"','"+dane[22]+"','"+dane[23]+"','"+dane[24]+"') ");
+                    }
+
+                }
+
+                PreparedStatement stmt4 = connection.prepareStatement("select * from samochod where qr_code='"+dane[4]+"'");
+                rs = stmt4.executeQuery();
+
+                sampleDB.execSQL("Delete from samochod where qr_code='"+dane[4]+"' ");
+
+                while (rs.next()) {
+                    String zm = rs.getString("marka");
+
+                    if (zm != null) {
+                        dane[25] = rs.getString("marka");
+                        dane[26] = rs.getString("model");
+                        dane[27] = rs.getString("rocznik");
+                        dane[28] = rs.getString("silnik");
+                        dane[29] = rs.getString("nr_rejestracyjny");
+                        dane[30] = rs.getString("qr_code");
+                        dane[31] = rs.getString("wyswietl");
+
+
+                        sampleDB.execSQL("INSERT INTO uzytkownik (marka,model,rocznik,silnik,nr_rejestracyjny," +
+                                "qr_code,wyswietl) VALUES ('"+dane[25]+"','"+dane[26]+"','"+dane[27]+"'," +
+                                "'"+dane[28]+"','"+dane[29]+"','"+dane[30]+"','"+dane[31]+"') ");
+
+                    }
+
+                }
+
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+                Log.i("myTag", "3" + e1);
+            }
+
+            try {
+                if (connection != null)
+                    sampleDB.close();
+                    connection.close();
+            } catch (SQLException se) {
+                Log.i("myTag", "4" + se);
+                   showToast("brak polaczenia z internetem");
+            }
+
+        }
 
     }
 
@@ -79,6 +309,7 @@ public class MainActivity extends AppCompatActivity {
             //tworzenie tabeli uzytkownik jezeli nie istnieje
             sampleDB.execSQL("CREATE TABLE IF NOT EXISTS uzytkownik (Id INTEGER PRIMARY KEY AUTOINCREMENT,data_dod VARCHAR," +
                     " email VARCHAR, haslo VARCHAR, zapisz_haslo VARCHAR, qr_code VARCHAR, punkty VARCHAR,admin VARCHAR,czy_zapis VARCHAR)");
+
             //tworzenie tabeli samochod jezeli nie istnieje
             sampleDB.execSQL("CREATE TABLE IF NOT EXISTS samochod (Id INTEGER PRIMARY KEY AUTOINCREMENT,marka VARCHAR," +
                     "model VARCHAR, rocznik VARCHAR, silnik VARCHAR, nr_rejestracyjny VARCHAR, qr_code VARCHAR,wyswietl VARCHAR)");
@@ -87,9 +318,11 @@ public class MainActivity extends AppCompatActivity {
             sampleDB.execSQL("CREATE TABLE IF NOT EXISTS zgloszenie (Id INTEGER PRIMARY KEY AUTOINCREMENT,zdjecie_przed BLOB," +
                     "zdjecie_po BLOB, cena_czesci VARCHAR, cena_uslugi VARCHAR, uwagi VARCHAR, data_dod VARCHAR,data_wykonania VARCHAR," +
                     "status VARCHAR, qr_code VARCHAR, akceptacja VARCHAR)");
+
             //tworzenie tabeli naprawy jezeli nie istnieje
-            sampleDB.execSQL("CREATE TABLE IF NOT EXISTS kategorie (Id INTEGER PRIMARY KEY AUTOINCREMENT,nazwa VARCHAR," +
-                    "punkty VARCHAR, kat_1 VARCHAR, kat_2 VARCHAR)");
+            sampleDB.execSQL("CREATE TABLE IF NOT EXISTS kategoria (Id INTEGER PRIMARY KEY AUTOINCREMENT,nazwa VARCHAR," +
+                    "punkty VARCHAR, kat_1 VARCHAR, kat_2 VARCHAR, aktywne VARCHAR)");
+
 
             Cursor c = sampleDB.rawQuery("Select * from uzytkownik where email = '"+login_act+"' ",null);
 
@@ -102,6 +335,10 @@ public class MainActivity extends AppCompatActivity {
                     password = String.valueOf(c.getString(3));
                     qr_code = String.valueOf(c.getString(5));
                     Log.i("MainActivity",login);
+                }else
+                {
+                    //imporowanie loginów jeżeli ich nie ma w wewnętrznej bazie danych
+                    ImportLogin(login_act);
                 }
             }
 
@@ -183,7 +420,7 @@ public class MainActivity extends AppCompatActivity {
             message = "Witaj "+login_act+",\n" +
                     " \n "+
                     "Otrzymałeś ten email ponieważ skorzystałeś z opcji przypomnienia hasła. \n" +
-                    "Twoje hasło to: "+password+"  \n"+
+                    "Twoje hasło to: "+dane[2]+"  \n"+
                     " \n "+
                     "Pozdrawiam Zespół TrustCar. \n";
             subject = "Przypomnienie hasła TrustCar";
@@ -211,11 +448,16 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public static MainActivity getInstance() {
+        return instance;
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        instance = this;
 
         //declare buttton and edittext
         konto = (Button) findViewById(R.id.konto);
@@ -228,6 +470,9 @@ public class MainActivity extends AppCompatActivity {
 
         checkBox = (CheckBox) findViewById(R.id.checkBoks);
 
+        //inicjalizacja progresbaru
+        simpleProgressBar=(ProgressBar) findViewById(R.id.progressBar);
+
         sprawdz_haslo();
 
         //logowanie przy użyciu danych logowania
@@ -235,43 +480,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-
-                login_act = email.getText().toString();
-                password_act = haslo.getText().toString();
-
-                login_act = login_act.replace(" ","");
-
-
-                SelectDataUser();
-                    hash();
-
-                    if (login_act.equals(login) & login_act.contains("@")) {
-                        Log.i("password_1",password);
-                        Log.i("pasword_asct_1",password_act);
-                        if (hash.equals(password) || (password.equals(password_act))) {
-
-                                //sprawdzanie czy mam zapamiętać hasło
-                                if(checkBox.isChecked())
-                                {
-                                    pamiec_hasla();
-
-                                }
-                                Intent c = new Intent(MainActivity.this,MainMenu.class);
-                                c.putExtra("email",login);
-                                startActivity(c);
-                                finish();
-                                //Log.i("password",password);
-                               // Log.i("pasword_asct",password_act);
-                                //Log.i("hash",hash);
-                                }else
-                        {
-                            showToast("Nie poprawne hasło" + password);
-                        }
-
-                        }else
-                    {
-                        showToast("Nie poprawny email ");
-                    }
+                simpleProgressBar.setVisibility(View.VISIBLE);
+                StartLog=true;
 
             }
         });
@@ -294,7 +504,7 @@ public class MainActivity extends AppCompatActivity {
 
                 login_act = email.getText().toString();
 
-                SelectDataUser();
+                ImportLogin(login_act);
 
                 if(login_act.contains("@"))
                 {
@@ -344,5 +554,59 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        handler = new Handler()
+        {
+            public void handleMessage(android.os.Message msg)
+            {
+
+                if(StartLog)
+                {
+                    login_act = email.getText().toString();
+                    password_act = haslo.getText().toString();
+
+                    login_act = login_act.replace(" ","");
+
+
+                    SelectDataUser();
+                    hash();
+
+                    if (login_act.equals(login) & login_act.contains("@")) {
+                        if (hash.equals(password) || (password.equals(password_act))) {
+
+                            //sprawdzanie czy mam zapamiętać hasło
+                            if(checkBox.isChecked())
+                            {
+                                pamiec_hasla();
+                            }
+
+                            //importowanie danych
+                            ImportDataMySql();
+
+                            Intent c = new Intent(MainActivity.this,MainMenu.class);
+                            c.putExtra("email",login);
+                            startActivity(c);
+                            finish();
+                        }else
+                        {
+                            showToast("Nie poprawne hasło" + password);
+                        }
+
+                    }else
+                    {
+                        showToast("Nie poprawny email ");
+                    }
+
+                    simpleProgressBar.setVisibility(View.INVISIBLE);
+                    StartLog=false;
+                }
+
+
+              //  simpleProgressBar.setProgress(suma);
+                handler.sendEmptyMessageDelayed(0, 100);
+            }
+        };
+
+        handler.sendEmptyMessage(0);
     }
 }

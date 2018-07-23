@@ -42,13 +42,13 @@
             android:text="Zgłoszenie nr: 1234" />
 
         <ImageView
+            android:id="@+id/imageView"
             android:layout_width="60dp"
-android:layout_height="60dp"
-android:id="@+id/imageView"
-app:srcCompat="@drawable/car4"
+            android:layout_height="60dp"
             android:layout_alignBottom="@+id/kategoria"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+            android:layout_alignParentStart="true"
+            app:srcCompat="@mipmap/car4" />
 
         <TextView
             android:text="Realizacja"

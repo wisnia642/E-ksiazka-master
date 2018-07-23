@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,6 +17,16 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.FileInputStream;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class New_user extends AppCompatActivity {
 
     public EditText email,haslo,haslo_pow,qrcode;
@@ -25,14 +36,21 @@ public class New_user extends AppCompatActivity {
     public boolean status =true;
     public String hash;
 
-    String subject = "";
+    String subject = "",data="",kod="";
     String message = "";
 
     SQLiteDatabase sampleDB;
 
     String dane[] = new String[8];
 
+    static ResultSet rs;
+    static Statement st;
+    PreparedStatement ps;
+    FileInputStream fis = null;
+    Connection connection = null;
+
     private static final String SAMPLE_DB_NAME = "Baza";
+
 
     private void showToast(String message) {
         Toast.makeText(getApplicationContext(),
@@ -40,19 +58,102 @@ public class New_user extends AppCompatActivity {
                 Toast.LENGTH_LONG).show();
     }
 
-    public void InsertLoginDataSqligt() {
+    public void podlaczenieDB()
+    {
+        if(activeNetwork()) {
+            //tworzenie polaczenia z baza danych
+            String url ="jdbc:mysql://s56.linuxpl.com:3306/trustcar_app";
+            String user = "trustcar_admin";
+            String pass = "Kubamobile2001!";
+            //  Log.i("login", getResources().getString(R.string.loginMySQL));
+            // Log.i("haslo", getResources().getString(R.string.hasloMySQL));
+            // Log.i("url", getResources().getString(R.string.url));
 
-        try {
+
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+
+            try {
+                Class.forName("com.mysql.jdbc.Driver");
+            } catch (ClassNotFoundException e) {
+                //   showToast("brak polaczenia z internetem");
+                Log.i("aaa", String.valueOf(e));
+            }
+
+            try {
+                connection = DriverManager.getConnection(url, user, pass);
+            } catch (SQLException e) {
+                showToast("brak polaczenia z internetem");
+                Log.i("aaa", String.valueOf(e));
+            }
+
+        }else
+        {
+            connection = null;
+            // showToast("Brak podłączenia do intrernetu");
+        }
+
+    }
+
+    public void InsertLoginDataMysql() {
+
+        podlaczenieDB();
+
+        if (connection != null) {
+
+            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yy_HH:mm");
+            data =sdf.format(new Date());
+
             sampleDB = this.openOrCreateDatabase(SAMPLE_DB_NAME, MODE_PRIVATE, null);
-            sampleDB.execSQL("INSERT INTO uzytkownik (email,haslo,qr_code) VALUES ('"+dane[0]+"','"+hash+"','"+dane[3]+"') ");
-            sampleDB.close();
-        } catch (Exception e) {
-            Log.i("new user", "" + e);
+
+            try {
+                st = connection.createStatement();
+            } catch (SQLException e1) {
+                //e1.printStackTrace();
+            }
+
+            String sql1 = "INSERT INTO uzytkownik (data_dod,email,haslo,zapisz_haslo,qr_code," +
+                    "punkty,admin,czy_zapis) VALUES (?,?,?,?,?,?,?,?)";
+
+            try {
+                ps = connection.prepareStatement(sql1);
+                ps.setString(1, data);
+                ps.setString(2, dane[0]);
+                ps.setString(3, dane[1]);
+                ps.setString(4, "0");
+                ps.setString(5, dane[3]);
+                ps.setString(6, "0");
+                ps.setString(7, "0");
+                ps.setString(8, "0");
+                ps.executeUpdate();
+
+
+                String sql2 = "UPDATE qr_code SET aktywne = '0' WHERE kod = '" + dane[3] + "'";
+                st.executeUpdate(sql2);
+
+                sampleDB.execSQL("INSERT INTO uzytkownik (data_dod,email,haslo,zapisz_haslo,qr_code," +
+                        "punkty,admin,czy_zapis) VALUES ('"+data+"','"+dane[0]+"','"+hash+"','0','"+dane[3]+"'," +
+                        "'0','0','0') ");
+
+            } catch (SQLException e) {
+                Log.i("New user",""+e);
+            }
+            try {
+                if (connection != null)
+                    sampleDB.close();
+                    connection.close();
+            } catch (SQLException se) {
+                Log.i("New user",""+se);
+                //  showToast("brak połączenia z internetem" +se);
+            }
         }
     }
 
+
     private void SelectDataUser()
     {
+        MainActivity.getInstance().ImportLogin(dane[0]);
+
         try{
 
             sampleDB = this.openOrCreateDatabase(SAMPLE_DB_NAME, MODE_PRIVATE,null);
@@ -103,6 +204,55 @@ public class New_user extends AppCompatActivity {
             }
         }
 
+    public void SelectDataUser_qrcode()
+    {
+        podlaczenieDB();
+
+        if (connection != null) {
+            try {
+                st = connection.createStatement();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+                Log.i("myTag", "1" + e1);
+            }
+
+            try {
+                PreparedStatement stmt1 = connection.prepareStatement("select * from qr_code where kod='"+dane[3]+"' and aktywne='1' ");
+                rs = stmt1.executeQuery();
+
+
+                while (rs.next()) {
+                    String zm = rs.getString("kod");
+
+
+                    if (zm != null) {
+                         kod = rs.getString("kod");
+
+                    }else
+                    {
+                        Log.i("New user",""+kod);
+                        // MainActivity.getInstance().showToast("Podany kod jest nieprawidłowy lub został już aktywowany");
+
+
+                    }
+
+                }
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+                Log.i("myTag", "3" + e1);
+            }
+
+            try {
+                if (connection != null)
+                    connection.close();
+            } catch (SQLException se) {
+                Log.i("myTag", "4" + se);
+
+            }
+
+        }
+    }
+
     public boolean activeNetwork () {
         ConnectivityManager cm = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
 
@@ -127,6 +277,8 @@ public class New_user extends AppCompatActivity {
             Log.i("hash",""+e);
         }
     }
+
+
 
 
     @Override
@@ -173,32 +325,39 @@ public class New_user extends AppCompatActivity {
                 dane[2] = haslo_pow.getText().toString();
                 dane[3] = qrcode.getText().toString();
 
-
                 SelectDataUser();
+                SelectDataUser_qrcode();
 
                 //sprawdzanie czy pole email jest uzupełnione
                 if(dane[0].contains("@") ) {
                     if (status == true) {
                         if (!dane[1].equals("") & !dane[2].equals("")) {
-
                             if (dane[1].equals(dane[2])) {
                                 if (!dane[3].equals("")) {
-                                    if (checkBox.isChecked()) {
-                                        dane[0].replace(" ","");
-                                        hash();
-                                        InsertLoginDataSqligt();
-                                        if(activeNetwork()) {
-                                            sendemail_execiut();
-                                        }else
-                                        {
-                                            showToast("Brak dostępu do internetu");
+                                    Log.i("user1",kod);
+                                    if(dane[3].equals(kod)) {
+                                        if (checkBox.isChecked()) {
+                                            dane[0].replace(" ", "");
+                                            hash();
+
+                                            //dodanie danych do dwoch baz
+                                            InsertLoginDataMysql();
+
+                                            if (activeNetwork()) {
+                                                sendemail_execiut();
+                                            } else {
+                                                showToast("Brak dostępu do internetu");
+                                            }
+                                            Intent i = new Intent(New_user.this, MainMenu.class);
+                                            i.putExtra("email", dane[0]);
+                                            startActivity(i);
+                                            showToast("Konto zostało utworzone");
+                                        } else {
+                                            showToast("Założenie konta wymaga potwierdzenia regulaminu serwisu");
                                         }
-                                        Intent i = new Intent(New_user.this, MainMenu.class);
-                                        i.putExtra("email", dane[0]);
-                                        startActivity(i);
-                                        showToast("Konto zostało utworzone");
-                                    } else {
-                                        showToast("Założenie konta wymaga potwierdzenia regulaminu serwisu");
+                                    }else
+                                    {
+                                        showToast("Nieprawidłowy lub nie aktywny kod QR");
                                     }
 
                                 } else {
@@ -228,18 +387,24 @@ public class New_user extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                dane[0] = email.getText().toString();
-                dane[1] = haslo.getText().toString();
-                dane[2] = haslo_pow.getText().toString();
-                dane[3] = qrcode.getText().toString();
+                if(MainActivity.getInstance().activeNetwork()) {
+                    dane[0] = email.getText().toString();
+                    dane[1] = haslo.getText().toString();
+                    dane[2] = haslo_pow.getText().toString();
+                    dane[3] = qrcode.getText().toString();
 
-                Intent i = new Intent(New_user.this,Regulamin.class);
-                i.putExtra("ekran","uzytkownik");
-                i.putExtra("email",dane[0]);
-                i.putExtra("haslo",dane[1]);
-                i.putExtra("haslo_pow",dane[2]);
-                i.putExtra("qrcode",dane[3]);
-                startActivity(i);
+                    Intent i = new Intent(New_user.this, Regulamin.class);
+                    i.putExtra("ekran", "uzytkownik");
+                    i.putExtra("email", dane[0]);
+                    i.putExtra("haslo", dane[1]);
+                    i.putExtra("haslo_pow", dane[2]);
+                    i.putExtra("qrcode", dane[3]);
+                    startActivity(i);
+                }else
+                {
+                    showToast("Brak podłączenia do internetu");
+                }
+
             }
         });
 
@@ -254,6 +419,8 @@ public class New_user extends AppCompatActivity {
         skan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+
 
                 dane[0] = email.getText().toString();
                 dane[1] = haslo.getText().toString();

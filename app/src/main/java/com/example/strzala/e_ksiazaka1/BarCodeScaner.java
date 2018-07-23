@@ -1,9 +1,15 @@
 package com.example.strzala.e_ksiazaka1;
 
+        import android.content.Context;
         import android.content.DialogInterface;
         import android.content.Intent;
         import android.content.pm.PackageManager;
+        import android.database.Cursor;
+        import android.database.sqlite.SQLiteDatabase;
+        import android.net.ConnectivityManager;
+        import android.net.NetworkInfo;
         import android.os.Build;
+        import android.os.StrictMode;
         import android.support.v4.app.ActivityCompat;
         import android.support.v4.content.ContextCompat;
         import android.support.v7.app.AlertDialog;
@@ -16,6 +22,14 @@ package com.example.strzala.e_ksiazaka1;
 
         import com.google.zxing.Result;
 
+        import java.io.FileInputStream;
+        import java.sql.Connection;
+        import java.sql.DriverManager;
+        import java.sql.PreparedStatement;
+        import java.sql.ResultSet;
+        import java.sql.SQLException;
+        import java.sql.Statement;
+
         import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
         import static android.Manifest.permission.CAMERA;
@@ -27,14 +41,125 @@ public class BarCodeScaner extends AppCompatActivity implements ZXingScannerView
     private static final int REQUEST_CAMERA = 1;
     private ZXingScannerView scannerView;
 
-    public String ekran="";
+    public String ekran="",myResult="";
     public String dane[] = new String[10];
   //  private static int camId = Camera.CameraInfo.CAMERA_FACING_BACK;
+
+    static ResultSet rs;
+    static Statement st;
+    PreparedStatement ps;
+    FileInputStream fis = null;
+    Connection connection = null;
+
+    public boolean activeNetwork () {
+        ConnectivityManager cm = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnected();
+
+        return isConnected;
+
+    }
+
+    private void showToast(String message) {
+        Toast.makeText(getApplicationContext(),
+                message,
+                Toast.LENGTH_LONG).show();
+    }
+
+    public void podlaczenieDB()
+    {
+        if(activeNetwork()) {
+            //tworzenie polaczenia z baza danych
+            String url ="jdbc:mysql://s56.linuxpl.com:3306/trustcar_app";
+            String user = "trustcar_admin";
+            String pass = "Kubamobile2001!";
+            //  Log.i("login", getResources().getString(R.string.loginMySQL));
+            // Log.i("haslo", getResources().getString(R.string.hasloMySQL));
+            // Log.i("url", getResources().getString(R.string.url));
+
+
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+
+
+            try {
+                Class.forName("com.mysql.jdbc.Driver");
+            } catch (ClassNotFoundException e) {
+                //   showToast("brak polaczenia z internetem");
+                Log.i("aaa", String.valueOf(e));
+
+            }
+
+            try {
+                connection = DriverManager.getConnection(url, user, pass);
+            } catch (SQLException e) {
+                showToast("brak polaczenia z internetem");
+                Log.i("aaa", String.valueOf(e));
+
+            }
+
+        }else
+        {
+            connection = null;
+            // showToast("Brak podłączenia do intrernetu");
+        }
+
+    }
+
+    private void SelectDataUser(String tekst)
+    {
+        podlaczenieDB();
+
+        if (connection != null) {
+
+            try {
+                st = connection.createStatement();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+                Log.i("myTag", "1" + e1);
+            }
+
+            try {
+                PreparedStatement stmt1 = connection.prepareStatement("select * from qr_code where kod='"+tekst+"' and aktywne='1' ");
+                rs = stmt1.executeQuery();
+
+
+                while (rs.next()) {
+                    String zm = rs.getString("kod");
+
+                    if (zm != null) {
+                        dane[8] = rs.getString("kod");
+
+                    }else
+                    {
+                       // MainActivity.getInstance().showToast("Podany kod jest nieprawidłowy lub został już aktywowany");
+                    }
+
+                }
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+                Log.i("myTag", "3" + e1);
+            }
+
+            try {
+                if (connection != null)
+                connection.close();
+            } catch (SQLException se) {
+                Log.i("myTag", "4" + se);
+
+            }
+
+        }
+    }
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
 
         try {
             ekran = getIntent().getStringExtra("ekran");
@@ -154,7 +279,7 @@ public class BarCodeScaner extends AppCompatActivity implements ZXingScannerView
     public void handleResult(final Result result) {
 
         if(!result.equals("")) {
-            final String myResult = result.getText();
+            myResult = result.getText();
             Log.d("QRCodeScanner", result.getText());
             Log.d("QRCodeScanner", result.getBarcodeFormat().toString());
             Log.i("blad",""+myResult);
@@ -166,14 +291,20 @@ public class BarCodeScaner extends AppCompatActivity implements ZXingScannerView
                 builder.setPositiveButton("Zaloguj", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if (myResult.equals("https://vicards.pl/pUcJCNC2")) {       // https://vicards.pl/pUcJCNC2
-                            Intent i = new Intent(BarCodeScaner.this, MainMenu.class);
-                            i.putExtra("qrkod",myResult);
-                            startActivity(i);
-                        }
-                        else {
-                            Toast.makeText(getApplicationContext(), "Nie prawidłowy kod QR", Toast.LENGTH_LONG).show();
-                            scannerView.resumeCameraPreview(BarCodeScaner.this);
+
+                        SelectDataUser(myResult);
+                        if(dane[8].equals(myResult)) {
+                            if (myResult.equals("https://vicards.pl/pUcJCNC2")) {       // https://vicards.pl/pUcJCNC2
+                                Intent i = new Intent(BarCodeScaner.this, MainMenu.class);
+                                i.putExtra("qrkod", myResult);
+                                startActivity(i);
+                            } else {
+                                Toast.makeText(getApplicationContext(), "Nie prawidłowy kod QR", Toast.LENGTH_LONG).show();
+                                scannerView.resumeCameraPreview(BarCodeScaner.this);
+                            }
+                        }else
+                        {
+                            Toast.makeText(getApplicationContext(), "Podany kod jest nieprawidłowy lub został już aktywowany", Toast.LENGTH_LONG).show();
                         }
 
                     }

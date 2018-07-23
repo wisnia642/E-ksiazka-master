@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="url">jdbc:mysql://s56.linuxpl.com:3306/trustcar_app</string>>
+    <string name="loginMySQL">regatzo_mw</string>>
+    <string name="hasloMySQL">mw1234</string>>
+</resources>

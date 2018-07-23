@@ -109,12 +109,21 @@
         android:layout_centerHorizontal="true" />
 
     <ImageView
-        app:srcCompat="@drawable/car"
         android:id="@+id/imageView2"
         android:layout_width="220dp"
         android:layout_height="220dp"
+        android:layout_alignEnd="@+id/checkBoks"
         android:layout_alignParentTop="true"
         android:layout_alignRight="@+id/checkBoks"
-        android:layout_alignEnd="@+id/checkBoks" />
+        app:srcCompat="@mipmap/car" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="@android:style/Widget.Material.ProgressBar.Large"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/login"
+        android:layout_centerHorizontal="true"
+        android:visibility="invisible" />
 
 </RelativeLayout>

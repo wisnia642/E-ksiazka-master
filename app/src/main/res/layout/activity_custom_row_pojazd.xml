@@ -23,12 +23,12 @@
 
         <ImageView
             android:id="@+id/zdjecieP"
-            app:srcCompat="@drawable/fiat"
-            android:layout_alignParentTop="true"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_width="60dp"
-            android:layout_height="60dp" />
+            android:layout_alignParentTop="true"
+            app:srcCompat="@mipmap/fiat" />
 
         <TextView
             android:text="Fiat 126p"
