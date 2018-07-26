@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -20,7 +21,9 @@ public class Historia_pojazd extends AppCompatActivity {
     EditText pole;
     ListView lista_new=null;
     String zm2[] = new String[6];
-    String dane,email;
+    String tekst,email;
+
+    String dane[] = new String[10];
 
     private static final String SAMPLE_DB_NAME = "Baza";
     SQLiteDatabase sampleDB;
@@ -63,6 +66,23 @@ public class Historia_pojazd extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_historia_pojazd);
 
+        try {
+
+            dane[0] = getIntent().getStringExtra("menu");
+
+
+
+        }catch (Exception e)
+        {
+            Log.i("MainMenu",""+e);
+        }
+
+            if(dane[0].equals("historia")) {
+              //  powrót.setText("Powrót");
+            }else if (dane[0].equals("zgloszenie"))
+            {
+                powrót.setText("");
+            }
 
         szukaj1 = (Button) findViewById(R.id.b_szukaj);
         powrót = (Button) findViewById(R.id.b_powrot);
@@ -82,13 +102,29 @@ public class Historia_pojazd extends AppCompatActivity {
 
         SelectDataUser();
 
+        lista_new.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if(dane[0].equals("zgloszenie"))
+                {
+                    Intent i = new Intent (Historia_pojazd.this, lista_pojazd.class);
+                    startActivity(i);
+                }
+                if(dane[0].equals("historia"))
+                {
+                    Intent i = new Intent (Historia_pojazd.this, lista_pojazd.class);
+                    startActivity(i);
+                }
+            }
+        });
+
         szukaj1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 SelectDataUser();
 
-                dane=pole.getText().toString();
+                tekst=pole.getText().toString();
             }
         });
 

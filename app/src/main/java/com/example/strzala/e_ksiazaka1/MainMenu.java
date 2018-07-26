@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -20,12 +21,15 @@ public class MainMenu extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     ListView list=null,list1=null;
+    Button zgloszenie,samochod;
 
-    Button zgloszenie;
+
 
     String[] zm = new String[1];
     String[] zm1 = new String[1];
     String[] zm2 = new String[1];
+
+    String dane[] = new String[20];
 
 
 
@@ -36,6 +40,16 @@ public class MainMenu extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        try {
+
+            dane[0] = getIntent().getStringExtra("email");
+            dane[1] = getIntent().getStringExtra("admin");
+
+
+        }catch (Exception e)
+        {
+            Log.i("MainMenu",""+e);
+        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -51,6 +65,7 @@ public class MainMenu extends AppCompatActivity
         list.setAdapter(adapter);
 
         zgloszenie =(Button) findViewById(R.id.zgloszenie);
+        samochod = (Button) findViewById(R.id.button7);
 
         Custom_row_zgloszenie adapter1=new Custom_row_zgloszenie(this, zm1);
         list1=(ListView)findViewById(R.id.zgloszenia);
@@ -60,10 +75,26 @@ public class MainMenu extends AppCompatActivity
         list1=(ListView)findViewById(R.id.pojazdy);
         list1.setAdapter(adapter2);
 
+        if(dane[1]!=null)
+        {
+            zgloszenie.setVisibility(View.VISIBLE);
+            samochod.setVisibility(View.VISIBLE);
+
+        }
+
         zgloszenie.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(MainMenu.this,dane_pojazd.class);
+                startActivity(i);
+            }
+        });
+
+        samochod.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(MainMenu.this,Historia_pojazd.class);
+                i.putExtra("menu","zgloszenie");
                 startActivity(i);
             }
         });
@@ -98,6 +129,7 @@ public class MainMenu extends AppCompatActivity
             // Handle the camera action
         }else if (id == R.id.historia) {
             Intent i = new Intent(MainMenu.this,Historia_pojazd.class);
+            i.putExtra("menu","historia");
             startActivity(i);
         }
 

@@ -11,6 +11,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.util.concurrent.ExecutionException;
+
 public class dane_pojazd extends AppCompatActivity {
 
     EditText marka,model,rocznik,silnik,qrCode,nr_rejestracyjny;
@@ -18,6 +20,8 @@ public class dane_pojazd extends AppCompatActivity {
     Boolean status=true;
     SQLiteDatabase sampleDB;
     private static final String SAMPLE_DB_NAME = "Baza";
+
+    String dane[] = new String[10];
 
 
     public void showToast(String message) {
@@ -31,10 +35,6 @@ public class dane_pojazd extends AppCompatActivity {
     {
         try {
             sampleDB = this.openOrCreateDatabase(SAMPLE_DB_NAME, MODE_PRIVATE, null);
-            sampleDB.execSQL("Drop table samochod");
-            sampleDB.execSQL("CREATE TABLE IF NOT EXISTS samochod (Id INTEGER PRIMARY KEY AUTOINCREMENT, marka,VARCHAR, model VARCHAR, rocznik VARCHAR, silnik VARCHAR, qrcode VARCHAR," +
-                    "nr_rejestracyjny VARCHAR,wyswietl VARCHAR)");
-
 
             Cursor c = sampleDB.rawQuery("Select * from samochod where nr_rejestracyjny = '"+dane[5]+"' ",null);
 
@@ -64,7 +64,7 @@ public class dane_pojazd extends AppCompatActivity {
     }
 
 
-    String dane[] = new String[10];
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,6 +97,7 @@ public class dane_pojazd extends AppCompatActivity {
             silnik.setText(dane[3]);
             qrCode.setText(dane[4]);
             nr_rejestracyjny.setText(dane[5]);
+
         }catch (Exception e)
         {
             Log.i("BarCode",""+e);
@@ -105,19 +106,20 @@ public class dane_pojazd extends AppCompatActivity {
         ok.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dane[0]= marka.getText().toString();
-                dane[1]= model.getText().toString();
-                dane[2]= rocznik.getText().toString();
-                dane[3]= silnik.getText().toString();
-                dane[4]= qrCode.getText().toString();
-                dane[5] = nr_rejestracyjny.getText().toString();
+
+                    dane[0] = marka.getText().toString();
+                    dane[1] = model.getText().toString();
+                    dane[2] = rocznik.getText().toString();
+                    dane[3] = silnik.getText().toString();
+                    dane[4] = qrCode.getText().toString();
+                    dane[5] = nr_rejestracyjny.getText().toString();
 
                 if(!dane[0].equals("") ) {
 
                     if(!dane[5].equals("")) {
 
                         if(!dane[4].equals("")) {
-                            InsertCar();
+                            //InsertCar();
                             Intent i = new Intent(dane_pojazd.this, lista_pojazd.class);
                             i.putExtra("rejestracyjny",dane[5]);
                             startActivity(i);

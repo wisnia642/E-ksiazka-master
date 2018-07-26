@@ -294,14 +294,10 @@ public class BarCodeScaner extends AppCompatActivity implements ZXingScannerView
 
                         SelectDataUser(myResult);
                         if(dane[8].equals(myResult)) {
-                            if (myResult.equals("https://vicards.pl/pUcJCNC2")) {       // https://vicards.pl/pUcJCNC2
+                                  // https://vicards.pl/pUcJCNC2
                                 Intent i = new Intent(BarCodeScaner.this, MainMenu.class);
                                 i.putExtra("qrkod", myResult);
                                 startActivity(i);
-                            } else {
-                                Toast.makeText(getApplicationContext(), "Nie prawidłowy kod QR", Toast.LENGTH_LONG).show();
-                                scannerView.resumeCameraPreview(BarCodeScaner.this);
-                            }
                         }else
                         {
                             Toast.makeText(getApplicationContext(), "Podany kod jest nieprawidłowy lub został już aktywowany", Toast.LENGTH_LONG).show();

@@ -334,6 +334,7 @@ public class MainActivity extends AppCompatActivity {
                     login = String.valueOf(c.getString(2));
                     password = String.valueOf(c.getString(3));
                     qr_code = String.valueOf(c.getString(5));
+                    dane[6] = String.valueOf(c.getString(8));
                     Log.i("MainActivity",login);
                 }else
                 {
@@ -585,6 +586,7 @@ public class MainActivity extends AppCompatActivity {
 
                             Intent c = new Intent(MainActivity.this,MainMenu.class);
                             c.putExtra("email",login);
+                            c.putExtra("admin",dane[6]);
                             startActivity(c);
                             finish();
                         }else
