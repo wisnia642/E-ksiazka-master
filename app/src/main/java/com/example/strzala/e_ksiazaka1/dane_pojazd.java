@@ -74,7 +74,7 @@ public class dane_pojazd extends AppCompatActivity {
         marka = (EditText) findViewById(R.id.marka);
         model = (EditText) findViewById(R.id.model);
         rocznik = (EditText) findViewById(R.id.rocznik);
-        silnik = (EditText) findViewById(R.id.silnik);
+        silnik = (EditText) findViewById(R.id.qr_code4);
         qrCode = (EditText) findViewById(R.id.qr_code);
         nr_rejestracyjny = (EditText) findViewById(R.id.rejestracyjny);
 
@@ -122,6 +122,8 @@ public class dane_pojazd extends AppCompatActivity {
                             //InsertCar();
                             Intent i = new Intent(dane_pojazd.this, lista_pojazd.class);
                             i.putExtra("rejestracyjny",dane[5]);
+                            i.putExtra("kategoria","kat_1");
+                            i.putExtra("qr_code",dane[4]);
                             startActivity(i);
                         }else
                         {

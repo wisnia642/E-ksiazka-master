@@ -19,13 +19,13 @@
         android:id="@+id/kategoria_naprawy" />
 
     <TextView
+        android:id="@+id/tekst"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="15dp"
-        android:id="@+id/tekst"
         android:textAlignment="center"
         android:textColor="@color/colorAccent"
-        android:textSize="18sp" />
+        android:textSize="22sp" />
 </RelativeLayout>
