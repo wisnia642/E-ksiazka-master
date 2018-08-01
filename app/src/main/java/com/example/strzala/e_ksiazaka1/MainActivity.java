@@ -201,29 +201,6 @@ public class MainActivity extends AppCompatActivity {
 
             try {
 
-
-                PreparedStatement stmt2 = connection.prepareStatement("select * from kategoria ");
-                rs = stmt2.executeQuery();
-
-                sampleDB.execSQL("Delete from kategoria ");
-
-                while (rs.next()) {
-                    String zm = rs.getString("nazwa");
-
-                    if (zm != null) {
-                        dane[10] = rs.getString("nazwa");
-                        dane[11] = rs.getString("punkty");
-                        dane[12] = rs.getString("kat_1");
-                        dane[13] = rs.getString("kat_2");
-                        dane[14] = rs.getString("aktywne");
-
-                        sampleDB.execSQL("INSERT INTO kategoria (nazwa,punkty,kat_1,kat_2,aktywne) " +
-                                "VALUES ('"+dane[10]+"','"+dane[11]+"','"+dane[12]+"'," +
-                                "'"+dane[13]+"','"+dane[14]+"') ");
-                    }
-
-                }
-
                 PreparedStatement stmt3 = connection.prepareStatement("select * from zgloszenie where qr_code='"+dane[4]+"' ");
                 rs = stmt3.executeQuery();
 
