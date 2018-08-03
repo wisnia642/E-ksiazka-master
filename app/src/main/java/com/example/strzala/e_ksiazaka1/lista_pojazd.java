@@ -206,6 +206,7 @@ public class lista_pojazd extends AppCompatActivity {
             qrcode = getIntent().getStringExtra("qr_code");
             liczba = Integer.parseInt(pozycja);
             Log.i("pozycja",pozycja);
+            Log.i("qrcode",qrcode);
 
         }catch (Exception e)
         {
@@ -250,7 +251,7 @@ public class lista_pojazd extends AppCompatActivity {
                 }else if (ekran.equals("koniec"))
                 {
                     Intent i = new Intent(lista_pojazd.this,koniec_pojazd.class);
-                    i.putExtra("pozycja1",nazwa);
+                    i.putExtra("status","0");
                     i.putExtra("pozycja2",dane.get(position));
                     i.putExtra("qr_code",qrcode);
                     startActivity(i);

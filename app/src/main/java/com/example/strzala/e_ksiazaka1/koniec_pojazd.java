@@ -23,9 +23,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
@@ -56,6 +59,9 @@ public class koniec_pojazd extends AppCompatActivity {
     String data="",qrcode;
     Blob blob;
     EditText czesci1,uslugi,punkty1;
+    AutoCompleteTextView uwagi;
+    TextView naprawa;
+    Switch przelacznik;
 
     String dane[] = new String[10];
     public int polaczenie=0;
@@ -194,6 +200,11 @@ public class koniec_pojazd extends AppCompatActivity {
 
         if (connection != null) {
 
+            dane[4] = uwagi.getText().toString();
+            dane[5] = punkty1.getText().toString();
+            dane[6] = czesci1.getText().toString();
+            dane[7] = uslugi.getText().toString();
+
             SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yy_HH:mm");
             data =sdf.format(new Date());
 
@@ -209,35 +220,63 @@ public class koniec_pojazd extends AppCompatActivity {
             try {
                 st = connection.createStatement();
             } catch (SQLException e1) {
-                //e1.printStackTrace();
+                e1.printStackTrace();
             }
 
-            String sql1 = "INSERT INTO zgloszenie (data_dod,zdjecie_przed,zdjecie_po,cena_czesci,cena_uslugi,uwagi," +
-                    "data_wykonania,status,qr_code,akceptacja) VALUES (?,?,?,?,?,?,?,?,?,?)";
+            if(dane[1].equals("0")) {
 
-            try {
-                ps = connection.prepareStatement(sql1);
-                ps.setString(1, data);
-                ps.setString(2,"0");
-                ps.setBinaryStream(3,fis,(int)file.length());
-                ps.setString(4, "0");
-                ps.setString(5, "0");
-                ps.setString(6, "0");
-                ps.setString(7, "0");
-                ps.setString(8, "0");
-                ps.setString(9, "0");
-                ps.setString(10, "0");
-                ps.executeUpdate();
+                String sql1 = "INSERT INTO zgloszenie (data_dod,zdjecie_przed,cena_czesci,cena_uslugi,uwagi," +
+                        "data_wykonania,status,qr_code,akceptacja) VALUES (?,?,?,?,?,?,?,?,?)";
 
-                showToast("udało się");
+                try {
+                    ps = connection.prepareStatement(sql1);
+                    ps.setString(1, data);
+                    ps.setBinaryStream(2, fis, (int) file.length());
+                    ps.setString(3, dane[6]);
+                    ps.setString(4, dane[7]);
+                    ps.setString(5, dane[4]);
+                    ps.setString(6, "");
+                    ps.setString(7, "Nowy");
+                    ps.setString(8, dane[3]);
+                    ps.setString(9, "");
+                    ps.executeUpdate();
 
-                sampleDB.execSQL("INSERT INTO zgloszenie (data_dod,zdjecie_przed,zdjecie_po,cena_czesci,cena_uslugi,uwagi," +
-                        "data_wykonania,status,qr_code,akceptacja) VALUES ('"+data+"','0','0','0','0','0','0','0','0','0')");
+                    sampleDB.execSQL("INSERT INTO zgloszenie (data_dod,zdjecie_przed,cena_czesci,cena_uslugi,uwagi," +
+                            "data_wykonania,status,qr_code,akceptacja) VALUES ('" + data + "','" + dane[8] + "','" + dane[6] + "'," +
+                            "'" + dane[7] + "','" + dane[4] + "','','Nowy','" + dane[3] + "','')");
 
 
-            } catch (SQLException e) {
-                Log.i("New user",""+e);
-                showToast(""+e);
+                } catch (SQLException e) {
+                    Log.i("New user", "" + e);
+                }
+
+            }else if(dane[1].equals("1"))
+            {
+                String sql1 = "INSERT INTO zgloszenie (data_dod,zdjecie_po,cena_czesci,cena_uslugi,uwagi," +
+                        "data_wykonania,status,qr_code,akceptacja) VALUES (?,?,?,?,?,?,?,?,?)";
+
+                try {
+                    ps = connection.prepareStatement(sql1);
+                    ps.setString(1, data);
+                    ps.setBinaryStream(2, fis, (int) file.length());
+                    ps.setString(3, dane[6]);
+                    ps.setString(4, dane[7]);
+                    ps.setString(5, dane[4]);
+                    ps.setString(6, "");
+                    ps.setString(7, "Zakończony");
+                    ps.setString(8, dane[3]);
+                    ps.setString(9, "");
+                    ps.executeUpdate();
+
+                    sampleDB.execSQL("INSERT INTO zgloszenie (data_dod,zdjecie_po,cena_czesci,cena_uslugi,uwagi," +
+                            "data_wykonania,status,qr_code,akceptacja) VALUES ('" + data + "','" + dane[8] + "','" + dane[6] + "'," +
+                            "'" + dane[7] + "','" + dane[4] + "','','Nowy','" + dane[3] + "','')");
+
+
+                } catch (SQLException e) {
+                    Log.i("koniec pojazd", "" + e);
+                    showToast("" + e);
+                }
             }
             try {
                 if (connection != null)
@@ -307,13 +346,17 @@ public class koniec_pojazd extends AppCompatActivity {
 
         czesci1 = (EditText) findViewById(R.id.czesci);
         uslugi = (EditText) findViewById(R.id.editText123);
-      //  punkty1 = (EditText) findViewById(R.id.punkty);
+        punkty1 = (EditText) findViewById(R.id.editText2);
+
+        uwagi = (AutoCompleteTextView) findViewById(R.id.uwagi);
+        naprawa = (TextView) findViewById(R.id.naprawa);
+        przelacznik = (Switch) findViewById(R.id.switch2);
 
         try {
-
-            dane[1] = getIntent().getStringExtra("pozycja1");
+            dane[1] = getIntent().getStringExtra("status");
             dane[2] = getIntent().getStringExtra("pozycja2");
-            dane[3] = getIntent().getStringExtra("qrcode");
+            dane[3] = getIntent().getStringExtra("qr_code");
+            naprawa.setText(dane[2]);
 
         }catch (Exception e)
         {
@@ -324,6 +367,11 @@ public class koniec_pojazd extends AppCompatActivity {
 
         if(checkPermission()==false) {
             requestPermission();
+        }
+
+        if(dane[1].equals("1"))
+        {
+            przelacznik.setChecked(true);
         }
 
 
@@ -349,9 +397,11 @@ public class koniec_pojazd extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-
                 InsertLoginDataMysql();
             showToast("Zgłoszenie naprawy zostało dodane");
+
+            Intent i = new Intent(koniec_pojazd.this,MainMenu.class);
+            startActivity(i);
             }
         });
 
@@ -360,6 +410,27 @@ public class koniec_pojazd extends AppCompatActivity {
             public void onClick(View v) {
                 Intent i = new Intent(koniec_pojazd.this,MainMenu.class);
                 startActivity(i);
+            }
+        });
+
+        przelacznik.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(przelacznik.isChecked())
+                {
+                    Intent i = new Intent(koniec_pojazd.this,koniec_pojazd.class);
+                    i.putExtra("pozycja2",dane[2]);
+                    i.putExtra("qr_code",qrcode);
+                    i.putExtra("status","1");
+                    startActivity(i);
+                }else if(!przelacznik.isChecked())
+                {
+                    Intent i = new Intent(koniec_pojazd.this,koniec_pojazd.class);
+                    i.putExtra("pozycja2",dane[2]);
+                    i.putExtra("qr_code",qrcode);
+                    i.putExtra("status","0");
+                    startActivity(i);
+                }
             }
         });
 
@@ -389,6 +460,9 @@ public class koniec_pojazd extends AppCompatActivity {
 
         if (requestCode == CAMERA_PIC_REQUEST) {
 
+            SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyHHmm");
+            String data_zdj =sdf.format(new Date());
+
             Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
             zdjecie.setImageDrawable(new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(thumbnail, 500, 500, true)));
 
@@ -400,13 +474,13 @@ public class koniec_pojazd extends AppCompatActivity {
             data1 = getBitmapAsByteArray(thumbnail); // this is a function
 
             //tutaj jest zapis na urządzeniu
-             file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) ,file.separator+"image1.jpg");
+             file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) ,file.separator+data_zdj+"_trustcar.jpg");
             try {
 
 
 
                 //przekazywanie danych do pliku
-                //tablica[30]=String.valueOf(file);
+                dane[8]=String.valueOf(file);
                 file.createNewFile();
                 FileOutputStream fo = new FileOutputStream(file);
                 //5
@@ -429,7 +503,7 @@ public class koniec_pojazd extends AppCompatActivity {
             int columnIndex = c.getColumnIndex(filePath[0]);
             String picturePath = c.getString(columnIndex);
             c.close();
-            dane[0] =picturePath;
+            dane[8] =picturePath;
             Bitmap thumbnail = (BitmapFactory.decodeFile(picturePath));
             galeria.setImageDrawable(new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(thumbnail, 500, 500, true)));
             file= new File(picturePath);

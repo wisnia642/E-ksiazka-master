@@ -453,6 +453,7 @@ public class MainActivity extends AppCompatActivity {
 
         sprawdz_haslo();
 
+
         //logowanie przy użyciu danych logowania
         logowanie.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -564,6 +565,7 @@ public class MainActivity extends AppCompatActivity {
                             Intent c = new Intent(MainActivity.this,MainMenu.class);
                             c.putExtra("email",login);
                             c.putExtra("admin",dane[6]);
+                            c.putExtra("qr_code",qr_code);
                             startActivity(c);
                             finish();
                         }else

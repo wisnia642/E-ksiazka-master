@@ -44,6 +44,7 @@ public class MainMenu extends AppCompatActivity
 
             dane[0] = getIntent().getStringExtra("email");
             dane[1] = getIntent().getStringExtra("admin");
+            dane[2] = getIntent().getStringExtra("qr_code");
 
 
         }catch (Exception e)
@@ -75,17 +76,20 @@ public class MainMenu extends AppCompatActivity
         list1=(ListView)findViewById(R.id.pojazdy);
         list1.setAdapter(adapter2);
 
-        if(dane[1]!=null)
-        {
+      //  if(dane[1]!=null)
+    //   {
             zgloszenie.setVisibility(View.VISIBLE);
             samochod.setVisibility(View.VISIBLE);
 
-        }
+
+
+      //  }
 
         zgloszenie.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(MainMenu.this,dane_pojazd.class);
+                i.putExtra("qr_code",dane[2]);
                 startActivity(i);
             }
         });
@@ -93,8 +97,10 @@ public class MainMenu extends AppCompatActivity
         samochod.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(MainMenu.this,Historia_pojazd.class);
-                i.putExtra("menu","zgloszenie");
+                Intent i = new Intent(MainMenu.this, lista_pojazd.class);
+                i.putExtra("rejestracyjny","");
+                i.putExtra("kategoria","kat_1");
+                i.putExtra("qr_code",dane[2]);
                 startActivity(i);
             }
         });

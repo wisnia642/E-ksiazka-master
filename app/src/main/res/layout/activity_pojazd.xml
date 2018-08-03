@@ -76,7 +76,8 @@
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="19dp"
         android:background="@drawable/button_style2"
-        android:text="Skanuj" />
+        android:text="Skanuj"
+        android:visibility="invisible" />
 
     <EditText
         android:id="@+id/qr_code"
@@ -87,7 +88,8 @@
         android:layout_marginBottom="106dp"
         android:ems="10"
         android:hint="QR kod"
-        android:inputType="textPersonName" />
+        android:inputType="textPersonName"
+        android:visibility="invisible" />
 
     <EditText
         android:id="@+id/rejestracyjny"

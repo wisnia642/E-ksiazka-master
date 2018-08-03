@@ -1,8 +1,12 @@
 package com.example.strzala.e_ksiazaka1;
 
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,18 +15,30 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.io.FileInputStream;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.concurrent.ExecutionException;
 
 public class dane_pojazd extends AppCompatActivity {
 
     EditText marka,model,rocznik,silnik,qrCode,nr_rejestracyjny;
     Button ok,powrót,skan;
-    Boolean status=true;
+    Boolean status=false;
     SQLiteDatabase sampleDB;
     private static final String SAMPLE_DB_NAME = "Baza";
 
     String dane[] = new String[10];
 
+    static ResultSet rs;
+    static Statement st;
+    PreparedStatement ps;
+    FileInputStream fis = null;
+    Connection connection = null;
 
     public void showToast(String message) {
         Toast.makeText(getApplicationContext(),
@@ -30,6 +46,56 @@ public class dane_pojazd extends AppCompatActivity {
                 Toast.LENGTH_LONG).show();
     }
 
+    public void podlaczenieDB()
+    {
+        if(activeNetwork()) {
+            //tworzenie polaczenia z baza danych
+            String url ="jdbc:mysql://s56.linuxpl.com:3306/trustcar_app";
+            String user = "trustcar_admin";
+            String pass = "Kubamobile2001!";
+            //  Log.i("login", getResources().getString(R.string.loginMySQL));
+            // Log.i("haslo", getResources().getString(R.string.hasloMySQL));
+            // Log.i("url", getResources().getString(R.string.url));
+
+
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+
+
+            try {
+                Class.forName("com.mysql.jdbc.Driver");
+            } catch (ClassNotFoundException e) {
+                //   showToast("brak polaczenia z internetem");
+                Log.i("aaa", String.valueOf(e));
+
+            }
+
+            try {
+                connection = DriverManager.getConnection(url, user, pass);
+            } catch (SQLException e) {
+                showToast("brak polaczenia z internetem");
+                Log.i("aaa", String.valueOf(e));
+
+            }
+
+        }else
+        {
+            connection = null;
+            // showToast("Brak podłączenia do intrernetu");
+        }
+
+    }
+
+    public boolean activeNetwork () {
+        ConnectivityManager cm = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnected();
+
+        return isConnected;
+
+    }
 
     private void InsertCar()
     {
@@ -40,18 +106,59 @@ public class dane_pojazd extends AppCompatActivity {
 
             while(c.moveToNext())
             {
+
                 String pamiec = String.valueOf(c.getString(1));
                 if(pamiec != null)
                 {
-                    status = false;
+                    status = true;
                 }else
                 {
-                    status = true;
+
+                    status = false;
                 }
             }
 
             if(status==false) {
-                sampleDB.execSQL("INSERT INTO samochod (marka,model,rocznik,silnik,nr_rejestracyjny,qrcode,wyswietl) values ('" + dane[0] + "','" + dane[1] + "','" + dane[2] + "','" + dane[3] + "','" + dane[4] + "') ");
+
+                sampleDB.execSQL("INSERT INTO samochod (marka,model,rocznik,silnik,nr_rejestracyjny,qr_code,wyswietl) values ('" + dane[0] + "','" + dane[1] + "','" + dane[2] + "','" + dane[3] + "','" + dane[5] + "','"+dane[4]+"','1') ");
+
+                podlaczenieDB();
+
+                try {
+                    st = connection.createStatement();
+                } catch (SQLException e1) {
+                    //e1.printStackTrace();
+                }
+
+                String sql1 = "INSERT INTO samochod (marka,model,rocznik,silnik,nr_rejestracyjny,qr_code,wyswietl) " +
+                        " VALUES (?,?,?,?,?,?,?)";
+
+                Log.i("danepojazd",dane[4]);
+                try {
+                    ps = connection.prepareStatement(sql1);
+                    ps.setString(1, dane[0]);
+                    ps.setString(2, dane[1]);
+                    ps.setString(3, dane[2]);
+                    ps.setString(4, dane[3]);
+                    ps.setString(5, dane[5]);
+                    ps.setString(6, dane[4]);
+                    ps.setString(7, "1");
+                    ps.executeUpdate();
+
+
+
+                } catch (SQLException e) {
+                    Log.i("New user",""+e);
+                }
+                try {
+                    if (connection != null)
+                        sampleDB.close();
+                    connection.close();
+                } catch (SQLException se) {
+                    Log.i("New user",""+se);
+                    //  showToast("brak połączenia z internetem" +se);
+                }
+
             }else
             {
                 showToast("Podane auto z takim nr rejestracyjnym już istnieje w systemie");
@@ -89,13 +196,13 @@ public class dane_pojazd extends AppCompatActivity {
             dane[1] = getIntent().getStringExtra("model");
             dane[2] = getIntent().getStringExtra("rocznik");
             dane[3] = getIntent().getStringExtra("silnik");
-            dane[4] = getIntent().getStringExtra("qrCode");
+            dane[4] = getIntent().getStringExtra("qr_code");
             dane[5] = getIntent().getStringExtra("rejestracja");
             marka.setText(dane[0]);
             model.setText(dane[1]);
             rocznik.setText(dane[2]);
             silnik.setText(dane[3]);
-            qrCode.setText(dane[4]);
+          //  qrCode.setText(dane[4]);
             nr_rejestracyjny.setText(dane[5]);
 
         }catch (Exception e)
@@ -111,24 +218,21 @@ public class dane_pojazd extends AppCompatActivity {
                     dane[1] = model.getText().toString();
                     dane[2] = rocznik.getText().toString();
                     dane[3] = silnik.getText().toString();
-                    dane[4] = qrCode.getText().toString();
+                  //  dane[4] = qrCode.getText().toString();
                     dane[5] = nr_rejestracyjny.getText().toString();
 
                 if(!dane[0].equals("") ) {
 
                     if(!dane[5].equals("")) {
+                        InsertCar();
+                        if(status==false) {
 
-                        if(!dane[4].equals("")) {
-                            //InsertCar();
                             Intent i = new Intent(dane_pojazd.this, lista_pojazd.class);
                             i.putExtra("rejestracyjny",dane[5]);
                             i.putExtra("kategoria","kat_1");
                             i.putExtra("qr_code",dane[4]);
                             startActivity(i);
-                        }else
-                        {
-                            showToast("Zeskanul lub wpisz kod QR");
-                        }
+                      }
                     }else
                     {
                         showToast("uzupełnij numer rejestracyjny samochodu.");
