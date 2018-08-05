@@ -10,27 +10,33 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 public class Custom_row_pojazd extends ArrayAdapter<String> {
 
     private final Activity context;
-    private final String[] zm2;
+    ArrayList<String> zm1 = new ArrayList<String>();
+    ArrayList<String> zm2 = new ArrayList<String>();
     ImageView txtTitle;
-    TextView texkst;
+    TextView marka_b,nr_rejestracyjny;
 
     public Custom_row_pojazd(Activity context,
-                                 String[] zma) {
+                                 ArrayList<String> zma, ArrayList<String> zma1) {
         super(context, R.layout.activity_custom_row_pojazd, zma);
         this.context = context;
         this.zm2 = zma;
+        this.zm1 = zma1;
     }
     public View getView(int position, View view, ViewGroup parent) {
         LayoutInflater inflater=context.getLayoutInflater();
         View rowView2=inflater.inflate(R.layout.activity_custom_row_pojazd, null,true);
 
         txtTitle = (ImageView) rowView2.findViewById(R.id.zdjecieP);
-        texkst = (TextView) rowView2.findViewById(R.id.textView9);
+        marka_b = (TextView) rowView2.findViewById(R.id.marka);
+        nr_rejestracyjny = (TextView) rowView2.findViewById(R.id.nr_rejestracyjny);
 
-        texkst.setText("Fiat 126p");
+        marka_b.setText(zm1.get(position));
+        nr_rejestracyjny.setText(zm2.get(position));
 
 
         return rowView2;

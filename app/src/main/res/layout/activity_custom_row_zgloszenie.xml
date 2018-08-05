@@ -15,62 +15,63 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_alignParentTop="true"
+        android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="12dp"
-        android:layout_height="70dp">
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="12dp">
 
         <TextView
-            android:text="Przyjęte"
+            android:id="@+id/status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/textView6"
-            android:textColor="@android:color/holo_red_dark"
-            android:layout_alignBottom="@+id/kategoria"
+            android:layout_alignBottom="@+id/data"
+            android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" />
+            android:text="Przyjęte"
+            android:textColor="@android:color/holo_red_dark" />
 
         <TextView
+            android:id="@+id/data"
             android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:id="@+id/kategoria"
-                    android:textSize="16sp"
-            android:layout_below="@+id/textView4"
-            android:layout_alignLeft="@+id/textView4"
-            android:layout_alignStart="@+id/textView4"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/marka"
+            android:layout_alignStart="@+id/marka"
+            android:layout_below="@+id/marka"
             android:layout_marginTop="17dp"
-            android:text="Zgłoszenie nr: 1234" />
+            android:text="Zgłoszenie nr: 1234"
+            android:textSize="16sp" />
 
         <ImageView
             android:id="@+id/imageView"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:layout_alignBottom="@+id/kategoria"
+            android:layout_alignBottom="@+id/data"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             app:srcCompat="@mipmap/car4" />
 
         <TextView
-            android:text="Realizacja"
+            android:id="@+id/textView5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/textView5"
-            android:layout_marginTop="19dp"
-            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" />
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="19dp"
+            android:text="Realizacja" />
 
         <TextView
-            android:text="Fiat 126p"
+            android:id="@+id/marka"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/textView4"
-            android:textSize="18sp"
+            android:layout_alignParentTop="true"
             android:layout_marginLeft="21dp"
             android:layout_marginStart="21dp"
-            android:layout_alignParentTop="true"
+            android:layout_toEndOf="@+id/imageView"
             android:layout_toRightOf="@+id/imageView"
-            android:layout_toEndOf="@+id/imageView" />
+            android:text="Fiat 126p"
+            android:textSize="18sp" />
     </RelativeLayout>
 
 

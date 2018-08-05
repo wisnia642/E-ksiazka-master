@@ -13,29 +13,28 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true">
 
         <TextView
-            android:id="@+id/kategoria"
+            android:id="@+id/data"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignStart="@+id/textView4"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/marka"
+            android:layout_marginStart="101dp"
             android:text="PO 123 CT"
             android:textSize="16sp" />
 
         <TextView
-            android:id="@+id/textView4"
+            android:id="@+id/marka"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            android:layout_marginLeft="50dp"
-            android:layout_marginStart="50dp"
-            android:layout_toEndOf="@+id/imageView"
-            android:layout_toRightOf="@+id/imageView"
+            android:layout_marginStart="102dp"
             android:text="Jan Kowalski"
             android:textSize="18sp" />
 
@@ -43,9 +42,9 @@
             android:id="@+id/imageView"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
+            android:layout_marginStart="22dp"
             android:background="@mipmap/user" />
     </RelativeLayout>
 

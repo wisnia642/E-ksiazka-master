@@ -1,34 +1,36 @@
 package com.example.strzala.e_ksiazaka1;
 
 import android.app.Activity;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
-import android.widget.TextClock;
 import android.widget.TextView;
+
+import java.util.ArrayList;
 
 public class Custom_row extends ArrayAdapter<String> {
 
 private final Activity context;
-public final String[] zm;
-    TextView txtTitle;
+    ArrayList<String> zm1 = new ArrayList<String>();
+    ArrayList<String> zm2 = new ArrayList<String>();
+    TextView tekst1,tekst2;
 
-public Custom_row(Activity context, String[] zma) {
-        super(context, R.layout.activity_custom_row, zma);
+public Custom_row(Activity context, ArrayList<String> zma1,ArrayList<String> zma2) {
+        super(context, R.layout.activity_custom_row, zma1);
         this.context = context;
-        this.zm = zma;
+        this.zm1 = zma1;
+        this.zm2 = zma2;
         }
 public View getView(int position, View view, ViewGroup parent) {
         LayoutInflater inflater=context.getLayoutInflater();
         View rowView=inflater.inflate(R.layout.activity_custom_row, null,true);
 
-     txtTitle = (TextView) rowView.findViewById(R.id.textView4);
+     tekst1 = (TextView) rowView.findViewById(R.id.marka);
+    tekst2 = (TextView) rowView.findViewById(R.id.data);
 
-     txtTitle.setText(zm[position]);
+     tekst1.setText(zm1.get(position));
+     tekst1.setText(zm2.get(position));
 
 
     return rowView;

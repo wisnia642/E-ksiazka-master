@@ -1,9 +1,6 @@
 package com.example.strzala.e_ksiazaka1;
 
 import android.app.Activity;
-import android.content.Context;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,7 +30,7 @@ public class Custom_row_kategoriaNaprawy extends ArrayAdapter<String> {
         View rowView2=inflater.inflate(R.layout.activity_custom_row_kategoria_naprawy, null,true);
 
 
-        kategoria = (TextView) rowView2.findViewById(R.id.kategoria);
+        kategoria = (TextView) rowView2.findViewById(R.id.data);
 
         kategoria.setText(zm2.get(position));
 

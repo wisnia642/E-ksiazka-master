@@ -34,9 +34,6 @@ public class lista_pojazd extends AppCompatActivity {
     Integer liczba;
     String dane4[] = new String[10];
 
-    private static final String SAMPLE_DB_NAME = "Baza";
-    SQLiteDatabase sampleDB;
-
    // public int polaczenie=0;
 
     static ResultSet rs;
@@ -114,34 +111,10 @@ public class lista_pojazd extends AppCompatActivity {
         dane2.clear();
 
             try {
-                sampleDB = this.openOrCreateDatabase(SAMPLE_DB_NAME, MODE_PRIVATE, null);
-
-                Cursor c = sampleDB.rawQuery("Select * from kategoria where kat_1 != '0' and aktywne='1' or kat_2 !='0' ", null);
-                int i = 0;
-                while (c.moveToNext()) {
-                    String pamiec = String.valueOf(c.getString(1));
-                    if (pamiec != null) {
-
-                        dane1.add(String.valueOf(c.getString(3))); //kategoria1
-                        dane2.add(String.valueOf(c.getString(4))); //kategoria2
-
-                        if (kategoria.equals("kat_1") & !dane1.get(i).equals("0")) {
-                            dane.add(String.valueOf(c.getString(1))); //nazwa
-                        }
-
-                        if (kategoria.equals("kat_2") & dane2.get(i).equals(pozycja)) {
-                            dane.add(String.valueOf(c.getString(1))); //nazwa
-                            // Log.i("lista_pojazd",String.valueOf(dane));
-                        }
-
-                        i++;
-                    } else {
-
                         podlaczenieDB();
 
                         if (connection != null) {
 
-                            sampleDB = this.openOrCreateDatabase(SAMPLE_DB_NAME, MODE_PRIVATE, null);
 
                             try {
                                 st = connection.createStatement();
@@ -153,24 +126,26 @@ public class lista_pojazd extends AppCompatActivity {
                             try {
 
 
-                                PreparedStatement stmt2 = connection.prepareStatement("select * from kategoria ");
+                                PreparedStatement stmt2 = connection.prepareStatement("Select * from kategoria where kat_1 != '0' and aktywne='1' or kat_2 !='0' ");
                                 rs = stmt2.executeQuery();
-
-                                sampleDB.execSQL("Delete from kategoria ");
-
+                                int i=0;
                                 while (rs.next()) {
                                     String zm = rs.getString("nazwa");
 
                                     if (zm != null) {
-                                        dane4[0] = rs.getString("nazwa");
-                                        dane4[1] = rs.getString("punkty");
-                                        dane4[2] = rs.getString("kat_1");
-                                        dane4[3] = rs.getString("kat_2");
-                                        dane4[4] = rs.getString("aktywne");
+                                        dane1.add(rs.getString("kat_1"));
+                                        dane2.add(rs.getString("kat_2"));
 
-                                        sampleDB.execSQL("INSERT INTO kategoria (nazwa,punkty,kat_1,kat_2,aktywne) " +
-                                                "VALUES ('" + dane4[0] + "','" + dane4[1] + "','" + dane4[2] + "'," +
-                                                "'" + dane4[3] + "','" + dane4[4] + "') ");
+                                        if (kategoria.equals("kat_1") & !dane1.get(i).equals("0")) {
+                                            dane.add(rs.getString("nazwa")); //nazwa
+                                        }
+
+                                        if (kategoria.equals("kat_2") & dane2.get(i).equals(pozycja)) {
+                                            dane.add(rs.getString("nazwa")); //nazwa
+                                            // Log.i("lista_pojazd",String.valueOf(dane));
+                                        }
+
+                                        i++;
                                     }
 
                                 }
@@ -178,10 +153,9 @@ public class lista_pojazd extends AppCompatActivity {
                             } catch (Exception e) {
                                 Log.i("lista pojazd", "" + e);
                             }
-                        }
-                        sampleDB.close();
+
                     }
-                }
+
             } catch (Exception e) {
                 Log.i("baza", "" + e);
             }
@@ -246,14 +220,14 @@ public class lista_pojazd extends AppCompatActivity {
                     i.putExtra("nazwa", dane.get(position));
                     i.putExtra("ekran", ekran);
                     i.putExtra("kategoria","kat_2");
-                    i.putExtra("qr_code",qrcode);
+                    i.putExtra("rejestracyjny",rejestracyjny);
                     startActivity(i);
                 }else if (ekran.equals("koniec"))
                 {
                     Intent i = new Intent(lista_pojazd.this,koniec_pojazd.class);
                     i.putExtra("status","0");
                     i.putExtra("pozycja2",dane.get(position));
-                    i.putExtra("qr_code",qrcode);
+                    i.putExtra("rejestracyjny",rejestracyjny);
                     startActivity(i);
                 }
 

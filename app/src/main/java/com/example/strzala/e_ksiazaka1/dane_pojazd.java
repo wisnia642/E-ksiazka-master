@@ -2,8 +2,6 @@ package com.example.strzala.e_ksiazaka1;
 
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.StrictMode;
@@ -22,15 +20,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.concurrent.ExecutionException;
 
 public class dane_pojazd extends AppCompatActivity {
 
     EditText marka,model,rocznik,silnik,qrCode,nr_rejestracyjny;
     Button ok,powrót,skan;
-    Boolean status=false;
-    SQLiteDatabase sampleDB;
-    private static final String SAMPLE_DB_NAME = "Baza";
+    Boolean status = false;
 
     String dane[] = new String[10];
 
@@ -100,70 +95,69 @@ public class dane_pojazd extends AppCompatActivity {
     private void InsertCar()
     {
         try {
-            sampleDB = this.openOrCreateDatabase(SAMPLE_DB_NAME, MODE_PRIVATE, null);
-
-            Cursor c = sampleDB.rawQuery("Select * from samochod where nr_rejestracyjny = '"+dane[5]+"' ",null);
-
-            while(c.moveToNext())
-            {
-
-                String pamiec = String.valueOf(c.getString(1));
-                if(pamiec != null)
-                {
-                    status = true;
-                }else
-                {
-
-                    status = false;
-                }
-            }
-
-            if(status==false) {
-
-                sampleDB.execSQL("INSERT INTO samochod (marka,model,rocznik,silnik,nr_rejestracyjny,qr_code,wyswietl) values ('" + dane[0] + "','" + dane[1] + "','" + dane[2] + "','" + dane[3] + "','" + dane[5] + "','"+dane[4]+"','1') ");
-
                 podlaczenieDB();
 
                 try {
                     st = connection.createStatement();
                 } catch (SQLException e1) {
-                    //e1.printStackTrace();
+                    e1.printStackTrace();
                 }
 
-                String sql1 = "INSERT INTO samochod (marka,model,rocznik,silnik,nr_rejestracyjny,qr_code,wyswietl) " +
-                        " VALUES (?,?,?,?,?,?,?)";
-
-                Log.i("danepojazd",dane[4]);
                 try {
-                    ps = connection.prepareStatement(sql1);
-                    ps.setString(1, dane[0]);
-                    ps.setString(2, dane[1]);
-                    ps.setString(3, dane[2]);
-                    ps.setString(4, dane[3]);
-                    ps.setString(5, dane[5]);
-                    ps.setString(6, dane[4]);
-                    ps.setString(7, "1");
-                    ps.executeUpdate();
 
+                    PreparedStatement stmt1 = connection.prepareStatement("select * from samochod where nr_rejestracyjny = '"+dane[5]+"' ");
+                    rs = stmt1.executeQuery();
+
+
+
+                    while (rs.next()) {
+                        String zm = rs.getString("nr_rejestracyjny");
+
+                        if (zm != null) {
+                            Log.i("danepojazd","tak"+ dane[5]);
+                            status=true;
+
+
+                        } else  {
+                            Log.i("danepojazd","nie"+ dane[5]);
+                            status=false;
+                        }
+
+                    }
+
+                        if (status==false)
+                        {
+
+                            String sql1 = "INSERT INTO samochod (marka,model,rocznik,silnik,nr_rejestracyjny,qr_code,wyswietl) " +
+                                    " VALUES (?,?,?,?,?,?,?) ";
+                            ps = connection.prepareStatement(sql1);
+                            ps.setString(1, dane[0]);
+                            ps.setString(2, dane[1]);
+                            ps.setString(3, dane[2]);
+                            ps.setString(4, dane[3]);
+                            ps.setString(5, dane[5]);
+                            ps.setString(6, dane[4]);
+                            ps.setString(7, "1");
+                            ps.executeUpdate();}
+                            else
+                        {
+                            showToast("Podane auto z nr rejestracyjnym już istnieje w systemie");
+                        }
 
 
                 } catch (SQLException e) {
                     Log.i("New user",""+e);
+
                 }
                 try {
                     if (connection != null)
-                        sampleDB.close();
                     connection.close();
                 } catch (SQLException se) {
                     Log.i("New user",""+se);
                     //  showToast("brak połączenia z internetem" +se);
                 }
 
-            }else
-            {
-                showToast("Podane auto z takim nr rejestracyjnym już istnieje w systemie");
-            }
-            sampleDB.close();
+
         }catch (Exception e)
         {
             Log.i("baza",""+e);
@@ -179,7 +173,7 @@ public class dane_pojazd extends AppCompatActivity {
         setContentView(R.layout.activity_pojazd);
 
         marka = (EditText) findViewById(R.id.marka);
-        model = (EditText) findViewById(R.id.model);
+        model = (EditText) findViewById(R.id.marka);
         rocznik = (EditText) findViewById(R.id.rocznik);
         silnik = (EditText) findViewById(R.id.qr_code4);
         qrCode = (EditText) findViewById(R.id.qr_code);
@@ -231,6 +225,9 @@ public class dane_pojazd extends AppCompatActivity {
                             i.putExtra("rejestracyjny",dane[5]);
                             i.putExtra("kategoria","kat_1");
                             i.putExtra("qr_code",dane[4]);
+                            i.putExtra("liczba","");
+                            i.putExtra("pozycja","");
+                            i.putExtra("nazwa","");
                             startActivity(i);
                       }
                     }else

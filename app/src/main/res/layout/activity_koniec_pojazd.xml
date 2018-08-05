@@ -86,7 +86,7 @@ tools:context="com.example.strzala.e_ksiazaka1.koniec_pojazd">
         app:srcCompat="@android:drawable/ic_search_category_default" />
 
     <TextView
-        android:id="@+id/punkty"
+        android:id="@+id/data"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/textView16"

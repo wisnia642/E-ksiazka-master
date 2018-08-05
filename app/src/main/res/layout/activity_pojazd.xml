@@ -12,7 +12,7 @@
     android:background="@color/truscar_background">
 
     <EditText
-        android:id="@+id/model"
+        android:id="@+id/marka"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
@@ -26,8 +26,8 @@
         android:id="@+id/rocznik"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/model"
-        android:layout_below="@+id/model"
+        android:layout_alignStart="@+id/marka"
+        android:layout_below="@+id/marka"
         android:ems="10"
         android:hint="Rocznik"
         android:inputType="textPersonName" />
@@ -95,7 +95,7 @@
         android:id="@+id/rejestracyjny"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/model"
+        android:layout_alignStart="@+id/marka"
         android:layout_below="@+id/qr_code4"
         android:ems="10"
         android:hint="Nr_rejestracyjny"
@@ -105,7 +105,7 @@
         android:id="@+id/qr_code4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/model"
+        android:layout_alignStart="@+id/marka"
         android:layout_centerVertical="true"
         android:ems="10"
         android:hint="Silnik"
@@ -116,7 +116,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_alignStart="@+id/model"
+        android:layout_alignStart="@+id/marka"
         android:layout_marginTop="66dp"
         android:ems="10"
         android:hint="Marka"

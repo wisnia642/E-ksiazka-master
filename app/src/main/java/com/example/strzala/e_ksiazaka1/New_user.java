@@ -2,8 +2,6 @@ package com.example.strzala.e_ksiazaka1;
 
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.StrictMode;
@@ -39,8 +37,6 @@ public class New_user extends AppCompatActivity {
     String subject = "",data="",kod="";
     String message = "";
 
-    SQLiteDatabase sampleDB;
-
     String dane[] = new String[8];
 
     static ResultSet rs;
@@ -49,7 +45,7 @@ public class New_user extends AppCompatActivity {
     FileInputStream fis = null;
     Connection connection = null;
 
-    private static final String SAMPLE_DB_NAME = "Baza";
+
 
 
     private void showToast(String message) {
@@ -104,7 +100,6 @@ public class New_user extends AppCompatActivity {
             SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yy_HH:mm");
             data =sdf.format(new Date());
 
-            sampleDB = this.openOrCreateDatabase(SAMPLE_DB_NAME, MODE_PRIVATE, null);
 
             try {
                 st = connection.createStatement();
@@ -131,16 +126,11 @@ public class New_user extends AppCompatActivity {
                 String sql2 = "UPDATE qr_code SET aktywne = '0' WHERE kod = '" + dane[3] + "'";
                 st.executeUpdate(sql2);
 
-                sampleDB.execSQL("INSERT INTO uzytkownik (data_dod,email,haslo,zapisz_haslo,qr_code," +
-                        "punkty,admin,czy_zapis) VALUES ('"+data+"','"+dane[0]+"','"+hash+"','0','"+dane[3]+"'," +
-                        "'0','0','0') ");
-
             } catch (SQLException e) {
                 Log.i("New user",""+e);
             }
             try {
                 if (connection != null)
-                    sampleDB.close();
                     connection.close();
             } catch (SQLException se) {
                 Log.i("New user",""+se);
@@ -152,31 +142,47 @@ public class New_user extends AppCompatActivity {
 
     private void SelectDataUser()
     {
-        MainActivity.getInstance().ImportLogin(dane[0]);
 
-        try{
+        podlaczenieDB();
 
-            sampleDB = this.openOrCreateDatabase(SAMPLE_DB_NAME, MODE_PRIVATE,null);
-
-            Cursor c = sampleDB.rawQuery("Select * from uzytkownik where email = '"+dane[0]+"' ",null);
-
-            while(c.moveToNext())
-            {
-                String pamiec = String.valueOf(c.getString(1));
-                if(pamiec != null)
-                {
-                    status = false;
-                }else
-                {
-                    status = true;
-                }
+        if (connection != null) {
+            try {
+                st = connection.createStatement();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+                Log.i("myTag", "1" + e1);
             }
 
-            sampleDB.close();
+            try {
+                PreparedStatement stmt1 = connection.prepareStatement("Select * from uzytkownik where email = '"+dane[0]+"' ");
+                rs = stmt1.executeQuery();
 
-        }catch (Exception e)
-        {
-            Log.i("baza",""+e);
+
+                while (rs.next()) {
+                    String zm = rs.getString("email");
+
+
+                    if (zm != null) {
+                        status = false;
+                    }else
+                    {
+                        status = true;
+                    }
+
+                }
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+                Log.i("myTag", "3" + e1);
+            }
+
+            try {
+                if (connection != null)
+                    connection.close();
+            } catch (SQLException se) {
+                Log.i("myTag", "4" + se);
+
+            }
+
         }
     }
 
@@ -287,7 +293,7 @@ public class New_user extends AppCompatActivity {
         setContentView(R.layout.activity_new_user);
 
         email = (EditText) findViewById(R.id.marka);
-        haslo = (EditText) findViewById(R.id.model);
+        haslo = (EditText) findViewById(R.id.marka);
         haslo_pow = (EditText) findViewById(R.id.silnik);
         qrcode = (EditText) findViewById(R.id.qr_code);
 

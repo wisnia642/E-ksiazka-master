@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
     Button logowanie,logowanie_qr,konto,przypmnienie_hasla;
     EditText email,haslo;
     CheckBox checkBox;
-    String login,password,qr_code,hash,zapis_hasla,pamiec,login_pamiec;
+    String login,password,qr_code,hash,pass,pamiec,login_pamiec;
     String login_act,password_act;
     private static final String SAMPLE_DB_NAME = "Baza";
     SQLiteDatabase sampleDB;
@@ -123,7 +123,9 @@ public class MainActivity extends AppCompatActivity {
     {
         podlaczenieDB();
 
+
         if (connection != null) {
+            password="";
 
             sampleDB = this.openOrCreateDatabase(SAMPLE_DB_NAME, MODE_PRIVATE, null);
 
@@ -138,30 +140,20 @@ public class MainActivity extends AppCompatActivity {
                 PreparedStatement stmt = connection.prepareStatement("select * from uzytkownik where email='"+msg_login+"' ");
                 rs = stmt.executeQuery();
 
-                //tworzenie tabeli uzytkownik jezeli nie istnieje
-                sampleDB.execSQL("CREATE TABLE IF NOT EXISTS uzytkownik (Id INTEGER PRIMARY KEY AUTOINCREMENT,data_dod VARCHAR," +
-                        " email VARCHAR, haslo VARCHAR, zapisz_haslo VARCHAR, qr_code VARCHAR, punkty VARCHAR,admin VARCHAR,czy_zapis VARCHAR)");
-
-                sampleDB.execSQL("Delete from uzytkownik where email='"+msg_login+"' ");
 
                 while (rs.next()) {
                     String zm = rs.getString("email");
 
                     if (zm != null) {
-                        dane[0] = rs.getString("data_dod");
-                        dane[1] = rs.getString("email");
-                        dane[2] = rs.getString("haslo");
+                        login = rs.getString("email");
+                        password = rs.getString("haslo");
                         dane[3] = rs.getString("zapisz_haslo");
-                        dane[4] = rs.getString("qr_code");
-                        dane[5] = rs.getString("punkty");
-                        dane[6] = rs.getString("admin");
-                        dane[7] = rs.getString("czy_zapis");
+                        qr_code = rs.getString("qr_code");
+                       // dane[5] = rs.getString("punkty");
+                        //dane[6] = rs.getString("admin");
+                        dane[6] = rs.getString("czy_zapis");
+                        pass =   hash = "%02320%xwc48" + String.valueOf(password.hashCode());
 
-                        hash = "%02320%xwc48" + String.valueOf(dane[2].hashCode());
-
-                        sampleDB.execSQL("INSERT INTO uzytkownik (data_dod,email,haslo,zapisz_haslo,qr_code," +
-                                "punkty,admin,czy_zapis) VALUES ('"+dane[0]+"','"+dane[1]+"','"+hash+"'," +
-                                "'"+dane[3]+"','"+dane[4]+"','"+dane[5]+"','"+dane[6]+"','"+dane[7]+"') ");
                     }
 
                 }
@@ -183,98 +175,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
-    public void ImportDataMySql()
-    {
-        podlaczenieDB();
-
-        if (connection != null) {
-
-            sampleDB = this.openOrCreateDatabase(SAMPLE_DB_NAME, MODE_PRIVATE, null);
-
-            try {
-                st = connection.createStatement();
-            } catch (SQLException e1) {
-                e1.printStackTrace();
-                Log.i("myTag", "1" + e1);
-            }
-
-            try {
-
-                PreparedStatement stmt3 = connection.prepareStatement("select * from zgloszenie where qr_code='"+dane[4]+"' ");
-                rs = stmt3.executeQuery();
-
-                sampleDB.execSQL("Delete from zgloszenie where qr_code='"+dane[4]+"' ");
-
-                while (rs.next()) {
-                    String zm = rs.getString("kod");
-
-                    if (zm != null) {
-                        dane[15] = rs.getString("zdjecie_prze");
-                        dane[16] = rs.getString("zdjecie_po");
-                        dane[17] = rs.getString("cena_czesci");
-                        dane[18] = rs.getString("cena_uslugi");
-                        dane[19] = rs.getString("uwagi");
-                        dane[20] = rs.getString("data_dod");
-                        dane[21] = rs.getString("data_wykonania");
-                        dane[22] = rs.getString("status");
-                        dane[23] = rs.getString("qr_code");
-                        dane[24] = rs.getString("akceptacja");
-
-                        sampleDB.execSQL("INSERT INTO zgloszenie (zdjecie_prze,zdjecie_po,cena_czesci," +
-                                "cena_uslugi,uwagi,data_dod,data_wykonania,status,qr_code,akceptacja) " +
-                                "VALUES ('"+dane[15]+"','"+dane[16]+"','"+dane[17]+"'," +
-                                "'"+dane[18]+"','"+dane[19]+"','"+dane[18]+"','"+dane[19]+"','"+dane[20]+"'," +
-                                "'"+dane[21]+"','"+dane[22]+"','"+dane[23]+"','"+dane[24]+"') ");
-                    }
-
-                }
-
-                PreparedStatement stmt4 = connection.prepareStatement("select * from samochod where qr_code='"+dane[4]+"'");
-                rs = stmt4.executeQuery();
-
-                sampleDB.execSQL("Delete from samochod where qr_code='"+dane[4]+"' ");
-
-                while (rs.next()) {
-                    String zm = rs.getString("marka");
-
-                    if (zm != null) {
-                        dane[25] = rs.getString("marka");
-                        dane[26] = rs.getString("model");
-                        dane[27] = rs.getString("rocznik");
-                        dane[28] = rs.getString("silnik");
-                        dane[29] = rs.getString("nr_rejestracyjny");
-                        dane[30] = rs.getString("qr_code");
-                        dane[31] = rs.getString("wyswietl");
-
-
-                        sampleDB.execSQL("INSERT INTO uzytkownik (marka,model,rocznik,silnik,nr_rejestracyjny," +
-                                "qr_code,wyswietl) VALUES ('"+dane[25]+"','"+dane[26]+"','"+dane[27]+"'," +
-                                "'"+dane[28]+"','"+dane[29]+"','"+dane[30]+"','"+dane[31]+"') ");
-
-                    }
-
-                }
-
-            } catch (SQLException e1) {
-                e1.printStackTrace();
-                Log.i("myTag", "3" + e1);
-            }
-
-            try {
-                if (connection != null)
-                    sampleDB.close();
-                    connection.close();
-            } catch (SQLException se) {
-                Log.i("myTag", "4" + se);
-                   showToast("brak polaczenia z internetem");
-            }
-
-        }
-
-    }
-
-
+/*
     //select data from table user, tworzenie tabel jeśli nie istnieją
     private void SelectDataUser()
     {
@@ -327,7 +228,7 @@ public class MainActivity extends AppCompatActivity {
             Log.i("baza",""+e);
         }
     }
-
+*/
     private void pamiec_hasla()
     {
         if(login_pamiec.equals("")) {
@@ -547,11 +448,11 @@ public class MainActivity extends AppCompatActivity {
                     login_act = login_act.replace(" ","");
 
 
-                    SelectDataUser();
+                    ImportLogin(login_act);
                     hash();
 
                     if (login_act.equals(login) & login_act.contains("@")) {
-                        if (hash.equals(password) || (password.equals(password_act))) {
+                        if (hash.equals(password) || (password.equals(password_act)) || (pass.equals(password_act))) {
 
                             //sprawdzanie czy mam zapamiętać hasło
                             if(checkBox.isChecked())
@@ -560,7 +461,7 @@ public class MainActivity extends AppCompatActivity {
                             }
 
                             //importowanie danych
-                            ImportDataMySql();
+                           // ImportLogin(login_act);
 
                             Intent c = new Intent(MainActivity.this,MainMenu.class);
                             c.putExtra("email",login);
@@ -570,7 +471,7 @@ public class MainActivity extends AppCompatActivity {
                             finish();
                         }else
                         {
-                            showToast("Nie poprawne hasło" + password);
+                            showToast("Nie poprawne hasło " + password);
                         }
 
                     }else

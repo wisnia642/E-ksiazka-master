@@ -78,9 +78,6 @@ public class koniec_pojazd extends AppCompatActivity {
 
     File file;
 
-    private static final String SAMPLE_DB_NAME = "Baza";
-    SQLiteDatabase sampleDB;
-
     private void showToast(String message) {
         Toast.makeText(getApplicationContext(),
                 message,
@@ -215,7 +212,6 @@ public class koniec_pojazd extends AppCompatActivity {
                 Log.i("koniec_pojaz",""+e);
             }
 
-            sampleDB = this.openOrCreateDatabase(SAMPLE_DB_NAME, MODE_PRIVATE, null);
 
             try {
                 st = connection.createStatement();
@@ -226,7 +222,7 @@ public class koniec_pojazd extends AppCompatActivity {
             if(dane[1].equals("0")) {
 
                 String sql1 = "INSERT INTO zgloszenie (data_dod,zdjecie_przed,cena_czesci,cena_uslugi,uwagi," +
-                        "data_wykonania,status,qr_code,akceptacja) VALUES (?,?,?,?,?,?,?,?,?)";
+                        "data_wykonania,status,nr_rejestracyjny,akceptacja) VALUES (?,?,?,?,?,?,?,?,?)";
 
                 try {
                     ps = connection.prepareStatement(sql1);
@@ -238,12 +234,8 @@ public class koniec_pojazd extends AppCompatActivity {
                     ps.setString(6, "");
                     ps.setString(7, "Nowy");
                     ps.setString(8, dane[3]);
-                    ps.setString(9, "");
+                    ps.setString(9, "0");
                     ps.executeUpdate();
-
-                    sampleDB.execSQL("INSERT INTO zgloszenie (data_dod,zdjecie_przed,cena_czesci,cena_uslugi,uwagi," +
-                            "data_wykonania,status,qr_code,akceptacja) VALUES ('" + data + "','" + dane[8] + "','" + dane[6] + "'," +
-                            "'" + dane[7] + "','" + dane[4] + "','','Nowy','" + dane[3] + "','')");
 
 
                 } catch (SQLException e) {
@@ -253,7 +245,7 @@ public class koniec_pojazd extends AppCompatActivity {
             }else if(dane[1].equals("1"))
             {
                 String sql1 = "INSERT INTO zgloszenie (data_dod,zdjecie_po,cena_czesci,cena_uslugi,uwagi," +
-                        "data_wykonania,status,qr_code,akceptacja) VALUES (?,?,?,?,?,?,?,?,?)";
+                        "data_wykonania,status,nr_rejestracyjny,akceptacja) VALUES (?,?,?,?,?,?,?,?,?)";
 
                 try {
                     ps = connection.prepareStatement(sql1);
@@ -265,12 +257,8 @@ public class koniec_pojazd extends AppCompatActivity {
                     ps.setString(6, "");
                     ps.setString(7, "Zakończony");
                     ps.setString(8, dane[3]);
-                    ps.setString(9, "");
+                    ps.setString(9, "0");
                     ps.executeUpdate();
-
-                    sampleDB.execSQL("INSERT INTO zgloszenie (data_dod,zdjecie_po,cena_czesci,cena_uslugi,uwagi," +
-                            "data_wykonania,status,qr_code,akceptacja) VALUES ('" + data + "','" + dane[8] + "','" + dane[6] + "'," +
-                            "'" + dane[7] + "','" + dane[4] + "','','Nowy','" + dane[3] + "','')");
 
 
                 } catch (SQLException e) {
@@ -280,7 +268,7 @@ public class koniec_pojazd extends AppCompatActivity {
             }
             try {
                 if (connection != null)
-                    sampleDB.close();
+
                 connection.close();
             } catch (SQLException se) {
                 Log.i("New user",""+se);
@@ -355,7 +343,7 @@ public class koniec_pojazd extends AppCompatActivity {
         try {
             dane[1] = getIntent().getStringExtra("status");
             dane[2] = getIntent().getStringExtra("pozycja2");
-            dane[3] = getIntent().getStringExtra("qr_code");
+            dane[3] = getIntent().getStringExtra("rejestracyjny");
             naprawa.setText(dane[2]);
 
         }catch (Exception e)
@@ -401,6 +389,7 @@ public class koniec_pojazd extends AppCompatActivity {
             showToast("Zgłoszenie naprawy zostało dodane");
 
             Intent i = new Intent(koniec_pojazd.this,MainMenu.class);
+            i.putExtra("qr_code",qrcode);
             startActivity(i);
             }
         });

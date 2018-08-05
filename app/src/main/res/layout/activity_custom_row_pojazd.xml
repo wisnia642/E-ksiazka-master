@@ -15,10 +15,10 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
+        android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-        android:layout_height="65dp">
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true">
 
 
         <ImageView
@@ -31,18 +31,24 @@
             app:srcCompat="@mipmap/fiat" />
 
         <TextView
-            android:text="Fiat 126p"
+            android:id="@+id/marka"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/textView9"
-            android:textSize="24sp"
+            android:layout_alignBottom="@+id/zdjecieP"
+            android:layout_alignStart="@+id/nr_rejestracyjny"
             android:textColor="@android:color/black"
-            android:layout_marginLeft="26dp"
-            android:layout_marginStart="26dp"
+            android:textSize="24sp"
+            android:textStyle="italic" />
+
+        <TextView
+            android:id="@+id/nr_rejestracyjny"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            android:layout_toRightOf="@+id/zdjecieP"
-            android:layout_toEndOf="@+id/zdjecieP"
-            android:layout_marginTop="15dp" />
+            android:layout_marginStart="84dp"
+            android:textColor="@android:color/black"
+            android:textSize="24sp" />
     </RelativeLayout>
 
 
