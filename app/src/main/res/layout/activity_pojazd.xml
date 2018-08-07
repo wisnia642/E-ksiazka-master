@@ -16,7 +16,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="118dp"
+        android:layout_marginTop="164dp"
         android:layout_toStartOf="@+id/powrot"
         android:ems="10"
         android:hint="Model"
@@ -26,8 +26,9 @@
         android:id="@+id/rocznik"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/marka"
         android:layout_alignStart="@+id/marka"
-        android:layout_below="@+id/marka"
+        android:layout_marginBottom="-164dp"
         android:ems="10"
         android:hint="Rocznik"
         android:inputType="textPersonName" />
@@ -117,7 +118,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_alignStart="@+id/marka"
-        android:layout_marginTop="66dp"
+        android:layout_marginTop="73dp"
         android:ems="10"
         android:hint="Marka"
         android:inputType="textPersonName" />

@@ -2,12 +2,12 @@ package com.example.strzala.e_ksiazaka1;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.StrictMode;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -16,15 +16,17 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -40,7 +42,11 @@ public class MainMenu extends AppCompatActivity
     Button zgloszenie,samochod;
 
     String dane[] = new String[20];
-    Boolean status=false;
+    Boolean s1=false,s2=false,s3=false;
+    TextView tekst1,tekst2;
+    Cursor DBcursor;
+
+    File file;
 
     ArrayList<String> zm1 = new ArrayList<String>();
     ArrayList<String> zm2 = new ArrayList<String>();
@@ -49,6 +55,8 @@ public class MainMenu extends AppCompatActivity
     ArrayList<String> zm5 = new ArrayList<String>();
     ArrayList<String> zm6 = new ArrayList<String>();
     ArrayList<String> zm7 = new ArrayList<String>();
+    ArrayList<String> zm8 = new ArrayList<String>();
+    ArrayList<Blob> zdjecie = new ArrayList<Blob>();
 
 
     static ResultSet rs;
@@ -128,36 +136,84 @@ public class MainMenu extends AppCompatActivity
 
             try {
 
-                PreparedStatement stmt1 = connection.prepareStatement("Select * from uzytkownik uzy inner join samochod sam on uzy.qr_code=sam.qr_code" +
-                        "Left join zgloszenie zgl on sam.nr_rejestracyjny=zgl.nr_rejestracyjny" +
-                        "where sam.qr_code = '"+dane[1]+"' and sam.wyswietl='1' and uzy.qr_code= '"+dane[1]+"' ");
+                PreparedStatement stmt1 = connection.prepareStatement("Select * from uzytkownik uzy where uzy.qr_code= '"+dane[2]+"' order by id desc");
+
                 rs = stmt1.executeQuery();
 
 
 
                 while (rs.next()) {
-                    String zm = rs.getString("sam.nr_rejestracyjny");
+                    String zm = rs.getString("uzy.Id");
 
                     if (zm != null) {
-                        Log.i("historiapojazd","tak"+ dane[5]);
-                        zm1.add(rs.getString("sam.Marka")+" "+  rs.getString("model"));
-                        zm2.add(rs.getString("sam.nr_rejestracyjny"));
+                      //  Log.i("historiapojazd","tak"+ dane[5]);
                         zm3.add(rs.getString("uzy.email"));
                         zm4.add("Punkty: " + rs.getString("uzy.punkty"));
-                        zm5.add(rs.getString("zgl.status"));
-                        zm6.add(rs.getString("zgl.data_dod"));
                         zm7.add(rs.getString("uzy.admin"));
+                        s1=true;
 
-                    } else  {
-                        Log.i("historiapojazd","nie"+ dane[5]);
-                        status=false;
+                    }
+                }
+
+                PreparedStatement stmt2 = connection.prepareStatement("Select * from samochod sam where sam.qr_code = '"+dane[2]+"' and sam.wyswietl='1' order by id desc");
+
+                rs = stmt2.executeQuery();
+
+
+
+                while (rs.next()) {
+                    String zm = rs.getString("sam.Id");
+
+                    if (zm != null) {
+                       // Log.i("historiapojazd","tak"+ dane[5]);
+                        zm1.add(rs.getString("sam.Marka")+" "+  rs.getString("model"));
+                        zm2.add(rs.getString("sam.nr_rejestracyjny"));
+                        s2=true;
+
                     }
 
                 }
 
-                if(status==false)
+                if(s2==false)
                 {
                     showToast("Brak pojazdów do wyświetlenia");
+                }
+
+                PreparedStatement stmt3 = connection.prepareStatement("select * from samochod sam " +
+                        "Left join zgloszenie zgl on sam.nr_rejestracyjny=zgl.nr_rejestracyjny " +
+                        "where sam.qr_code = '"+dane[2]+"' order by zgl.id desc ");
+
+                rs = stmt3.executeQuery();
+
+
+
+                while (rs.next()) {
+                    String zm = rs.getString("zgl.Id");
+
+                    if (zm != null) {
+                        s3=true;
+                        zm5.add(rs.getString("zgl.status"));
+                        zm6.add(rs.getString("zgl.data_dod"));
+                        zm8.add(rs.getString("zgl.nr_rejestracyjny"));
+
+                       // Blob blob = rs.getBlob("zdjecie_przed");
+                        //zdjecie.add(rs.getBlob("zdjecie_przed"));
+
+                        zdjecie.add( rs.getBlob("zdjecie_przed"));
+                       // is = blob.getBinaryStream();
+                        //imageView.setImageBitmap(BitmapFactory.decodeStream(is));
+
+                        Log.i("mainmenu",""+String.valueOf(zdjecie.get(0)));
+
+
+                    }
+
+                }
+
+                if(s3==false)
+                {
+
+                   showToast("Brak zgłoszeń do wyświetlenia");
                 }
 
 
@@ -219,8 +275,10 @@ public class MainMenu extends AppCompatActivity
 
         zgloszenie =(Button) findViewById(R.id.zgloszenie);
         samochod = (Button) findViewById(R.id.button7);
+        tekst1 = (TextView) findViewById(R.id.textView2);
+        tekst2 = (TextView) findViewById(R.id.textView);
 
-        Custom_row_zgloszenie adapter1=new Custom_row_zgloszenie(this, zm1,zm6,zm5);
+        Custom_row_zgloszenie adapter1=new Custom_row_zgloszenie(this, zm8,zm6,zm5,zdjecie);
         list1=(ListView)findViewById(R.id.zgloszenia);
         list1.setAdapter(adapter1);
 
@@ -228,11 +286,20 @@ public class MainMenu extends AppCompatActivity
         list1=(ListView)findViewById(R.id.pojazdy);
         list1.setAdapter(adapter2);
 
-        if(zm7.get(0).equals("1"))
-       {
-            zgloszenie.setVisibility(View.VISIBLE);
-            samochod.setVisibility(View.VISIBLE);
+        tekst2.setText("Samochody("+String.valueOf(zm1.size())+")");
+        tekst1.setText("Zgłoszenia("+String.valueOf(zm5.size())+")");
 
+        try {
+
+            if (zm7.get(0).equals("1")) {
+                zgloszenie.setVisibility(View.VISIBLE);
+                samochod.setVisibility(View.VISIBLE);
+
+            }
+
+        }catch (Exception e)
+        {
+            Log.i("mainmenu",""+e);
         }
 
         zgloszenie.setOnClickListener(new View.OnClickListener() {

@@ -1,13 +1,18 @@
 package com.example.strzala.e_ksiazaka1;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Handler;
 import android.os.StrictMode;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,6 +31,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+
+import static android.Manifest.permission.CAMERA;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -50,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
     ProgressBar simpleProgressBar = null;
     private Handler handler = new Handler();
     boolean StartLog=false;
+    private static final int REQUEST_CAMERA = 1;
 
     String dane[] = new String[35];
 
@@ -327,6 +335,39 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private boolean checkPermission()
+    {
+        return (ContextCompat.checkSelfPermission(getApplicationContext(), CAMERA) == PackageManager.PERMISSION_GRANTED);
+    }
+
+    private void requestPermission()
+    {
+        ActivityCompat.requestPermissions(this, new String[]{CAMERA}, REQUEST_CAMERA);
+    }
+
+    // Storage Permissions variables
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
+
+    //persmission method.
+    public static void verifyStoragePermissions(Activity activity) {
+        // Check if we have read or write permission
+        int writePermission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        int readPermission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE);
+
+        if (writePermission != PackageManager.PERMISSION_GRANTED || readPermission != PackageManager.PERMISSION_GRANTED) {
+            // We don't have permission so prompt the user
+            ActivityCompat.requestPermissions(
+                    activity,
+                    PERMISSIONS_STORAGE,
+                    REQUEST_EXTERNAL_STORAGE
+            );
+        }
+    }
+
     public static MainActivity getInstance() {
         return instance;
     }
@@ -354,6 +395,12 @@ public class MainActivity extends AppCompatActivity {
 
         sprawdz_haslo();
 
+        //sprawdzanie uprawnien do robienia zdjecia i zapisu
+        verifyStoragePermissions(MainActivity.this);
+
+        if(checkPermission()==false) {
+            requestPermission();
+        }
 
         //logowanie przy użyciu danych logowania
         logowanie.setOnClickListener(new View.OnClickListener() {

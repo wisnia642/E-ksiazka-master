@@ -344,6 +344,7 @@ public class koniec_pojazd extends AppCompatActivity {
             dane[1] = getIntent().getStringExtra("status");
             dane[2] = getIntent().getStringExtra("pozycja2");
             dane[3] = getIntent().getStringExtra("rejestracyjny");
+            qrcode = getIntent().getStringExtra("qr_code");
             naprawa.setText(dane[2]);
 
         }catch (Exception e)
@@ -398,6 +399,7 @@ public class koniec_pojazd extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(koniec_pojazd.this,MainMenu.class);
+                i.putExtra("qr_code",qrcode);
                 startActivity(i);
             }
         });

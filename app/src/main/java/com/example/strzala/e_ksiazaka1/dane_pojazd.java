@@ -270,6 +270,7 @@ public class dane_pojazd extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(dane_pojazd.this, MainMenu.class);
+                i.putExtra("qr_code",dane[4]);
                 startActivity(i);
             }
         });

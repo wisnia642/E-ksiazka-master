@@ -32,7 +32,7 @@ public class lista_pojazd extends AppCompatActivity {
     String kategoria="",pozycja="",nazwa="",ekran="",rejestracyjny="";
     String qrcode="";
     Integer liczba;
-    String dane4[] = new String[10];
+   // String dane4[] = new String[10];
 
    // public int polaczenie=0;
 
@@ -219,6 +219,7 @@ public class lista_pojazd extends AppCompatActivity {
                     i.putExtra("pozycja", pozycja);
                     i.putExtra("nazwa", dane.get(position));
                     i.putExtra("ekran", ekran);
+                    i.putExtra("qr_code", qrcode);
                     i.putExtra("kategoria","kat_2");
                     i.putExtra("rejestracyjny",rejestracyjny);
                     startActivity(i);
@@ -226,6 +227,7 @@ public class lista_pojazd extends AppCompatActivity {
                 {
                     Intent i = new Intent(lista_pojazd.this,koniec_pojazd.class);
                     i.putExtra("status","0");
+                    i.putExtra("qr_code", qrcode);
                     i.putExtra("pozycja2",dane.get(position));
                     i.putExtra("rejestracyjny",rejestracyjny);
                     startActivity(i);
