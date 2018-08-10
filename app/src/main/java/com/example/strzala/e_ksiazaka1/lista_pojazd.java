@@ -30,7 +30,7 @@ public class lista_pojazd extends AppCompatActivity {
     ListView lista_napraw;
     TextView tekst;
     String kategoria="",pozycja="",nazwa="",ekran="",rejestracyjny="";
-    String qrcode="";
+    String qrcode="",admin="";
     Integer liczba;
    // String dane4[] = new String[10];
 
@@ -178,6 +178,7 @@ public class lista_pojazd extends AppCompatActivity {
             kategoria = getIntent().getStringExtra("kategoria");
             rejestracyjny = getIntent().getStringExtra("rejestracyjny");
             qrcode = getIntent().getStringExtra("qr_code");
+            admin = getIntent().getStringExtra("admin");
             liczba = Integer.parseInt(pozycja);
             Log.i("pozycja",pozycja);
             Log.i("qrcode",qrcode);
@@ -219,6 +220,7 @@ public class lista_pojazd extends AppCompatActivity {
                     i.putExtra("pozycja", pozycja);
                     i.putExtra("nazwa", dane.get(position));
                     i.putExtra("ekran", ekran);
+                    i.putExtra("admin", admin);
                     i.putExtra("qr_code", qrcode);
                     i.putExtra("kategoria","kat_2");
                     i.putExtra("rejestracyjny",rejestracyjny);
@@ -227,6 +229,8 @@ public class lista_pojazd extends AppCompatActivity {
                 {
                     Intent i = new Intent(lista_pojazd.this,koniec_pojazd.class);
                     i.putExtra("status","0");
+                    i.putExtra("admin", "1");
+                    i.putExtra("menu", "");
                     i.putExtra("qr_code", qrcode);
                     i.putExtra("pozycja2",dane.get(position));
                     i.putExtra("rejestracyjny",rejestracyjny);

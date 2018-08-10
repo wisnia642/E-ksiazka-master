@@ -196,13 +196,16 @@ public class dane_pojazd extends AppCompatActivity {
             model.setText(dane[1]);
             rocznik.setText(dane[2]);
             silnik.setText(dane[3]);
-          //  qrCode.setText(dane[4]);
+            qrCode.setText(dane[4]);
             nr_rejestracyjny.setText(dane[5]);
 
         }catch (Exception e)
         {
             Log.i("BarCode",""+e);
         }
+
+        //testowo póżniej do usnięcia
+        qrCode.setText("https://vicards.pl/kuHSFb3r/test");
 
         ok.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -212,24 +215,33 @@ public class dane_pojazd extends AppCompatActivity {
                     dane[1] = model.getText().toString();
                     dane[2] = rocznik.getText().toString();
                     dane[3] = silnik.getText().toString();
-                  //  dane[4] = qrCode.getText().toString();
+                    dane[4] = qrCode.getText().toString();
                     dane[5] = nr_rejestracyjny.getText().toString();
 
                 if(!dane[0].equals("") ) {
 
                     if(!dane[5].equals("")) {
-                        InsertCar();
-                        if(status==false) {
+                        if(!dane[4].equals("")) {
 
-                            Intent i = new Intent(dane_pojazd.this, lista_pojazd.class);
-                            i.putExtra("rejestracyjny",dane[5]);
-                            i.putExtra("kategoria","kat_1");
-                            i.putExtra("qr_code",dane[4]);
-                            i.putExtra("liczba","");
-                            i.putExtra("pozycja","");
-                            i.putExtra("nazwa","");
-                            startActivity(i);
-                      }
+                            InsertCar();
+                            if (status == false) {
+
+
+                                Intent i = new Intent(dane_pojazd.this, lista_pojazd.class);
+                                i.putExtra("rejestracyjny", dane[5]);
+                                i.putExtra("kategoria", "kat_1");
+                                i.putExtra("qr_code", dane[4]);
+                                i.putExtra("liczba", "");
+                                i.putExtra("pozycja", "");
+                                i.putExtra("nazwa", "");
+                                i.putExtra("admin", "1");
+                                startActivity(i);
+
+                            }
+                        }else
+                        {
+                            showToast("Zeskanuj QR kod użytkownika");
+                        }
                     }else
                     {
                         showToast("uzupełnij numer rejestracyjny samochodu.");

@@ -8,6 +8,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -17,6 +18,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -38,8 +40,9 @@ import java.util.ArrayList;
 public class MainMenu extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    ListView list=null,list1=null;
+    ListView list=null,list1=null,list2=null;
     Button zgloszenie,samochod;
+    SwipeRefreshLayout mSwipeRefreshLayout;
 
     String dane[] = new String[20];
     Boolean s1=false,s2=false,s3=false;
@@ -56,6 +59,7 @@ public class MainMenu extends AppCompatActivity
     ArrayList<String> zm6 = new ArrayList<String>();
     ArrayList<String> zm7 = new ArrayList<String>();
     ArrayList<String> zm8 = new ArrayList<String>();
+    ArrayList<String> zm9 = new ArrayList<String>();
     ArrayList<Blob> zdjecie = new ArrayList<Blob>();
 
 
@@ -125,6 +129,7 @@ public class MainMenu extends AppCompatActivity
 
     private void SelectDataUser()
     {
+
         try {
             podlaczenieDB();
 
@@ -135,6 +140,18 @@ public class MainMenu extends AppCompatActivity
             }
 
             try {
+
+                //czysczenie tablic
+                zm1.clear();
+                zm2.clear();
+                zm3.clear();
+                zm4.clear();
+                zm5.clear();
+                zm6.clear();
+                zm7.clear();
+                zm8.clear();
+                zdjecie.clear();
+
 
                 PreparedStatement stmt1 = connection.prepareStatement("Select * from uzytkownik uzy where uzy.qr_code= '"+dane[2]+"' order by id desc");
 
@@ -150,17 +167,18 @@ public class MainMenu extends AppCompatActivity
                         zm3.add(rs.getString("uzy.email"));
                         zm4.add("Punkty: " + rs.getString("uzy.punkty"));
                         zm7.add(rs.getString("uzy.admin"));
-                        s1=true;
+                                      s1=true;
 
-                    }
+            }
+        }
+        //jeżeli jesteś adminem wyświetl wszystkie dane
+                if (zm7.get(0).equals("1")) {
+                    PreparedStatement stmt2 = connection.prepareStatement("Select * from samochod sam where sam.wyswietl='1' order by id desc");
+                    rs = stmt2.executeQuery();
+                }else  if (zm7.get(0).equals("0")){
+                    PreparedStatement stmt2 = connection.prepareStatement("Select * from samochod sam where sam.qr_code = '" + dane[2] + "' and sam.wyswietl='1' order by id desc");
+                    rs = stmt2.executeQuery();
                 }
-
-                PreparedStatement stmt2 = connection.prepareStatement("Select * from samochod sam where sam.qr_code = '"+dane[2]+"' and sam.wyswietl='1' order by id desc");
-
-                rs = stmt2.executeQuery();
-
-
-
                 while (rs.next()) {
                     String zm = rs.getString("sam.Id");
 
@@ -179,12 +197,19 @@ public class MainMenu extends AppCompatActivity
                     showToast("Brak pojazdów do wyświetlenia");
                 }
 
-                PreparedStatement stmt3 = connection.prepareStatement("select * from samochod sam " +
-                        "Left join zgloszenie zgl on sam.nr_rejestracyjny=zgl.nr_rejestracyjny " +
-                        "where sam.qr_code = '"+dane[2]+"' order by zgl.id desc ");
-
-                rs = stmt3.executeQuery();
-
+                //jeżeli jesteś adminem wyświetl wszystkie dane
+                if (zm7.get(0).equals("1")) {
+                    PreparedStatement stmt3 = connection.prepareStatement("select * from samochod sam " +
+                            "Left join zgloszenie zgl on sam.nr_rejestracyjny=zgl.nr_rejestracyjny " +
+                            "where sam.wyswietl='1' order by zgl.id desc ");
+                    rs = stmt3.executeQuery();
+                }else if (zm7.get(0).equals("0"))
+                {
+                    PreparedStatement stmt3 = connection.prepareStatement("select * from samochod sam " +
+                            "Left join zgloszenie zgl on sam.nr_rejestracyjny=zgl.nr_rejestracyjny " +
+                            "where sam.qr_code = '"+dane[2]+"' and  sam.wyswietl='1' order by zgl.id desc ");
+                    rs = stmt3.executeQuery();
+                }
 
 
                 while (rs.next()) {
@@ -195,17 +220,12 @@ public class MainMenu extends AppCompatActivity
                         zm5.add(rs.getString("zgl.status"));
                         zm6.add(rs.getString("zgl.data_dod"));
                         zm8.add(rs.getString("zgl.nr_rejestracyjny"));
+                        zm9.add(rs.getString("zgl.Id"));
 
                        // Blob blob = rs.getBlob("zdjecie_przed");
                         //zdjecie.add(rs.getBlob("zdjecie_przed"));
 
                         zdjecie.add( rs.getBlob("zdjecie_przed"));
-                       // is = blob.getBinaryStream();
-                        //imageView.setImageBitmap(BitmapFactory.decodeStream(is));
-
-                        Log.i("mainmenu",""+String.valueOf(zdjecie.get(0)));
-
-
                     }
 
                 }
@@ -234,10 +254,28 @@ public class MainMenu extends AppCompatActivity
         {
             Log.i("baza",""+e);
         }
+        mSwipeRefreshLayout.setRefreshing(false);
 
     }
 
+    public void adapters()
+    {
+        //uzytkownik adapter listview
+        Custom_row adapter=new Custom_row(this, zm3,zm4);
+        list.setAdapter(adapter);
 
+        //zgloszenia adapter listview
+        Custom_row_zgloszenie adapter1=new Custom_row_zgloszenie(this, zm8,zm6,zm5,zdjecie);
+        list1.setAdapter(adapter1);
+
+        //pojazd adapter listview
+        Custom_row_pojazd adapter2=new Custom_row_pojazd(this, zm1,zm2);
+        list2.setAdapter(adapter2);
+
+        adapter.notifyDataSetChanged();
+        adapter1.notifyDataSetChanged();
+        adapter2.notifyDataSetChanged();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -267,24 +305,19 @@ public class MainMenu extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        SelectDataUser();
-
-        Custom_row adapter=new Custom_row(MainMenu.this, zm3,zm4);
-        list=(ListView)findViewById(R.id.konto);
-        list.setAdapter(adapter);
-
         zgloszenie =(Button) findViewById(R.id.zgloszenie);
         samochod = (Button) findViewById(R.id.button7);
         tekst1 = (TextView) findViewById(R.id.textView2);
         tekst2 = (TextView) findViewById(R.id.textView);
 
-        Custom_row_zgloszenie adapter1=new Custom_row_zgloszenie(this, zm8,zm6,zm5,zdjecie);
+        list=(ListView)findViewById(R.id.konto);
         list1=(ListView)findViewById(R.id.zgloszenia);
-        list1.setAdapter(adapter1);
+        list2=(ListView)findViewById(R.id.pojazdy);
 
-        Custom_row_pojazd adapter2=new Custom_row_pojazd(this, zm1,zm2);
-        list1=(ListView)findViewById(R.id.pojazdy);
-        list1.setAdapter(adapter2);
+        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.activity_main_swipe_refresh_layout);
+
+        SelectDataUser();
+        adapters();
 
         tekst2.setText("Samochody("+String.valueOf(zm1.size())+")");
         tekst1.setText("Zgłoszenia("+String.valueOf(zm5.size())+")");
@@ -302,12 +335,39 @@ public class MainMenu extends AppCompatActivity
             Log.i("mainmenu",""+e);
         }
 
+        list1.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent i = new Intent(MainMenu.this, koniec_pojazd.class);
+                i.putExtra("menu","edit");
+                i.putExtra("qr_code",dane[2]);
+                i.putExtra("status","1");
+                i.putExtra("admin",zm7.get(0));
+                i.putExtra("rejestracyjny",zm8.get(position));
+                i.putExtra("pozycja2",zm9.get(position));
+                startActivity(i);
+            }
+        });
+
+        list2.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent i = new Intent(MainMenu.this,Historia_pojazd.class);
+                i.putExtra("menu","menu_zgloszenie");
+                i.putExtra("qr_code",dane[2]);
+                i.putExtra("admin",zm7.get(0));
+                i.putExtra("rejestracyjny",zm8.get(position));
+                startActivity(i);
+            }
+        });
+
         zgloszenie.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(MainMenu.this, Historia_pojazd.class);
                 i.putExtra("menu","zgloszenie");
                 i.putExtra("qr_code",dane[2]);
+                i.putExtra("admin",zm7.get(0));
                 startActivity(i);
             }
         });
@@ -320,6 +380,15 @@ public class MainMenu extends AppCompatActivity
                 i.putExtra("qr_code",dane[2]);
                 startActivity(i);
 
+            }
+        });
+
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                SelectDataUser();
+                adapters();
+                showToast("Dane zostały zaktualizowane");
             }
         });
     }
@@ -355,6 +424,7 @@ public class MainMenu extends AppCompatActivity
             Intent i = new Intent(MainMenu.this,Historia_pojazd.class);
             i.putExtra("menu","historia");
             i.putExtra("qr_code",dane[2]);
+            i.putExtra("admin",zm7.get(0));
             startActivity(i);
         }
 

@@ -13,6 +13,22 @@
     tools:context="com.example.strzala.e_ksiazaka1.MainMenu"
     tools:showIn="@layout/app_bar_main_menu">
 
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/activity_main_swipe_refresh_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/textView7"
+            android:layout_width="wrap_content"
+            android:layout_height="10dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="14dp"
+            android:gravity="center_horizontal"
+            android:text="Przeciągnij aby odświerzyć" />
+
+    </android.support.v4.widget.SwipeRefreshLayout>
 
 <LinearLayout
     android:orientation="vertical"
@@ -89,14 +105,7 @@
             android:scrollbars="horizontal" />
     </LinearLayout>
 
-<TextView
-    android:text="Przeciągnij aby odświerzyć"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="14dp"
-    android:id="@+id/textView7"
-    android:layout_alignParentTop="true"
-    android:layout_centerHorizontal="true" />
+
 
     <Button
         android:id="@+id/zgloszenie"

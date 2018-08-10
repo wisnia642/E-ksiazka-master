@@ -56,13 +56,14 @@ tools:context="com.example.strzala.e_ksiazaka1.koniec_pojazd">
         android:gravity="top"
         android:hint="Dodaj Uwagi" />
 
-    <ImageButton
+    <ImageView
         android:id="@+id/imageButton"
         android:layout_width="150dp"
         android:layout_height="100dp"
         android:layout_alignEnd="@+id/anuluj"
         android:layout_alignParentTop="true"
         android:layout_marginTop="71dp"
+        android:visibility="invisible"
         app:srcCompat="@android:drawable/ic_input_add" />
 
     <Button
@@ -76,7 +77,7 @@ tools:context="com.example.strzala.e_ksiazaka1.koniec_pojazd">
         android:text="Powrót do menu"
         android:textColor="@android:color/background_light" />
 
-    <ImageButton
+    <ImageView
         android:id="@+id/imageButton2"
         android:layout_width="150dp"
         android:layout_height="100dp"
@@ -84,16 +85,6 @@ tools:context="com.example.strzala.e_ksiazaka1.koniec_pojazd">
         android:layout_alignStart="@+id/dodaj"
         android:layout_marginTop="71dp"
         app:srcCompat="@android:drawable/ic_search_category_default" />
-
-    <TextView
-        android:id="@+id/data"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/textView16"
-        android:layout_centerHorizontal="true"
-        android:textColor="@android:color/black"
-        android:inputType="textPersonName"
-        android:textStyle="bold" />
 
     <EditText
         android:id="@+id/editText123"
@@ -134,8 +125,7 @@ tools:context="com.example.strzala.e_ksiazaka1.koniec_pojazd">
         android:layout_above="@+id/imageButton"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="-71dp"
-        android:text="TextView"
-        android:inputType="textPersonName"/>
+        android:inputType="textPersonName" />
 
     <EditText
         android:id="@+id/editText2"
@@ -147,6 +137,15 @@ tools:context="com.example.strzala.e_ksiazaka1.koniec_pojazd">
         android:hint="Punkty"
         android:inputType="textPersonName"
         android:textSize="14sp" />
+
+    <RelativeLayout
+        android:id="@+id/activity_koniec_pojazd_galeria"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:orientation="horizontal"
+        android:visibility="invisible"></RelativeLayout>
 
 
 </RelativeLayout>

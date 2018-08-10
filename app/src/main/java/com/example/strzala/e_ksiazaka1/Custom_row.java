@@ -29,8 +29,8 @@ public View getView(int position, View view, ViewGroup parent) {
      tekst1 = (TextView) rowView.findViewById(R.id.marka);
     tekst2 = (TextView) rowView.findViewById(R.id.data);
 
-     tekst1.setText(zm1.get(position));
-     tekst1.setText(zm2.get(position));
+     tekst1.setText(zm1.get(0));
+     tekst1.setText(zm2.get(0));
 
 
     return rowView;

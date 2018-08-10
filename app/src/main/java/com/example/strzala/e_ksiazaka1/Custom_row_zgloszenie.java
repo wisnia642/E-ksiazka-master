@@ -47,32 +47,29 @@ public class Custom_row_zgloszenie extends ArrayAdapter<String> {
         tekst1 = (TextView) rowView1.findViewById(R.id.marka);
         tekst2 = (TextView) rowView1.findViewById(R.id.data);
         tekst3 = (TextView) rowView1.findViewById(R.id.status);
-        zdjecie = (ImageView) rowView1.findViewById(R.id.imageView) ;
+        zdjecie = (ImageView) rowView1.findViewById(R.id.imageView);
 
-        if(zm4.get(position)!=null) {
+        if(zm2.get(position)!=null) {
+            if (zm4.get(position) != null) {
 
-            try {
-                is = zm4.get(position).getBinaryStream();
-                zdjecie.setImageBitmap(BitmapFactory.decodeStream(is));
-            } catch (SQLException e) {
-                e.printStackTrace();
+                try {
+                    is = zm4.get(position).getBinaryStream();
+                    zdjecie.setImageBitmap(BitmapFactory.decodeStream(is));
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+
+                //Bitmap bm = BitmapFactory.decodeByteArray(zm4.get(position), 0, zm4.size());
+                // zdjecie.setImageBitmap(bm);
+            } else {
+                zdjecie.setImageDrawable(zdjecie.getResources().getDrawable(R.mipmap.car4));
             }
 
-            //Bitmap bm = BitmapFactory.decodeByteArray(zm4.get(position), 0, zm4.size());
-           // zdjecie.setImageBitmap(bm);
-        }else
-        {
-            zdjecie.setImageDrawable(zdjecie.getResources().getDrawable(R.mipmap.car4));
+
+            tekst1.setText(zm1.get(position));
+            tekst2.setText(zm2.get(position));
+            tekst3.setText(zm3.get(position));
         }
-
-
-        tekst1.setText(zm1.get(position));
-        tekst2.setText(zm2.get(position));
-        tekst3.setText(zm3.get(position));
-
-
-
-
 
         return rowView1;
     }
