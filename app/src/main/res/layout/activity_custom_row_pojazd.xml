@@ -31,14 +31,13 @@
             app:srcCompat="@mipmap/fiat" />
 
         <TextView
-            android:id="@+id/marka"
+            android:id="@+id/email_lista"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@+id/zdjecieP"
             android:layout_alignStart="@+id/nr_rejestracyjny"
             android:textColor="@android:color/black"
-            android:textSize="24sp"
-            android:textStyle="italic" />
+            android:textSize="18sp" />
 
         <TextView
             android:id="@+id/nr_rejestracyjny"
@@ -48,7 +47,7 @@
             android:layout_alignParentTop="true"
             android:layout_marginStart="84dp"
             android:textColor="@android:color/black"
-            android:textSize="24sp" />
+            android:textSize="18sp" />
     </RelativeLayout>
 
 

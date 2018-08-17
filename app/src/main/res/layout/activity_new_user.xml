@@ -36,28 +36,25 @@
         android:id="@+id/powrot" />
 
     <TextView
-        android:text="Dodawanie nowego uzytkownika"
+        android:id="@+id/napis"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="18dp"
-        android:id="@+id/textView8"
-        android:textSize="18sp"
-        android:textColor="@android:color/background_dark"
         android:layout_alignParentTop="true"
-        android:layout_alignLeft="@+id/zapisz_p"
-        android:layout_alignStart="@+id/zapisz_p" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="34dp"
+        android:text="Dodawanie nowego uzytkownika"
+        android:textColor="@android:color/background_dark"
+        android:textSize="18sp" />
 
     <EditText
+        android:id="@+id/qr_code"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:inputType="textPersonName"
+        android:layout_alignStart="@+id/email"
+        android:layout_centerVertical="true"
         android:ems="10"
-        android:id="@+id/qr_code"
         android:hint="QR kod"
-        android:layout_below="@+id/silnik"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="12dp" />
+        android:inputType="textPersonName" />
 
     <Button
         android:text="Skanuj"
@@ -70,63 +67,56 @@
         android:layout_alignParentEnd="true" />
 
     <CheckBox
-        android:text="Akceptuję regulamin serwisu"
+        android:id="@+id/checkBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/qr_code"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginLeft="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="22dp"
-        android:id="@+id/checkBox"
+        android:layout_alignParentBottom="true"
+        android:layout_alignStart="@+id/qr_code"
+        android:layout_marginBottom="150dp"
+        android:text="Akceptuję regulamin serwisu"
         android:textAllCaps="false" />
 
     <EditText
+        android:id="@+id/email"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:inputType="textPersonName"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="17dp"
+        android:layout_marginTop="85dp"
         android:ems="10"
-        android:layout_marginTop="36dp"
-        android:id="@+id/marka"
         android:hint="Email"
-        android:layout_below="@+id/textView8"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:inputType="textPersonName" />
 
     <EditText
+        android:id="@+id/haslo_p"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/email"
+        android:layout_below="@+id/haslo"
         android:ems="10"
-        android:layout_marginTop="10dp"
-        android:id="@+id/silnik"
         android:hint="Powtórz hasło"
-        android:layout_below="@+id/marka"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
         android:inputType="textPassword" />
 
     <EditText
+        android:id="@+id/haslo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/email"
+        android:layout_below="@+id/email"
         android:ems="10"
-        android:id="@+id/marka"
         android:hint="Hasło"
-        android:layout_below="@+id/marka"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="11dp"
         android:inputType="textPassword" />
 
     <TextView
-        android:text="Podgląd regulaninu"
+        android:id="@+id/regulamin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/regulamin"
-        android:layout_marginTop="13dp"
-        android:layout_below="@+id/checkBox"
-        android:layout_alignLeft="@+id/zapisz_p"
-        android:layout_alignStart="@+id/zapisz_p"
-        android:textColor="?android:attr/statusBarColor" />
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="189dp"
+        android:layout_marginStart="79dp"
+        android:text="Podgląd regulaninu"
+        android:textColor="@color/colorPrimaryDark" />
 
 </RelativeLayout>

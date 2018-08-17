@@ -172,8 +172,8 @@ public class dane_pojazd extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pojazd);
 
-        marka = (EditText) findViewById(R.id.marka);
-        model = (EditText) findViewById(R.id.marka);
+        marka = (EditText) findViewById(R.id.email_lista);
+        model = (EditText) findViewById(R.id.email_lista);
         rocznik = (EditText) findViewById(R.id.rocznik);
         silnik = (EditText) findViewById(R.id.qr_code4);
         qrCode = (EditText) findViewById(R.id.qr_code);
@@ -205,7 +205,7 @@ public class dane_pojazd extends AppCompatActivity {
         }
 
         //testowo póżniej do usnięcia
-        qrCode.setText("https://vicards.pl/kuHSFb3r/test");
+       // qrCode.setText("https://vicards.pl/kuHSFb3r/test");
 
         ok.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -28,14 +28,14 @@ import java.util.Date;
 public class New_user extends AppCompatActivity {
 
     public EditText email,haslo,haslo_pow,qrcode;
-    public TextView rekulamin_akceptacja;
+    public TextView rekulamin_akceptacja,napis;
     public Button skan,ok,anuluj;
     public CheckBox checkBox;
     public boolean status =true;
     public String hash;
 
     String subject = "",data="",kod="";
-    String message = "";
+    String message = "",haslo_old;
 
     String dane[] = new String[8];
 
@@ -107,27 +107,41 @@ public class New_user extends AppCompatActivity {
                 //e1.printStackTrace();
             }
 
-            String sql1 = "INSERT INTO uzytkownik (data_dod,email,haslo,zapisz_haslo,qr_code," +
-                    "punkty,admin,czy_zapis) VALUES (?,?,?,?,?,?,?,?)";
+            if(dane[4].equals("zmiana_hasla"))
+            {
+                String sql3 = "UPDATE uzytkownik SET haslo = '"+dane[1]+"' WHERE qr_code = '" + dane[3] + "'";
+                try {
+                    st.executeUpdate(sql3);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
 
-            try {
-                ps = connection.prepareStatement(sql1);
-                ps.setString(1, data);
-                ps.setString(2, dane[0]);
-                ps.setString(3, dane[1]);
-                ps.setString(4, "0");
-                ps.setString(5, dane[3]);
-                ps.setString(6, "0");
-                ps.setString(7, "0");
-                ps.setString(8, "0");
-                ps.executeUpdate();
+            }else {
+
+                String sql1 = "INSERT INTO uzytkownik (data_dod,email,haslo,zapisz_haslo,qr_code," +
+                        "punkty,admin,czy_zapis) VALUES (?,?,?,?,?,?,?,?)";
+
+                try {
+                    ps = connection.prepareStatement(sql1);
+                    ps.setString(1, data);
+                    ps.setString(2, dane[0]);
+                    ps.setString(3, dane[1]);
+                    ps.setString(4, "0");
+                    ps.setString(5, dane[3]);
+                    ps.setString(6, "0");
+                    ps.setString(7, "0");
+                    ps.setString(8, "0");
+                    ps.executeUpdate();
 
 
-                String sql2 = "UPDATE qr_code SET aktywne = '0' WHERE kod = '" + dane[3] + "'";
-                st.executeUpdate(sql2);
+                    String sql2 = "UPDATE qr_code SET aktywne = '0' WHERE kod = '" + dane[3] + "'";
+                    st.executeUpdate(sql2);
 
-            } catch (SQLException e) {
-                Log.i("New user",""+e);
+
+                } catch (SQLException e) {
+                    Log.i("New user", "" + e);
+                }
+
             }
             try {
                 if (connection != null)
@@ -154,12 +168,21 @@ public class New_user extends AppCompatActivity {
             }
 
             try {
-                PreparedStatement stmt1 = connection.prepareStatement("Select * from uzytkownik where email = '"+dane[0]+"' ");
-                rs = stmt1.executeQuery();
+                if (dane[4].equals("zmiana_hasla"))
+                {
+                    PreparedStatement stmt1 = connection.prepareStatement("Select * from uzytkownik where qr_code = '" + dane[3] + "' ");
+                    rs = stmt1.executeQuery();
+                }else
+                {
+                    PreparedStatement stmt1 = connection.prepareStatement("Select * from uzytkownik where email = '" + dane[0] + "' ");
+                    rs = stmt1.executeQuery();
+                }
 
 
                 while (rs.next()) {
                     String zm = rs.getString("email");
+                    haslo_old = rs.getString("haslo");
+
 
 
                     if (zm != null) {
@@ -292,10 +315,11 @@ public class New_user extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_user);
 
-        email = (EditText) findViewById(R.id.marka);
-        haslo = (EditText) findViewById(R.id.marka);
-        haslo_pow = (EditText) findViewById(R.id.silnik);
+        email = (EditText) findViewById(R.id.email);
+        haslo = (EditText) findViewById(R.id.haslo);
+        haslo_pow = (EditText) findViewById(R.id.haslo_p);
         qrcode = (EditText) findViewById(R.id.qr_code);
+        napis = (TextView) findViewById(R.id.napis);
 
         rekulamin_akceptacja = (TextView) findViewById(R.id.regulamin);
 
@@ -310,12 +334,29 @@ public class New_user extends AppCompatActivity {
             dane[0] = getIntent().getStringExtra("email");
             dane[1] = getIntent().getStringExtra("haslo");
             dane[2] = getIntent().getStringExtra("haslo_pow");
-            dane[3] = getIntent().getStringExtra("qrcode");
+            dane[3] = getIntent().getStringExtra("qr_code");
+            dane[4] = getIntent().getStringExtra("menu");
+            dane[5] = getIntent().getStringExtra("admin");
 
-            email.setText(dane[0]);
-            haslo.setText(dane[1]);
-            haslo_pow.setText(dane[2]);
-            qrcode.setText(dane[3]);
+            if(dane[4].equals("zmiana_hasla"))
+            {
+                napis.setText("Zmiana hasła");
+                email.setHint("Stare hasło");
+                haslo.setHint("Nowe hasło");
+                haslo_pow.setHint("Powtórz nowe hasło");
+
+                skan.setVisibility(View.INVISIBLE);
+                qrcode.setVisibility(View.INVISIBLE);
+                checkBox.setVisibility(View.INVISIBLE);
+                rekulamin_akceptacja.setVisibility(View.INVISIBLE);
+                ok.setText("Zmień");
+
+            }else {
+                email.setText(dane[0]);
+                haslo.setText(dane[1]);
+                haslo_pow.setText(dane[2]);
+                qrcode.setText(dane[3]);
+            }
 
         }catch (Exception e)
         {
@@ -329,63 +370,96 @@ public class New_user extends AppCompatActivity {
                 dane[0] = email.getText().toString();
                 dane[1] = haslo.getText().toString();
                 dane[2] = haslo_pow.getText().toString();
-                dane[3] = qrcode.getText().toString();
 
-                SelectDataUser();
-                SelectDataUser_qrcode();
 
-                //sprawdzanie czy pole email jest uzupełnione
-                if(dane[0].contains("@") ) {
-                    if (status == true) {
-                        if (!dane[1].equals("") & !dane[2].equals("")) {
-                            if (dane[1].equals(dane[2])) {
-                                if (!dane[3].equals("")) {
-                                    Log.i("user1",kod);
-                                    if(dane[3].equals(kod)) {
-                                        if (checkBox.isChecked()) {
-                                            dane[0].replace(" ", "");
-                                            hash();
+                //modułdo zmiany hasła
+                if (dane[4].equals("zmiana_hasla")) {
+                    if (activeNetwork()) {
+                    //sprawdzanie starego hasła
+                    SelectDataUser();
+                    if(dane[0].equals(haslo_old)) {
+                        if (!dane[1].equals("") & !dane[2].equals("") & dane[1].equals(dane[2])) {
 
-                                            //dodanie danych do dwoch baz
-                                            InsertLoginDataMysql();
+                            //do yotur stuf
+                            InsertLoginDataMysql();
+                            showToast("Hasło zostało zmienione");
+                            Intent i = new Intent(New_user.this, MainMenu.class);
+                            i.putExtra("qr_code", dane[3]);
+                            startActivity(i);
 
-                                            if (activeNetwork()) {
-                                                sendemail_execiut();
+                        } else {
+                            showToast("Hasła nie są identyczne");
+                        }
+                    }else
+                    {
+                        showToast("Stare hasło jest nieprawidłowe");
+                    }
+                    } else {
+                        showToast("Brak dostępu do internetu");
+                    }
+
+                    //moduł do dodawania nowego użytkownika
+                }else {
+                    if (activeNetwork()) {
+                        dane[3] = qrcode.getText().toString();
+                        SelectDataUser();
+                        SelectDataUser_qrcode();
+
+                        //sprawdzanie czy pole email jest uzupełnione
+                        if (dane[0].contains("@")) {
+                            if (status == true) {
+                                if (!dane[1].equals("") & !dane[2].equals("")) {
+                                    if (dane[1].equals(dane[2])) {
+                                        if (!dane[3].equals("")) {
+                                            Log.i("user1", kod);
+                                            if (dane[3].equals(kod)) {
+                                                if (checkBox.isChecked()) {
+                                                    dane[0].replace(" ", "");
+                                                    hash();
+
+                                                    //dodanie danych do dwoch baz
+                                                    InsertLoginDataMysql();
+
+
+                                                    sendemail_execiut();
+
+                                                    Intent i = new Intent(New_user.this, MainMenu.class);
+                                                    i.putExtra("email", dane[0]);
+                                                    i.putExtra("qr_code", dane[3]);
+                                                    i.putExtra("admin", "0");
+                                                    startActivity(i);
+                                                    showToast("Konto zostało utworzone");
+                                                } else {
+                                                    showToast("Założenie konta wymaga potwierdzenia regulaminu serwisu");
+                                                }
                                             } else {
-                                                showToast("Brak dostępu do internetu");
+                                                showToast("Nieprawidłowy lub nie aktywny kod QR");
                                             }
-                                            Intent i = new Intent(New_user.this, MainMenu.class);
-                                            i.putExtra("email", dane[0]);
-                                            startActivity(i);
-                                            showToast("Konto zostało utworzone");
+
                                         } else {
-                                            showToast("Założenie konta wymaga potwierdzenia regulaminu serwisu");
+                                            showToast("Podaj kod zabezpieczający kodu QE");
                                         }
-                                    }else
-                                    {
-                                        showToast("Nieprawidłowy lub nie aktywny kod QR");
+                                    } else {
+                                        showToast("Hasła nie są identyczne");
                                     }
 
                                 } else {
-                                    showToast("Podaj kod zabezpieczający kodu QE");
+                                    showToast("Uzupełnij hasło");
                                 }
+
+
                             } else {
-                                showToast("Hasła nie są identyczne");
+                                showToast("Email już istnieje");
                             }
 
                         } else {
-                            showToast("Uzupełnij hasło");
+                            showToast("Uzupełnij poprawnie email");
                         }
 
-
                     } else {
-                        showToast("Email już istnieje");
+                        showToast("Brak dostępu do internetu");
                     }
-
-                    }else {
-                    showToast("Uzupełnij poprawnie email");
-                     }
-
+                }
             }
         });
 
@@ -400,11 +474,11 @@ public class New_user extends AppCompatActivity {
                     dane[3] = qrcode.getText().toString();
 
                     Intent i = new Intent(New_user.this, Regulamin.class);
-                    i.putExtra("ekran", "uzytkownik");
                     i.putExtra("email", dane[0]);
                     i.putExtra("haslo", dane[1]);
                     i.putExtra("haslo_pow", dane[2]);
-                    i.putExtra("qrcode", dane[3]);
+                    i.putExtra("qr_code", dane[3]);
+                    i.putExtra("menu", "");
                     startActivity(i);
                 }else
                 {
@@ -417,8 +491,15 @@ public class New_user extends AppCompatActivity {
         anuluj.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(New_user.this,MainActivity.class);
-                startActivity(i);
+                if(dane[4].equals("zmiana_hasla")) {
+                    Intent i = new Intent(New_user.this, MainMenu.class);
+                    i.putExtra("qr_code", dane[3]);
+                    startActivity(i);
+                }
+                else {
+                    Intent i = new Intent(New_user.this, MainActivity.class);
+                    startActivity(i);
+                }
             }
         });
 

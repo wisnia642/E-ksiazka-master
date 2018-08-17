@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
         }else
        {
            connection = null;
-           // showToast("Brak podłączenia do intrernetu");
+            showToast("Brak podłączenia do intrernetu");
        }
 
     }
@@ -307,7 +307,7 @@ public class MainActivity extends AppCompatActivity {
             message = "Witaj "+login_act+",\n" +
                     " \n "+
                     "Otrzymałeś ten email ponieważ skorzystałeś z opcji przypomnienia hasła. \n" +
-                    "Twoje hasło to: "+dane[2]+"  \n"+
+                    "Twoje hasło to: "+password+"  \n"+
                     " \n "+
                     "Pozdrawiam Zespół TrustCar. \n";
             subject = "Przypomnienie hasła TrustCar";
@@ -406,9 +406,13 @@ public class MainActivity extends AppCompatActivity {
         logowanie.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                if (activeNetwork()) {
                 simpleProgressBar.setVisibility(View.VISIBLE);
-                StartLog=true;
+                StartLog = true;
+                }
+                 else {
+                    showToast("Brak dostępu do internetu");
+                }
 
             }
         });
@@ -417,10 +421,14 @@ public class MainActivity extends AppCompatActivity {
         logowanie_qr.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                if (activeNetwork()) {
                 Intent i = new Intent(MainActivity.this,BarCodeScaner.class);
                 i.putExtra("ekran","logowanie");
                 startActivity(i);
+                }
+                else {
+                    showToast("Brak dostępu do internetu");
+                }
             }
         });
 
@@ -428,7 +436,7 @@ public class MainActivity extends AppCompatActivity {
         przypmnienie_hasla.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                if (activeNetwork()) {
                 login_act = email.getText().toString();
 
                 ImportLogin(login_act);
@@ -452,6 +460,10 @@ public class MainActivity extends AppCompatActivity {
                 {
                     showToast("Nie poprawny adres email");
                 }
+                }
+                else {
+                    showToast("Brak dostępu do internetu");
+                }
 
             }
         });
@@ -462,8 +474,15 @@ public class MainActivity extends AppCompatActivity {
         konto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (activeNetwork()) {
                 Intent i = new Intent(MainActivity.this,New_user.class);
+                i.putExtra("menu","");
+                i.putExtra("qr_code","");
                 startActivity(i);
+            }
+                else {
+                showToast("Brak dostępu do internetu");
+            }
             }
         });
 

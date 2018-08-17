@@ -1,16 +1,19 @@
 package com.example.strzala.e_ksiazaka1;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.StrictMode;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -34,13 +37,14 @@ import java.util.concurrent.ExecutionException;
 public class Historia_pojazd extends AppCompatActivity {
 
     Button szukaj1,powrót;
-    TextView pole;
+    TextView pole,liczba;
     ListView lista_new=null;
-    String tekst,email;
+    String tekst,email,zm,zm1;
+    Integer pozycja;
     EditText szukaj2;
 
     String dane[] = new String[10];
-    Boolean status=false;
+    Boolean status=false,delete=false,click=false;
 
     static ResultSet rs;
     static Statement st;
@@ -53,6 +57,7 @@ public class Historia_pojazd extends AppCompatActivity {
     ArrayList<String> marka_a = new ArrayList<String>();
     ArrayList<String> nr_rejestracyjny_a = new ArrayList<String>();
     ArrayList<String> qrcode_tab = new ArrayList<String>();
+    ArrayList<String> Id = new ArrayList<String>();
     ArrayList<String> zm6 = new ArrayList<String>();
     ArrayList<String> zm5 = new ArrayList<String>();
     ArrayList<String> zm8 = new ArrayList<String>();
@@ -108,7 +113,7 @@ public class Historia_pojazd extends AppCompatActivity {
         }else
         {
             connection = null;
-            // showToast("Brak podłączenia do intrernetu");
+             showToast("Brak podłączenia do intrernetu");
         }
 
     }
@@ -126,10 +131,12 @@ public class Historia_pojazd extends AppCompatActivity {
             }
 
             try {
-
+                //pobieranie samochodów dla zywkłego użytkownika
                 if(dane[3].equals("0")) {
                     PreparedStatement stmt1 = connection.prepareStatement("Select * from samochod where qr_code = '" + dane[1] + "' and wyswietl='1'  ");
                     rs = stmt1.executeQuery();
+
+                    //powbieranie wszystkich samochodów dla admina
                 }else if(dane[3].equals("1"))
                 {
                     PreparedStatement stmt1 = connection.prepareStatement("Select * from samochod ");
@@ -139,29 +146,42 @@ public class Historia_pojazd extends AppCompatActivity {
 
 
                 while (rs.next()) {
-                    String zm = rs.getString("nr_rejestracyjny");
+                    zm = rs.getString("nr_rejestracyjny");
 
                     if (zm != null) {
+                        Id.add(rs.getString("Id"));
                         marka_a.add(rs.getString("Marka")+" "+  rs.getString("model"));
                         nr_rejestracyjny_a.add(rs.getString("nr_rejestracyjny"));
                         qrcode_tab.add(rs.getString("qr_code"));
-                        Log.i("historiapojazd","nie"+ marka_a.get(0));
-                       status=true;
+                        status=true;
+                       // Log.i("historiapojazd","Status"+ status);
 
-                    } else  {
-                        Log.i("historiapojazd","nie"+ dane[1]);
+                    } else  if (zm == null){
                         status=false;
                     }
 
                 }
 
-                if(status==false)
+                if(zm == null)
                 {
                     showToast("Brak pojazdów do wyświetlenia");
                 }
 
+                if(delete==true) {
+                    delete=false;
+                    String sql3 = "Delete from samochod where Id='" + Id.get(pozycja) + "'";
 
-            } catch (SQLException e) {
+                    try {
+                        st.executeUpdate(sql3);
+                        connection.close();
+                        showToast("Samochód został usunięty");
+                    } catch (SQLException e) {
+                        Log.i("koniecpojazd", "" + e);
+                    }
+                }
+
+
+                } catch (SQLException e) {
                 Log.i("New user",""+e);
 
             }
@@ -195,8 +215,8 @@ public class Historia_pojazd extends AppCompatActivity {
             try {
 
                 //czyszczenie tablic
-                marka_a.clear();
-                nr_rejestracyjny_a.clear();
+              //  marka_a.clear();
+               // nr_rejestracyjny_a.clear();
                 zm5.clear();
                 zm6.clear();
                 zm8.clear();
@@ -217,11 +237,11 @@ public class Historia_pojazd extends AppCompatActivity {
                 }
 
                 while (rs.next()) {
-                    String zm = rs.getString("sam.nr_rejestracyjny");
+                    zm1 = rs.getString("zgl.data_dod");
 
-                    if (zm != null) {
-                        marka_a.add(rs.getString("sam.marka")+" "+  rs.getString("sam.model"));
-                        nr_rejestracyjny_a.add(rs.getString("sam.nr_rejestracyjny"));
+                    if (zm1 != null) {
+                       // marka_a.add(rs.getString("sam.marka")+" "+  rs.getString("sam.model"));
+                      //  nr_rejestracyjny_a.add(rs.getString("sam.nr_rejestracyjny"));
                         zm4.add(rs.getString("zgl.Id"));
                         zm5.add(rs.getString("zgl.status"));
                         zm6.add(rs.getString("zgl.data_dod"));
@@ -229,16 +249,30 @@ public class Historia_pojazd extends AppCompatActivity {
                         zdjecie.add( rs.getBlob("zdjecie_przed"));
                         status=true;
 
-                    } else  {
+                    } else  if (zm1 == null){
                         Log.i("historiapojazd","nie"+ dane[2]);
                         status=false;
                     }
 
                 }
 
-                if(status==false)
+                if(zm1 == null)
                 {
                     showToast("Brak pojazdów do wyświetlenia");
+                }
+
+                //usuwanie zgłoszenia
+
+                if(delete==true) {
+                    delete=false;
+                    String sql3 = "Delete from zgloszenie where Id='" + zm4.get(pozycja) + "'";
+                    try {
+                        st.executeUpdate(sql3);
+                        connection.close();
+                        showToast("Zgłoszenie zostało usunięte");
+                    } catch (SQLException e) {
+                        Log.i("koniecpojazd", "" + e);
+                    }
                 }
 
 
@@ -264,8 +298,14 @@ public class Historia_pojazd extends AppCompatActivity {
 
     public void adapter_Zgloszenie()
     {
-        Custom_row_zgloszenie adapter1=new Custom_row_zgloszenie(this, zm8,zm6,zm5,zdjecie);
-        lista_new.setAdapter(adapter1);
+        if(zm1 != null) {
+            Custom_row_zgloszenie adapter1 = new Custom_row_zgloszenie(this, zm8, zm6, zm5, zdjecie);
+            lista_new.setAdapter(adapter1);
+            adapter1.notifyDataSetChanged();
+        }else
+        {
+            showToast("Brak zgłoszeń dla danego samochodu");
+        }
     }
 
     @Override
@@ -279,6 +319,7 @@ public class Historia_pojazd extends AppCompatActivity {
             dane[1] = getIntent().getStringExtra("qr_code");
             dane[3] = getIntent().getStringExtra("admin");
             dane[4] = getIntent().getStringExtra("rejestracyjny");
+            Log.i("qr_code", dane[4]);
 
         }catch (Exception e)
         {
@@ -289,64 +330,145 @@ public class Historia_pojazd extends AppCompatActivity {
         szukaj2 = (EditText) findViewById(R.id.szukaj);
         powrót = (Button) findViewById(R.id.b_powrot);
         pole = (TextView) findViewById(R.id.tekst);
+        liczba = (TextView) findViewById(R.id.textView13);
+
+
+        lista_new = (ListView) findViewById(R.id.lista_new);
 
         SelectDataUser();
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
         if(dane[0].equals("historia")) {
             pole.setText("Historia pojazdów");
+            liczba.setText("Samochody("+marka_a.size()+")");
         }else if (dane[0].equals("zgloszenie"))
         {
             pole.setText("Dodaj zgłoszenie");
+            liczba.setText("Samochody("+marka_a.size()+")");
+
         }else if (dane[0].equals("menu_zgloszenie"))
         {
+            liczba.setText("Zgłoszenia("+zm4.size()+")");
             dane[0]="zgloszenie_1";
+         //   Log.i("rejestra ",dane[2]);
             dane[2]=dane[4];
             SelectDataUserSkan();
             adapter_Zgloszenie();
+            if(status==false)
+            {
+                dane[0]="historia";
+            }
 
         }
 
-        Custom_row_pojazd adapter2=new Custom_row_pojazd(Historia_pojazd.this, marka_a,nr_rejestracyjny_a);
-        lista_new = (ListView) findViewById(R.id.lista_new);
-        lista_new.setAdapter(adapter2);
+        if (!dane[0].equals("zgloszenie_1")) {
+            Custom_row_pojazd adapter2 = new Custom_row_pojazd(Historia_pojazd.this, marka_a, nr_rejestracyjny_a);
+            lista_new.setAdapter(adapter2);
+            adapter2.notifyDataSetChanged();
+        }
 
         lista_new.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if(dane[0].equals("zgloszenie"))
+                if(click==false) {
+                    if (dane[0].equals("zgloszenie")) {
+                        Intent i = new Intent(Historia_pojazd.this, lista_pojazd.class);
+                        i.putExtra("rejestracyjny", nr_rejestracyjny_a.get(position));
+                        i.putExtra("kategoria", "kat_1");
+                        i.putExtra("qr_code", qrcode_tab.get(position));
+                        i.putExtra("liczba", "");
+                        i.putExtra("pozycja", "");
+                        i.putExtra("nazwa", "");
+                        startActivity(i);
+                    }
+                    //przejcie z widoku zgłoszenia
+                    else if (dane[0].equals("historia")) {
+                        dane[0] = "zgloszenie_1";
+                        Log.i("pozycja_rejestracja", nr_rejestracyjny_a.get(position));
+                        dane[2] = nr_rejestracyjny_a.get(position);
+                        SelectDataUserSkan();
+                        liczba.setText("Zgłoszenia(" + zm4.size() + ")");
+                        adapter_Zgloszenie();
+                        if (status == false) {
+                            dane[0] = "historia";
+                        }
+
+                    }
+                    //przejscie do edycji zgloszenia
+                    else if (dane[0].equals("zgloszenie_1")) {
+                        Intent i = new Intent(Historia_pojazd.this, koniec_pojazd.class);
+                        i.putExtra("menu", "edit");
+                        i.putExtra("qr_code", dane[1]);
+                        i.putExtra("status", "1");
+                        i.putExtra("admin", dane[3]);
+                        i.putExtra("rejestracyjny", zm8.get(position));
+                        i.putExtra("pozycja2", zm4.get(position));
+                        startActivity(i);
+                    }
+                }
+
+            }
+        });
+
+        lista_new.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+
+                final AlertDialog.Builder builder = new AlertDialog.Builder(Historia_pojazd.this);
+                click=true;
+
+                if(dane[0].equals("zgloszenie") || dane[0].equals("zgloszenie_1"))
                 {
-                    Intent i = new Intent (Historia_pojazd.this, lista_pojazd.class);
-                    i.putExtra("rejestracyjny",nr_rejestracyjny_a.get(position));
-                    i.putExtra("kategoria","kat_1");
-                    i.putExtra("qr_code",qrcode_tab.get(position));
-                    i.putExtra("liczba","");
-                    i.putExtra("pozycja","");
-                    i.putExtra("nazwa","");
-                    startActivity(i);
+                    builder.setTitle("Czy na pewno chcesz usunąć Zgłoszenie ");
                 }
                 //przejcie z widoku zgłoszenia
                 else if(dane[0].equals("historia"))
                 {
-                    dane[0]="zgloszenie_1";
-                    dane[2]=nr_rejestracyjny_a.get(position);
-                    SelectDataUserSkan();
-                    adapter_Zgloszenie();
+                    builder.setTitle("Czy na pewno chcesz usunąć samochód ");
+                }
 
-                }
-                //przejscie do edycji zgloszenia
-                else if(dane[0].equals("zgloszenie_1"))
-                {
-                    Intent i = new Intent(Historia_pojazd.this, koniec_pojazd.class);
-                    i.putExtra("menu","edit");
-                    i.putExtra("qr_code",dane[1]);
-                    i.putExtra("status","1");
-                    i.putExtra("admin",dane[3]);
-                    i.putExtra("rejestracyjny",zm8.get(position));
-                    i.putExtra("pozycja2",zm4.get(position));
-                    startActivity(i);
-                }
+                builder.setPositiveButton("Tak", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        pozycja=position;
+                        delete=true;
+
+                        if(dane[0].equals("zgloszenie_1"))
+                        {
+                            click=false;
+                            Log.i("koniecpojazd_delete","zm");
+                            SelectDataUserSkan();
+                            dialog.cancel();
+
+                        }
+                        //przejcie z widoku zgłoszenia
+                        else if(dane[0].equals("historia"))
+                        {
+                            click=false;
+                            Log.i("koniecpojazd_delete","zm1");
+                            SelectDataUser();
+                            dialog.cancel();
+
+                        }
+
+                    }
+                });
+                builder.setNeutralButton("Nie", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        lista_new.setClickable(true);
+                        dialog.cancel();
+                    }
+                });
+
+                AlertDialog alert1 = builder.create();
+                alert1.show();
+
+                return false;
             }
         });
+
+
 
         szukaj1.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -368,10 +490,27 @@ public class Historia_pojazd extends AppCompatActivity {
         powrót.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(Historia_pojazd.this,MainMenu.class);
-                i.putExtra("email",email);
-                i.putExtra("qr_code",dane[1]);
-                startActivity(i);
+                if (dane[0].equals("historia") )
+                {
+                    Intent i = new Intent(Historia_pojazd.this, MainMenu.class);
+                    i.putExtra("menu", "historia");
+                    i.putExtra("admin", dane[3]);
+                    i.putExtra("qr_code", dane[1]);
+                    startActivity(i);
+                } else if (dane[0].equals("zgloszenie_1") ) {
+                    Intent i = new Intent(Historia_pojazd.this, Historia_pojazd.class);
+                    i.putExtra("menu", "historia");
+                    i.putExtra("admin", dane[3]);
+                    i.putExtra("qr_code", dane[1]);
+                    startActivity(i);
+                }
+                else {
+                    Intent i = new Intent(Historia_pojazd.this, MainMenu.class);
+                    i.putExtra("menu", "historia");
+                    i.putExtra("qr_code", dane[1]);
+                    i.putExtra("admin", dane[3]);
+                    startActivity(i);
+                }
             }
         });
 

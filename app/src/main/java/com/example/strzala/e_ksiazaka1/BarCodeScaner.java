@@ -296,7 +296,7 @@ public class BarCodeScaner extends AppCompatActivity implements ZXingScannerView
                         if(dane[8].equals(myResult)) {
                                   // https://vicards.pl/pUcJCNC2
                                 Intent i = new Intent(BarCodeScaner.this, MainMenu.class);
-                                i.putExtra("qrkod", myResult);
+                                i.putExtra("qr_code", myResult);
                                 startActivity(i);
                         }else
                         {
@@ -338,6 +338,7 @@ public class BarCodeScaner extends AppCompatActivity implements ZXingScannerView
                             i.putExtra("haslo", dane[1]);
                             i.putExtra("haslo_pow", dane[2]);
                             i.putExtra("qrcode", myResult);
+                            i.putExtra("menu","");
                             startActivity(i);
 
                     }
@@ -365,7 +366,7 @@ public class BarCodeScaner extends AppCompatActivity implements ZXingScannerView
                 builder.setPositiveButton("Dodaj", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Intent i = new Intent(BarCodeScaner.this, New_user.class);
+                        Intent i = new Intent(BarCodeScaner.this, dane_pojazd.class);
                         i.putExtra("qrcode",myResult);
                         i.putExtra("marka",dane[0]);
                         i.putExtra("model", dane[1]);

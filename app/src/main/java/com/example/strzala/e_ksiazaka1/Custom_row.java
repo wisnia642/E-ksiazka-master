@@ -1,6 +1,7 @@
 package com.example.strzala.e_ksiazaka1;
 
 import android.app.Activity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,11 +27,12 @@ public View getView(int position, View view, ViewGroup parent) {
         LayoutInflater inflater=context.getLayoutInflater();
         View rowView=inflater.inflate(R.layout.activity_custom_row, null,true);
 
-     tekst1 = (TextView) rowView.findViewById(R.id.marka);
-    tekst2 = (TextView) rowView.findViewById(R.id.data);
+     tekst1 = (TextView) rowView.findViewById(R.id.email_lista);
+    tekst2 = (TextView) rowView.findViewById(R.id.email_punkty);
 
-     tekst1.setText(zm1.get(0));
-     tekst1.setText(zm2.get(0));
+     //Log.i("uzytkownik",zm1.get(position)+zm2.get(position));
+     tekst1.setText(zm1.get(position));
+     tekst2.setText(zm2.get(position));
 
 
     return rowView;

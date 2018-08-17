@@ -1,20 +1,14 @@
 package com.example.strzala.e_ksiazaka1;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Log;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.mysql.jdbc.Blob;
 
 import java.io.InputStream;
 import java.sql.SQLException;
@@ -44,8 +38,8 @@ public class Custom_row_zgloszenie extends ArrayAdapter<String> {
         LayoutInflater inflater=context.getLayoutInflater();
         View rowView1=inflater.inflate(R.layout.activity_custom_row_zgloszenie, null,true);
 
-        tekst1 = (TextView) rowView1.findViewById(R.id.marka);
-        tekst2 = (TextView) rowView1.findViewById(R.id.data);
+        tekst1 = (TextView) rowView1.findViewById(R.id.email_lista);
+        tekst2 = (TextView) rowView1.findViewById(R.id.email_punkty);
         tekst3 = (TextView) rowView1.findViewById(R.id.status);
         zdjecie = (ImageView) rowView1.findViewById(R.id.imageView);
 
@@ -69,6 +63,14 @@ public class Custom_row_zgloszenie extends ArrayAdapter<String> {
             tekst1.setText(zm1.get(position));
             tekst2.setText(zm2.get(position));
             tekst3.setText(zm3.get(position));
+            if(zm3.get(position).equals("Nowy"))
+            {
+                tekst3.setTextColor(ContextCompat.getColor(context, R.color.akcept));
+            }
+            else if(zm3.get(position).equals("Zakończony"))
+            {
+                tekst3.setTextColor(ContextCompat.getColor(context, R.color.close));
+            }
         }
 
         return rowView1;

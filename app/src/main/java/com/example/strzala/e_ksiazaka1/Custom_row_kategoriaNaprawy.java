@@ -30,7 +30,7 @@ public class Custom_row_kategoriaNaprawy extends ArrayAdapter<String> {
         View rowView2=inflater.inflate(R.layout.activity_custom_row_kategoria_naprawy, null,true);
 
 
-        kategoria = (TextView) rowView2.findViewById(R.id.data);
+        kategoria = (TextView) rowView2.findViewById(R.id.email_punkty);
 
         kategoria.setText(zm2.get(position));
 

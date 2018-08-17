@@ -94,7 +94,38 @@ public class koniec_pojazd extends AppCompatActivity {
                 Toast.LENGTH_LONG).show();
     }
 
+    //akceptacja kosztów zgłoszenia
+    public void akceptacja_kosztów()
+    {
+        podlaczenieDB();
 
+        if (connection != null) {
+
+            try {
+                st = connection.createStatement();
+            } catch (SQLException e1) {
+                //e1.printStackTrace();
+            }
+
+            try {
+
+                String sql2 = "Update zgloszenie set akceptacja='1' where Id='"+dane[2]+"' ";
+                st.executeUpdate(sql2);
+
+            }catch (Exception e)
+            {
+                Log.i("myTag", "8" + e);
+            }
+
+            try {
+                if (connection != null)
+                    connection.close();
+            } catch (SQLException se) {
+                Log.i("myTag", "4" + se);
+                showToast("brak polaczenia z internetem");
+            }
+        }
+    }
 
    // odczytywanie zdjęcia z bazy danych
    public void readimage() {
@@ -426,13 +457,18 @@ public class koniec_pojazd extends AppCompatActivity {
 
             if(dane[10].equals("1") )
             {
-                przelacznik.setVisibility(View.VISIBLE);
+                if(dane[1].equals("1"))
+                {
+                    przelacznik.setVisibility(View.VISIBLE);
+                }
                 zdjecie.setVisibility(View.VISIBLE);
 
             }else if (!dane[10].equals("1"))
             {
                 opis.setText("Podgląd zgłoszenia");
-                zapis.setText("Akceptacja kosztów");
+                dodaj.setText("Akceptacja kosztów");
+                zapis.setVisibility(View.INVISIBLE);
+                przelacznik.setVisibility(View.VISIBLE);
             }
 
             if(dane[9].equals("edit"))
@@ -478,7 +514,7 @@ public class koniec_pojazd extends AppCompatActivity {
                 {
 
                 }else {
-                    zdjecie.setImageResource(android.R.drawable.ic_search_category_default);
+                    zdjecie.setImageResource(android.R.drawable.ic_input_add);
                     Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
                     startActivityForResult(intent, CAMERA_PIC_REQUEST);
                 }
@@ -535,7 +571,7 @@ public class koniec_pojazd extends AppCompatActivity {
                         showToast("Brak wsparcia");
                     }
                 }else {
-                    galeria.setImageResource(android.R.drawable.ic_input_add);
+                    galeria.setImageResource(android.R.drawable.ic_search_category_default);
                     Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                     startActivityForResult(intent, 2);
                 }
@@ -547,10 +583,11 @@ public class koniec_pojazd extends AppCompatActivity {
             public void onClick(View v) {
 
                 InsertLoginDataMysql();
-            showToast("Zgłoszenie naprawy zostało dodane");
+            showToast("Dane zostały zapisane");
 
             Intent i = new Intent(koniec_pojazd.this,MainMenu.class);
             i.putExtra("qr_code",qrcode);
+            i.putExtra("admin", dane[10]);
             startActivity(i);
             }
         });
@@ -560,6 +597,7 @@ public class koniec_pojazd extends AppCompatActivity {
             public void onClick(View v) {
                 Intent i = new Intent(koniec_pojazd.this,MainMenu.class);
                 i.putExtra("qr_code",qrcode);
+                i.putExtra("admin", dane[10]);
                 startActivity(i);
             }
         });
@@ -574,7 +612,7 @@ public class koniec_pojazd extends AppCompatActivity {
                             galeria.setImageResource(android.R.drawable.ic_search_category_default);
                             if(zdjecie_przed!=null) {
                                 is = zdjecie_przed.getBinaryStream();
-                                galeria.setImageDrawable(new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(BitmapFactory.decodeStream(is), 150, 100, true)));
+                                galeria.setImageBitmap(BitmapFactory.decodeStream(is));
 
                             }
 
@@ -590,8 +628,9 @@ public class koniec_pojazd extends AppCompatActivity {
                         try {
                             galeria.setImageResource(android.R.drawable.ic_search_category_default);
                             if(zdjecie_po!=null) {
+                                Log.i("koniecpojazd","zdjęcie_po");
                                 is = zdjecie_po.getBinaryStream();
-                                galeria.setImageDrawable(new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(BitmapFactory.decodeStream(is), 150, 100, true)));
+                                galeria.setImageBitmap(BitmapFactory.decodeStream(is));
 
                             }
                         } catch (SQLException e) {
@@ -611,14 +650,21 @@ public class koniec_pojazd extends AppCompatActivity {
                 //odczyt zapisanego zdjęcia
                // readimage();
 
-                Intent i = new Intent(koniec_pojazd.this,lista_pojazd.class);
-                i.putExtra("pozycja", "");
-                i.putExtra("nazwa", "");
-                i.putExtra("ekran", "");
-                i.putExtra("kategoria","kat_1");
-                i.putExtra("qr_code",qrcode);
-                i.putExtra("admin",dane[10]);
-                startActivity(i);
+                if (!dane[10].equals("1"))
+                {
+                    akceptacja_kosztów();
+                    showToast("Koszty zostały zaakceptowane");
+                }
+                else {
+                    Intent i = new Intent(koniec_pojazd.this, lista_pojazd.class);
+                    i.putExtra("pozycja", "");
+                    i.putExtra("nazwa", "");
+                    i.putExtra("ekran", "");
+                    i.putExtra("kategoria", "kat_1");
+                    i.putExtra("qr_code", qrcode);
+                    i.putExtra("admin", dane[10]);
+                    startActivity(i);
+                }
 
             }
         });
@@ -674,8 +720,9 @@ public class koniec_pojazd extends AppCompatActivity {
                 String picturePath = c.getString(columnIndex);
                 c.close();
                 dane[8] = picturePath;
-                Bitmap thumbnail = (BitmapFactory.decodeFile(picturePath));
-                galeria.setImageDrawable(new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(thumbnail, 500, 500, true)));
+               // Bitmap thumbnail = (BitmapFactory.decodeFile(picturePath));
+               // galeria.setImageDrawable(new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(thumbnail, 500, 500, true)));
+                galeria.setImageBitmap(BitmapFactory.decodeFile(picturePath));
                 file = new File(picturePath);
             }catch (Exception e)
             {

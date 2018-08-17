@@ -153,11 +153,8 @@ public class MainMenu extends AppCompatActivity
                 zdjecie.clear();
 
 
-                PreparedStatement stmt1 = connection.prepareStatement("Select * from uzytkownik uzy where uzy.qr_code= '"+dane[2]+"' order by id desc");
-
+                PreparedStatement stmt1 = connection.prepareStatement("Select * from uzytkownik uzy where uzy.qr_code= '"+dane[2]+"'");
                 rs = stmt1.executeQuery();
-
-
 
                 while (rs.next()) {
                     String zm = rs.getString("uzy.Id");
@@ -194,7 +191,9 @@ public class MainMenu extends AppCompatActivity
 
                 if(s2==false)
                 {
-                    showToast("Brak pojazdów do wyświetlenia");
+                    if (zm7.get(0).equals("1") & zm7.get(0).equals("0")) {
+                        showToast("Brak pojazdów do wyświetlenia");
+                    }
                 }
 
                 //jeżeli jesteś adminem wyświetl wszystkie dane
@@ -221,10 +220,6 @@ public class MainMenu extends AppCompatActivity
                         zm6.add(rs.getString("zgl.data_dod"));
                         zm8.add(rs.getString("zgl.nr_rejestracyjny"));
                         zm9.add(rs.getString("zgl.Id"));
-
-                       // Blob blob = rs.getBlob("zdjecie_przed");
-                        //zdjecie.add(rs.getBlob("zdjecie_przed"));
-
                         zdjecie.add( rs.getBlob("zdjecie_przed"));
                     }
 
@@ -293,7 +288,7 @@ public class MainMenu extends AppCompatActivity
 
         }catch (Exception e)
         {
-            Log.i("MainMenu",""+e);
+            Log.i("MainMenu","test"+e);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -356,7 +351,7 @@ public class MainMenu extends AppCompatActivity
                 i.putExtra("menu","menu_zgloszenie");
                 i.putExtra("qr_code",dane[2]);
                 i.putExtra("admin",zm7.get(0));
-                i.putExtra("rejestracyjny",zm8.get(position));
+                i.putExtra("rejestracyjny",zm2.get(position));
                 startActivity(i);
             }
         });
@@ -419,7 +414,11 @@ public class MainMenu extends AppCompatActivity
         } else if (id == R.id.nav_gallery) {
             // Handle the camera action
         } else if (id == R.id.nav_slideshow) {
-            // Handle the camera action
+            Intent i = new Intent(MainMenu.this,New_user.class);
+            i.putExtra("menu","zmiana_hasla");
+            i.putExtra("qr_code",dane[2]);
+            i.putExtra("admin",zm7.get(0));
+            startActivity(i);
         }else if (id == R.id.historia) {
             Intent i = new Intent(MainMenu.this,Historia_pojazd.class);
             i.putExtra("menu","historia");

@@ -28,7 +28,8 @@ public class Regulamin extends AppCompatActivity {
             dane[0] = getIntent().getStringExtra("email");
             dane[1] = getIntent().getStringExtra("haslo");
             dane[2] = getIntent().getStringExtra("haslo_pow");
-            dane[3] = getIntent().getStringExtra("qrcode");
+            dane[3] = getIntent().getStringExtra("qr_code");
+            dane[4] = getIntent().getStringExtra("menu");
 
         }catch (Exception e)
         {
@@ -58,7 +59,8 @@ public class Regulamin extends AppCompatActivity {
                 i.putExtra("email",dane[0]);
                 i.putExtra("haslo",dane[1]);
                 i.putExtra("haslo_pow",dane[2]);
-                i.putExtra("qrcode",dane[3]);
+                i.putExtra("qr_code",dane[3]);
+                i.putExtra("menu",dane[4]);
                 startActivity(i);
             }
         });
