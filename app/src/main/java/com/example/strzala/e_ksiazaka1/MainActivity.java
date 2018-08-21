@@ -157,7 +157,6 @@ public class MainActivity extends AppCompatActivity {
                         password = rs.getString("haslo");
                         dane[3] = rs.getString("zapisz_haslo");
                         qr_code = rs.getString("qr_code");
-                       // dane[5] = rs.getString("punkty");
                         //dane[6] = rs.getString("admin");
                         dane[6] = rs.getString("czy_zapis");
                         pass =   hash = "%02320%xwc48" + String.valueOf(password.hashCode());
@@ -537,7 +536,7 @@ public class MainActivity extends AppCompatActivity {
                             finish();
                         }else
                         {
-                            showToast("Nie poprawne hasło " + password);
+                            showToast("Nie poprawne hasło ");
                         }
 
                     }else

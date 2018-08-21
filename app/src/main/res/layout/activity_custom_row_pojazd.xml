@@ -48,6 +48,15 @@
             android:layout_marginStart="84dp"
             android:textColor="@android:color/black"
             android:textSize="18sp" />
+
+        <CheckBox
+            android:id="@+id/checkBox2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:text="Aktywne"
+            android:visibility="invisible" />
     </RelativeLayout>
 
 

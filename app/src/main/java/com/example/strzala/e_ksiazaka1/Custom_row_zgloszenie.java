@@ -65,11 +65,11 @@ public class Custom_row_zgloszenie extends ArrayAdapter<String> {
             tekst3.setText(zm3.get(position));
             if(zm3.get(position).equals("Nowy"))
             {
-                tekst3.setTextColor(ContextCompat.getColor(context, R.color.akcept));
+                tekst3.setTextColor(ContextCompat.getColor(context, R.color.close));
             }
             else if(zm3.get(position).equals("Zakończony"))
             {
-                tekst3.setTextColor(ContextCompat.getColor(context, R.color.close));
+                tekst3.setTextColor(ContextCompat.getColor(context, R.color.akcept));
             }
         }
 

@@ -184,13 +184,7 @@ public class New_user extends AppCompatActivity {
                     haslo_old = rs.getString("haslo");
 
 
-
-                    if (zm != null) {
-                        status = false;
-                    }else
-                    {
-                        status = true;
-                    }
+                    status = zm == null;
 
                 }
             } catch (SQLException e1) {

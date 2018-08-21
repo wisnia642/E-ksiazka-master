@@ -2,8 +2,6 @@ package com.example.strzala.e_ksiazaka1;
 
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -43,11 +41,11 @@ public class MainMenu extends AppCompatActivity
     ListView list=null,list1=null,list2=null;
     Button zgloszenie,samochod;
     SwipeRefreshLayout mSwipeRefreshLayout;
+    Integer punkty=0;
 
-    String dane[] = new String[20];
+    String dane[] = new String[8];
     Boolean s1=false,s2=false,s3=false;
     TextView tekst1,tekst2;
-    Cursor DBcursor;
 
     File file;
 
@@ -60,6 +58,7 @@ public class MainMenu extends AppCompatActivity
     ArrayList<String> zm7 = new ArrayList<String>();
     ArrayList<String> zm8 = new ArrayList<String>();
     ArrayList<String> zm9 = new ArrayList<String>();
+    ArrayList<String> zm10 = new ArrayList<String>();
     ArrayList<Blob> zdjecie = new ArrayList<Blob>();
 
 
@@ -162,8 +161,8 @@ public class MainMenu extends AppCompatActivity
                     if (zm != null) {
                       //  Log.i("historiapojazd","tak"+ dane[5]);
                         zm3.add(rs.getString("uzy.email"));
-                        zm4.add("Punkty: " + rs.getString("uzy.punkty"));
                         zm7.add(rs.getString("uzy.admin"));
+                        dane[3] = rs.getString("czy_zapis");
                                       s1=true;
 
             }
@@ -183,6 +182,7 @@ public class MainMenu extends AppCompatActivity
                        // Log.i("historiapojazd","tak"+ dane[5]);
                         zm1.add(rs.getString("sam.Marka")+" "+  rs.getString("model"));
                         zm2.add(rs.getString("sam.nr_rejestracyjny"));
+                        zm10.add("nie");
                         s2=true;
 
                     }
@@ -213,15 +213,21 @@ public class MainMenu extends AppCompatActivity
 
                 while (rs.next()) {
                     String zm = rs.getString("zgl.Id");
-
+                    int i=0;
+                    punkty=0;
                     if (zm != null) {
                         s3=true;
                         zm5.add(rs.getString("zgl.status"));
                         zm6.add(rs.getString("zgl.data_dod"));
                         zm8.add(rs.getString("zgl.nr_rejestracyjny"));
                         zm9.add(rs.getString("zgl.Id"));
-                        zdjecie.add( rs.getBlob("zdjecie_przed"));
+                        zdjecie.add( rs.getBlob("zgl.zdjecie_przed"));
+                        i = rs.getInt("zgl.punkty");
+                        punkty = i + punkty;
+
+
                     }
+                    zm4.add(String.valueOf(punkty));
 
                 }
 
@@ -255,6 +261,7 @@ public class MainMenu extends AppCompatActivity
 
     public void adapters()
     {
+
         //uzytkownik adapter listview
         Custom_row adapter=new Custom_row(this, zm3,zm4);
         list.setAdapter(adapter);
@@ -264,7 +271,7 @@ public class MainMenu extends AppCompatActivity
         list1.setAdapter(adapter1);
 
         //pojazd adapter listview
-        Custom_row_pojazd adapter2=new Custom_row_pojazd(this, zm1,zm2);
+        Custom_row_pojazd adapter2=new Custom_row_pojazd(this, zm1,zm2,zm10);
         list2.setAdapter(adapter2);
 
         adapter.notifyDataSetChanged();
@@ -412,7 +419,13 @@ public class MainMenu extends AppCompatActivity
             startActivity(c);
             finish();
         } else if (id == R.id.nav_gallery) {
-            // Handle the camera action
+            //wyswietlanie samochodów
+            Intent i = new Intent(MainMenu.this,Historia_pojazd.class);
+            i.putExtra("menu","konfiguracja");
+            i.putExtra("qr_code",dane[2]);
+            i.putExtra("admin",zm7.get(0));
+            i.putExtra("czy_zapis",dane[3]);
+            startActivity(i);
         } else if (id == R.id.nav_slideshow) {
             Intent i = new Intent(MainMenu.this,New_user.class);
             i.putExtra("menu","zmiana_hasla");

@@ -85,4 +85,13 @@
             tools:layout_editor_absoluteX="8dp"
             tools:layout_editor_absoluteY="123dp" />
     </LinearLayout>
+
+    <CheckBox
+        android:id="@+id/checkBox3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/szukaj"
+        android:layout_alignTop="@+id/szukaj"
+        android:text="Automatyczna aktualizacja zleceń"
+        android:visibility="invisible" />
 </RelativeLayout>

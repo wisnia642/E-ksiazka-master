@@ -17,7 +17,7 @@ private final Activity context;
     ArrayList<String> zm2 = new ArrayList<String>();
     TextView tekst1,tekst2;
 
-public Custom_row(Activity context, ArrayList<String> zma1,ArrayList<String> zma2) {
+public Custom_row(Activity context, ArrayList<String> zma1, ArrayList<String> zma2) {
         super(context, R.layout.activity_custom_row, zma1);
         this.context = context;
         this.zm1 = zma1;
@@ -28,11 +28,11 @@ public View getView(int position, View view, ViewGroup parent) {
         View rowView=inflater.inflate(R.layout.activity_custom_row, null,true);
 
      tekst1 = (TextView) rowView.findViewById(R.id.email_lista);
-    tekst2 = (TextView) rowView.findViewById(R.id.email_punkty);
+     tekst2 = (TextView) rowView.findViewById(R.id.email_punkty);
 
      //Log.i("uzytkownik",zm1.get(position)+zm2.get(position));
      tekst1.setText(zm1.get(position));
-     tekst2.setText(zm2.get(position));
+     tekst2.setText("Punkty: "+zm2.get(position));
 
 
     return rowView;

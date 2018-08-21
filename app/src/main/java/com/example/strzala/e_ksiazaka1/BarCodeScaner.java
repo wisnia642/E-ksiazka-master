@@ -42,7 +42,7 @@ public class BarCodeScaner extends AppCompatActivity implements ZXingScannerView
     private ZXingScannerView scannerView;
 
     public String ekran="",myResult="";
-    public String dane[] = new String[10];
+    public String dane[] = new String[13];
   //  private static int camId = Camera.CameraInfo.CAMERA_FACING_BACK;
 
     static ResultSet rs;
@@ -80,7 +80,10 @@ public class BarCodeScaner extends AppCompatActivity implements ZXingScannerView
             // Log.i("url", getResources().getString(R.string.url));
 
 
-            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.ThreadPolicy policy = null;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.GINGERBREAD) {
+                policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            }
             StrictMode.setThreadPolicy(policy);
 
 
@@ -111,7 +114,7 @@ public class BarCodeScaner extends AppCompatActivity implements ZXingScannerView
     private void SelectDataUser(String tekst)
     {
         podlaczenieDB();
-
+        dane[8]="";
         if (connection != null) {
 
             try {
@@ -134,7 +137,7 @@ public class BarCodeScaner extends AppCompatActivity implements ZXingScannerView
 
                     }else
                     {
-                       // MainActivity.getInstance().showToast("Podany kod jest nieprawidłowy lub został już aktywowany");
+
                     }
 
                 }
@@ -146,6 +149,55 @@ public class BarCodeScaner extends AppCompatActivity implements ZXingScannerView
             try {
                 if (connection != null)
                 connection.close();
+            } catch (SQLException se) {
+                Log.i("myTag", "4" + se);
+
+            }
+
+        }
+    }
+
+    private void SelectUser(String tekst)
+    {
+        podlaczenieDB();
+        dane[9]="";
+        if (connection != null) {
+
+            try {
+                st = connection.createStatement();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+                Log.i("myTag", "1" + e1);
+            }
+
+            try {
+                PreparedStatement stmt1 = connection.prepareStatement("select * from uzytkownik where qr_code='"+tekst+"' ");
+                rs = stmt1.executeQuery();
+
+
+                while (rs.next()) {
+                    String zm = rs.getString("qr_code");
+
+                    if (zm != null) {
+                        dane[9] = rs.getString("qr_code");
+                        dane[10] = rs.getString("email");
+                        dane[11] = rs.getString("admin");
+
+                    }else
+                    {
+
+
+                    }
+
+                }
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+                Log.i("myTag", "3" + e1);
+            }
+
+            try {
+                if (connection != null)
+                    connection.close();
             } catch (SQLException se) {
                 Log.i("myTag", "4" + se);
 
@@ -167,14 +219,16 @@ public class BarCodeScaner extends AppCompatActivity implements ZXingScannerView
                 dane[0] = getIntent().getStringExtra("email");
                 dane[1] = getIntent().getStringExtra("haslo");
                 dane[2] = getIntent().getStringExtra("haslo_pow");
-                dane[3] = getIntent().getStringExtra("qrcode");
-            } else if(ekran.equals("pojazd_dane"))
+                dane[12] = getIntent().getStringExtra("qr_code");
+            }
+            if(ekran.equals("pojazd_dane"))
             {
                 dane[0] = getIntent().getStringExtra("marka");
                 dane[1] = getIntent().getStringExtra("model");
                 dane[2] = getIntent().getStringExtra("rocznik");
                 dane[3] = getIntent().getStringExtra("silnik");
-                dane[3] = getIntent().getStringExtra("rejestracyjny");
+                dane[4] = getIntent().getStringExtra("rejestracyjny");
+                dane[12] = getIntent().getStringExtra("qr_code");
             }
 
         }catch (Exception e)
@@ -281,26 +335,28 @@ public class BarCodeScaner extends AppCompatActivity implements ZXingScannerView
         if(!result.equals("")) {
             myResult = result.getText();
             Log.d("QRCodeScanner", result.getText());
-            Log.d("QRCodeScanner", result.getBarcodeFormat().toString());
-            Log.i("blad",""+myResult);
 
             //ekran uruchamiany z poziomu logowania
             if(ekran.equals("logowanie")) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle("Twój zeskanowany kod to:");
+
                 builder.setPositiveButton("Zaloguj", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
-                        SelectDataUser(myResult);
-                        if(dane[8].equals(myResult)) {
-                                  // https://vicards.pl/pUcJCNC2
+                        SelectUser(myResult);
+                        if(dane[9].equals(myResult)) {
+
                                 Intent i = new Intent(BarCodeScaner.this, MainMenu.class);
                                 i.putExtra("qr_code", myResult);
+                                i.putExtra("admin",dane[11]);
+                                i.putExtra("email",dane[10]);
                                 startActivity(i);
                         }else
                         {
                             Toast.makeText(getApplicationContext(), "Podany kod jest nieprawidłowy lub został już aktywowany", Toast.LENGTH_LONG).show();
+                            scannerView.resumeCameraPreview(BarCodeScaner.this);
                         }
 
                     }
@@ -312,7 +368,7 @@ public class BarCodeScaner extends AppCompatActivity implements ZXingScannerView
                     }
                 });
 
-                if(myResult.equals("https://vicards.pl")){
+                if(myResult.contains("https://vicards.pl")){
                     String new_result = myResult.replace("https://vicards.pl/","");
                     builder.setMessage(new_result);
                 }else
@@ -332,14 +388,21 @@ public class BarCodeScaner extends AppCompatActivity implements ZXingScannerView
                 builder.setPositiveButton("Dodaj", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                            SelectDataUser(myResult);
 
-                            Intent i = new Intent(BarCodeScaner.this, New_user.class);
-                            i.putExtra("email", dane[0]);
-                            i.putExtra("haslo", dane[1]);
-                            i.putExtra("haslo_pow", dane[2]);
-                            i.putExtra("qrcode", myResult);
-                            i.putExtra("menu","");
-                            startActivity(i);
+                            if(dane[8].equals(myResult)) {
+                                Intent i = new Intent(BarCodeScaner.this, New_user.class);
+                                i.putExtra("email", dane[0]);
+                                i.putExtra("haslo", dane[1]);
+                                i.putExtra("haslo_pow", dane[2]);
+                                i.putExtra("qr_code", myResult);
+                                i.putExtra("menu", "");
+                                startActivity(i);
+                            }else
+                            {
+                                MainActivity.getInstance().showToast("Podany kod nie jest prrzypisany do żadnego użytkownika");
+                                scannerView.resumeCameraPreview(BarCodeScaner.this);
+                            }
 
                     }
                 });
@@ -349,7 +412,7 @@ public class BarCodeScaner extends AppCompatActivity implements ZXingScannerView
                         scannerView.resumeCameraPreview(BarCodeScaner.this);
                     }
                 });
-                if(myResult.equals("https://vicards.pl")){
+                if(myResult.contains("https://vicards.pl")){
                     String new_result = myResult.replace("https://vicards.pl/","");
                     builder.setMessage(new_result);
                 }else
@@ -367,7 +430,8 @@ public class BarCodeScaner extends AppCompatActivity implements ZXingScannerView
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         Intent i = new Intent(BarCodeScaner.this, dane_pojazd.class);
-                        i.putExtra("qrcode",myResult);
+                        i.putExtra("qr_code",dane[12]);
+                        i.putExtra("qr_code_kod",myResult);
                         i.putExtra("marka",dane[0]);
                         i.putExtra("model", dane[1]);
                         i.putExtra("rocznik",dane[2]);
@@ -383,7 +447,7 @@ public class BarCodeScaner extends AppCompatActivity implements ZXingScannerView
                         scannerView.resumeCameraPreview(BarCodeScaner.this);
                     }
                 });
-                if(myResult.equals("https://vicards.pl")){
+                if(myResult.contains("https://vicards.pl")){
                     String new_result = myResult.replace("https://vicards.pl/","");
                     builder.setMessage(new_result);
                 }else

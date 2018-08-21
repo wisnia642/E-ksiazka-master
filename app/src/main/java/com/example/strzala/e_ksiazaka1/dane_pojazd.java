@@ -48,9 +48,6 @@ public class dane_pojazd extends AppCompatActivity {
             String url ="jdbc:mysql://s56.linuxpl.com:3306/trustcar_app";
             String user = "trustcar_admin";
             String pass = "Kubamobile2001!";
-            //  Log.i("login", getResources().getString(R.string.loginMySQL));
-            // Log.i("haslo", getResources().getString(R.string.hasloMySQL));
-            // Log.i("url", getResources().getString(R.string.url));
 
 
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -136,7 +133,7 @@ public class dane_pojazd extends AppCompatActivity {
                             ps.setString(3, dane[2]);
                             ps.setString(4, dane[3]);
                             ps.setString(5, dane[5]);
-                            ps.setString(6, dane[4]);
+                            ps.setString(6, dane[6]);
                             ps.setString(7, "1");
                             ps.executeUpdate();}
                             else
@@ -164,6 +161,48 @@ public class dane_pojazd extends AppCompatActivity {
         }
     }
 
+    private void SelectUser(String tekst)
+    {
+        podlaczenieDB();
+        dane[7]="";
+        if (connection != null) {
+
+            try {
+                st = connection.createStatement();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+                Log.i("myTag", "1" + e1);
+            }
+
+            try {
+                PreparedStatement stmt1 = connection.prepareStatement("select * from uzytkownik where qr_code='"+tekst+"' ");
+                rs = stmt1.executeQuery();
+
+
+                while (rs.next()) {
+                    String zm = rs.getString("qr_code");
+
+                    if (zm != null) {
+                        dane[7] = rs.getString("qr_code");
+
+                    }
+                }
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+                Log.i("myTag", "3" + e1);
+            }
+
+            try {
+                if (connection != null)
+                    connection.close();
+            } catch (SQLException se) {
+                Log.i("myTag", "4" + se);
+
+            }
+
+        }
+    }
+
 
 
 
@@ -172,7 +211,7 @@ public class dane_pojazd extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pojazd);
 
-        marka = (EditText) findViewById(R.id.email_lista);
+        marka = (EditText) findViewById(R.id.marka);
         model = (EditText) findViewById(R.id.email_lista);
         rocznik = (EditText) findViewById(R.id.rocznik);
         silnik = (EditText) findViewById(R.id.qr_code4);
@@ -192,20 +231,24 @@ public class dane_pojazd extends AppCompatActivity {
             dane[3] = getIntent().getStringExtra("silnik");
             dane[4] = getIntent().getStringExtra("qr_code");
             dane[5] = getIntent().getStringExtra("rejestracja");
+            dane[6] = getIntent().getStringExtra("qr_code_kod");
             marka.setText(dane[0]);
             model.setText(dane[1]);
             rocznik.setText(dane[2]);
             silnik.setText(dane[3]);
-            qrCode.setText(dane[4]);
+            if(dane[6].contains("https://vicards.pl/")) {
+                String new_result = dane[6].replace("https://vicards.pl/", "");
+                qrCode.setText(new_result);
+            }else
+            {
+                qrCode.setText(dane[6]);
+            }
             nr_rejestracyjny.setText(dane[5]);
 
         }catch (Exception e)
         {
             Log.i("BarCode",""+e);
         }
-
-        //testowo póżniej do usnięcia
-       // qrCode.setText("https://vicards.pl/kuHSFb3r/test");
 
         ok.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -215,16 +258,18 @@ public class dane_pojazd extends AppCompatActivity {
                     dane[1] = model.getText().toString();
                     dane[2] = rocznik.getText().toString();
                     dane[3] = silnik.getText().toString();
-                    dane[4] = qrCode.getText().toString();
+                    dane[6] = qrCode.getText().toString();
                     dane[5] = nr_rejestracyjny.getText().toString();
+
+                    SelectUser(dane[6]);
 
                 if(!dane[0].equals("") ) {
 
                     if(!dane[5].equals("")) {
-                        if(!dane[4].equals("")) {
+                        if(dane[6].equals(dane[7])) {
 
                             InsertCar();
-                            if (status == false) {
+                                if (status == false) {
 
 
                                 Intent i = new Intent(dane_pojazd.this, lista_pojazd.class);
@@ -240,7 +285,7 @@ public class dane_pojazd extends AppCompatActivity {
                             }
                         }else
                         {
-                            showToast("Zeskanuj QR kod użytkownika");
+                            showToast("Brak użytkownika z przypisanym kodem QR");
                         }
                     }else
                     {
@@ -263,7 +308,6 @@ public class dane_pojazd extends AppCompatActivity {
                 dane[1]= model.getText().toString();
                 dane[2]= rocznik.getText().toString();
                 dane[3]= silnik.getText().toString();
-                dane[4]= qrCode.getText().toString();
                 dane[5] = nr_rejestracyjny.getText().toString();
 
                 Intent i = new Intent(dane_pojazd.this, BarCodeScaner.class);
@@ -272,7 +316,7 @@ public class dane_pojazd extends AppCompatActivity {
                 i.putExtra("model",dane[1]);
                 i.putExtra("rocznik",dane[2]);
                 i.putExtra("silnik",dane[3]);
-                i.putExtra("qrCode",dane[4]);
+                i.putExtra("qr_code",dane[4]);
                 i.putExtra("rejestracyjny",dane[5]);
                 startActivity(i);
             }

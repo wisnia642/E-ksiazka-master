@@ -17,7 +17,6 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_marginTop="164dp"
-        android:layout_toStartOf="@+id/powrot"
         android:ems="10"
         android:hint="Model"
         android:inputType="textPersonName" />
@@ -27,7 +26,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/email_lista"
-        android:layout_alignStart="@+id/email_lista"
         android:layout_marginBottom="-164dp"
         android:ems="10"
         android:hint="Rocznik"
@@ -85,9 +83,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignStart="@+id/silnik"
         android:layout_marginBottom="106dp"
-        android:enabled="false"
         android:ems="10"
         android:hint="QR kod"
         android:inputType="textPersonName"
@@ -114,11 +110,10 @@
         android:inputType="textPersonName" />
 
     <EditText
-        android:id="@+id/email_lista"
+        android:id="@+id/marka"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_alignStart="@+id/email_lista"
         android:layout_marginTop="73dp"
         android:ems="10"
         android:hint="Marka"

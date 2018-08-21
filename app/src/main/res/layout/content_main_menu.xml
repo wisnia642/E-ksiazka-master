@@ -128,7 +128,7 @@
         android:layout_marginBottom="28dp"
         android:layout_marginEnd="31dp"
         android:background="@drawable/button_style"
-        android:text="Add Car"
+        android:text="Dodaj Samochód"
         android:textColor="@android:color/white"
         android:visibility="invisible" />
 
