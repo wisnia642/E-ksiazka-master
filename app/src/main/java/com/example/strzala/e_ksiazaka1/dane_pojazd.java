@@ -23,7 +23,7 @@ import java.sql.Statement;
 
 public class dane_pojazd extends AppCompatActivity {
 
-    EditText marka,model,rocznik,silnik,qrCode,nr_rejestracyjny;
+    EditText marka,model,rocznik,silnik,qrCode,nr_rejestracyjny,vin;
     Button ok,powrót,skan;
     Boolean status = false;
 
@@ -125,8 +125,8 @@ public class dane_pojazd extends AppCompatActivity {
                         if (status==false)
                         {
 
-                            String sql1 = "INSERT INTO samochod (marka,model,rocznik,silnik,nr_rejestracyjny,qr_code,wyswietl) " +
-                                    " VALUES (?,?,?,?,?,?,?) ";
+                            String sql1 = "INSERT INTO samochod (marka,model,rocznik,silnik,nr_rejestracyjny,qr_code,wyswietl,vin) " +
+                                    " VALUES (?,?,?,?,?,?,?,?) ";
                             ps = connection.prepareStatement(sql1);
                             ps.setString(1, dane[0]);
                             ps.setString(2, dane[1]);
@@ -135,6 +135,7 @@ public class dane_pojazd extends AppCompatActivity {
                             ps.setString(5, dane[5]);
                             ps.setString(6, dane[6]);
                             ps.setString(7, "1");
+                            ps.setString(8, dane[8]);
                             ps.executeUpdate();}
                             else
                         {
@@ -175,7 +176,7 @@ public class dane_pojazd extends AppCompatActivity {
             }
 
             try {
-                PreparedStatement stmt1 = connection.prepareStatement("select * from uzytkownik where qr_code='"+tekst+"' ");
+                PreparedStatement stmt1 = connection.prepareStatement("select * from uzytkownik where qr_code like '%"+tekst+"%' ");
                 rs = stmt1.executeQuery();
 
 
@@ -217,6 +218,7 @@ public class dane_pojazd extends AppCompatActivity {
         silnik = (EditText) findViewById(R.id.qr_code4);
         qrCode = (EditText) findViewById(R.id.qr_code);
         nr_rejestracyjny = (EditText) findViewById(R.id.rejestracyjny);
+        vin = (EditText) findViewById(R.id.numer_vin);
 
         ok = (Button) findViewById(R.id.zapisz_p);
         powrót = (Button) findViewById(R.id.powrot);
@@ -232,10 +234,12 @@ public class dane_pojazd extends AppCompatActivity {
             dane[4] = getIntent().getStringExtra("qr_code");
             dane[5] = getIntent().getStringExtra("rejestracja");
             dane[6] = getIntent().getStringExtra("qr_code_kod");
+            dane[8] = getIntent().getStringExtra("vin");
             marka.setText(dane[0]);
             model.setText(dane[1]);
             rocznik.setText(dane[2]);
             silnik.setText(dane[3]);
+            vin.setText(dane[8]);
             if(dane[6].contains("https://vicards.pl/")) {
                 String new_result = dane[6].replace("https://vicards.pl/", "");
                 qrCode.setText(new_result);
@@ -260,13 +264,14 @@ public class dane_pojazd extends AppCompatActivity {
                     dane[3] = silnik.getText().toString();
                     dane[6] = qrCode.getText().toString();
                     dane[5] = nr_rejestracyjny.getText().toString();
+                    dane[8] = vin.getText().toString();
 
                     SelectUser(dane[6]);
 
                 if(!dane[0].equals("") ) {
 
                     if(!dane[5].equals("")) {
-                        if(dane[6].equals(dane[7])) {
+                        if(!dane[7].equals("")) {
 
                             InsertCar();
                                 if (status == false) {
@@ -309,6 +314,7 @@ public class dane_pojazd extends AppCompatActivity {
                 dane[2]= rocznik.getText().toString();
                 dane[3]= silnik.getText().toString();
                 dane[5] = nr_rejestracyjny.getText().toString();
+                dane[8] = vin.getText().toString();
 
                 Intent i = new Intent(dane_pojazd.this, BarCodeScaner.class);
                 i.putExtra("ekran","pojazd_dane");
@@ -318,6 +324,7 @@ public class dane_pojazd extends AppCompatActivity {
                 i.putExtra("silnik",dane[3]);
                 i.putExtra("qr_code",dane[4]);
                 i.putExtra("rejestracyjny",dane[5]);
+                i.putExtra("vin",dane[8]);
                 startActivity(i);
             }
         });

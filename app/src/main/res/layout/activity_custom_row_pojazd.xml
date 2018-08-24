@@ -28,7 +28,7 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            app:srcCompat="@mipmap/fiat" />
+            app:srcCompat="@mipmap/car4" />
 
         <TextView
             android:id="@+id/email_lista"

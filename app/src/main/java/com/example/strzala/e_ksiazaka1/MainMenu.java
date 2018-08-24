@@ -139,7 +139,6 @@ public class MainMenu extends AppCompatActivity
             }
 
             try {
-
                 //czysczenie tablic
                 zm1.clear();
                 zm2.clear();

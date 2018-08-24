@@ -42,7 +42,7 @@ public class BarCodeScaner extends AppCompatActivity implements ZXingScannerView
     private ZXingScannerView scannerView;
 
     public String ekran="",myResult="";
-    public String dane[] = new String[13];
+    public String dane[] = new String[15];
   //  private static int camId = Camera.CameraInfo.CAMERA_FACING_BACK;
 
     static ResultSet rs;
@@ -229,6 +229,7 @@ public class BarCodeScaner extends AppCompatActivity implements ZXingScannerView
                 dane[3] = getIntent().getStringExtra("silnik");
                 dane[4] = getIntent().getStringExtra("rejestracyjny");
                 dane[12] = getIntent().getStringExtra("qr_code");
+                dane[13] = getIntent().getStringExtra("vin");
             }
 
         }catch (Exception e)
@@ -437,6 +438,7 @@ public class BarCodeScaner extends AppCompatActivity implements ZXingScannerView
                         i.putExtra("rocznik",dane[2]);
                         i.putExtra("silnik",dane[3]);
                         i.putExtra("rejestracyjny",dane[5]);
+                        i.putExtra("vin",dane[13]);
                         startActivity(i);
 
                     }
