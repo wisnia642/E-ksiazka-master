@@ -35,7 +35,7 @@
         android:id="@+id/pojazdy_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="90dp"
+        android:layout_marginBottom="50dp"
         android:layout_marginTop="290dp"
         android:orientation="vertical">
 
@@ -44,20 +44,21 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Samochody (1)"
-            android:textColor="@android:color/black" />
+            android:textColor="@android:color/black"
+            android:textSize="17sp" />
 
         <ListView
             android:id="@+id/pojazdy"
             android:layout_width="match_parent"
-            android:layout_height="80dp" />
+            android:layout_height="104dp" />
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/zgloszenia_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="190dp"
-        android:layout_marginTop="160dp"
+        android:layout_marginBottom="202dp"
+        android:layout_marginTop="145dp"
         android:drawSelectorOnTop="false"
         android:orientation="vertical">
 
@@ -67,13 +68,14 @@
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:text="Zgłoszenia (1)"
-            android:textColor="@android:color/black" />
+            android:textColor="@android:color/black"
+            android:textSize="17sp" />
 
 
         <ListView
             android:id="@+id/zgloszenia"
             android:layout_width="match_parent"
-            android:layout_height="90dp"
+            android:layout_height="118dp"
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:scrollbarAlwaysDrawHorizontalTrack="true"
@@ -84,8 +86,8 @@
         android:id="@+id/konto_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="335dp"
-        android:layout_marginTop="60dp"
+        android:layout_marginBottom="350dp"
+        android:layout_marginTop="40dp"
         android:orientation="vertical">
 
         <TextView
@@ -93,7 +95,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Konto (1)"
-            android:textColor="@android:color/black" />
+            android:textColor="@android:color/black"
+            android:textSize="17sp" />
 
         <ListView
             android:id="@+id/konto"
@@ -110,10 +113,9 @@
         android:id="@+id/zgloszenie"
         android:layout_width="100dp"
         android:layout_height="40dp"
-        android:layout_alignParentBottom="true"
+        android:layout_alignBottom="@+id/activity_main_swipe_refresh_layout"
         android:layout_alignParentStart="true"
-        android:layout_marginBottom="28dp"
-        android:layout_marginStart="31dp"
+        android:layout_marginStart="44dp"
         android:background="@drawable/button_style"
         android:text="Dodaj zgłoszenie"
         android:textColor="@android:color/white"
@@ -123,10 +125,9 @@
         android:id="@+id/button7"
         android:layout_width="100dp"
         android:layout_height="40dp"
-        android:layout_alignParentBottom="true"
+        android:layout_alignBottom="@+id/activity_main_swipe_refresh_layout"
         android:layout_alignParentEnd="true"
-        android:layout_marginBottom="28dp"
-        android:layout_marginEnd="31dp"
+        android:layout_marginEnd="44dp"
         android:background="@drawable/button_style"
         android:text="Dodaj Samochód"
         android:textColor="@android:color/white"

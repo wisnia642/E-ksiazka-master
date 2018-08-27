@@ -31,8 +31,14 @@ public View getView(int position, View view, ViewGroup parent) {
      tekst2 = (TextView) rowView.findViewById(R.id.email_punkty);
 
      //Log.i("uzytkownik",zm1.get(position)+zm2.get(position));
-     tekst1.setText(zm1.get(position));
-     tekst2.setText("Punkty: "+zm2.get(position));
+     tekst1.setText(zm1.get(0));
+     try {
+         tekst2.setText("Punkty: " + zm2.get(0));
+     }catch (Exception e)
+     {
+         tekst2.setText("Punkty: 0");
+         Log.i("CustomRow",""+e);
+     }
 
 
     return rowView;

@@ -519,10 +519,11 @@ public class Historia_pojazd extends AppCompatActivity {
                         Intent i = new Intent(Historia_pojazd.this, lista_pojazd.class);
                         i.putExtra("rejestracyjny", nr_rejestracyjny_a.get(position));
                         i.putExtra("kategoria", "kat_1");
-                        i.putExtra("qr_code", qrcode_tab.get(position));
+                        i.putExtra("qr_code", dane[1]);
                         i.putExtra("liczba", "");
                         i.putExtra("pozycja", "");
                         i.putExtra("nazwa", "");
+                        i.putExtra("admin", dane[3]);
                         startActivity(i);
                     }
                     //przejcie z widoku zgłoszenia

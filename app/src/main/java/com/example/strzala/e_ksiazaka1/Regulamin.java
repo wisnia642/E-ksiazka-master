@@ -31,6 +31,7 @@ public class Regulamin extends AppCompatActivity {
             dane[3] = getIntent().getStringExtra("qr_code");
             dane[4] = getIntent().getStringExtra("menu");
 
+
         }catch (Exception e)
         {
             Log.i("Regulamin",""+e);

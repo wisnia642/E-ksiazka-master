@@ -220,6 +220,7 @@ public class BarCodeScaner extends AppCompatActivity implements ZXingScannerView
                 dane[1] = getIntent().getStringExtra("haslo");
                 dane[2] = getIntent().getStringExtra("haslo_pow");
                 dane[12] = getIntent().getStringExtra("qr_code");
+                dane[14] = getIntent().getStringExtra("admin");
             }
             if(ekran.equals("pojazd_dane"))
             {
@@ -229,7 +230,7 @@ public class BarCodeScaner extends AppCompatActivity implements ZXingScannerView
                 dane[3] = getIntent().getStringExtra("silnik");
                 dane[4] = getIntent().getStringExtra("rejestracyjny");
                 dane[12] = getIntent().getStringExtra("qr_code");
-                dane[13] = getIntent().getStringExtra("vin");
+                dane[14] = getIntent().getStringExtra("admin");
             }
 
         }catch (Exception e)
@@ -351,7 +352,7 @@ public class BarCodeScaner extends AppCompatActivity implements ZXingScannerView
 
                                 Intent i = new Intent(BarCodeScaner.this, MainMenu.class);
                                 i.putExtra("qr_code", myResult);
-                                i.putExtra("admin",dane[11]);
+                                i.putExtra("admin",dane[14]);
                                 i.putExtra("email",dane[10]);
                                 startActivity(i);
                         }else
@@ -394,6 +395,7 @@ public class BarCodeScaner extends AppCompatActivity implements ZXingScannerView
                             if(dane[8].equals(myResult)) {
                                 Intent i = new Intent(BarCodeScaner.this, New_user.class);
                                 i.putExtra("email", dane[0]);
+                                i.putExtra("admin", dane[14]);
                                 i.putExtra("haslo", dane[1]);
                                 i.putExtra("haslo_pow", dane[2]);
                                 i.putExtra("qr_code", myResult);
@@ -432,6 +434,7 @@ public class BarCodeScaner extends AppCompatActivity implements ZXingScannerView
                     public void onClick(DialogInterface dialog, int which) {
                         Intent i = new Intent(BarCodeScaner.this, dane_pojazd.class);
                         i.putExtra("qr_code",dane[12]);
+                        i.putExtra("admin",dane[14]);
                         i.putExtra("qr_code_kod",myResult);
                         i.putExtra("marka",dane[0]);
                         i.putExtra("model", dane[1]);

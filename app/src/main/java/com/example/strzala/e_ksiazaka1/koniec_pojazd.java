@@ -309,6 +309,7 @@ public class koniec_pojazd extends AppCompatActivity {
                         Log.i("koniecpojazd", "" + e);
                 }
                 if(file!=null) {
+
                      sql1 = "INSERT INTO zgloszenie (data_dod,zdjecie_przed,cena_czesci,cena_uslugi,uwagi," +
                             "data_wykonania,status,nr_rejestracyjny,akceptacja,kategoria,punkty) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
 
@@ -336,6 +337,7 @@ public class koniec_pojazd extends AppCompatActivity {
 
                 }else
                 {
+
                      sql1 = "INSERT INTO zgloszenie (data_dod,cena_czesci,cena_uslugi,uwagi," +
                             "data_wykonania,status,nr_rejestracyjny,akceptacja,kategoria,punkty) VALUES (?,?,?,?,?,?,?,?,?,?)";
 
@@ -560,7 +562,9 @@ public class koniec_pojazd extends AppCompatActivity {
         try {
             if(zdjecie_przed!=null) {
                 is = zdjecie_przed.getBinaryStream();
-                galeria.setImageBitmap(BitmapFactory.decodeStream(is));
+                //galeria.setImageBitmap(BitmapFactory.decodeStream(is));
+                Drawable d = Drawable.createFromStream(is , "src");
+                galeria.setImageDrawable(d);
             }
 
 
@@ -662,8 +666,20 @@ public class koniec_pojazd extends AppCompatActivity {
             public void onClick(View v) {
 
                 if (activeNetwork()) {
-                    simpleProgressBar_new.setVisibility(View.VISIBLE);
-                    StartLog = true;
+
+                    if(file==null)
+                    {
+                        simpleProgressBar_new.setVisibility(View.VISIBLE);
+                        InsertLoginDataMysql();
+                        showToast("Dane zostały zapisane");
+                        Intent i = new Intent(koniec_pojazd.this,MainMenu.class);
+                        i.putExtra("qr_code",qrcode);
+                        i.putExtra("admin", dane[10]);
+                        startActivity(i);
+                    } else if (file!=null)
+                        simpleProgressBar_new.setVisibility(View.VISIBLE);
+                         StartLog = true;
+
                 }
                 else {
                     showToast("Brak dostępu do internetu");
@@ -692,7 +708,9 @@ public class koniec_pojazd extends AppCompatActivity {
                             if(zdjecie_przed!=null) {
                                 try {
                                     is = zdjecie_przed.getBinaryStream();
-                                    galeria.setImageBitmap(BitmapFactory.decodeStream(is));
+                                   // galeria.setImageBitmap(BitmapFactory.decodeStream(is));
+                                    Drawable d = Drawable.createFromStream(is , "src");
+                                    zdjecie.setImageDrawable(d);
                                 } catch (SQLException e) {
                                     e.printStackTrace();
                                 }
@@ -809,10 +827,10 @@ public class koniec_pojazd extends AppCompatActivity {
         handler = new Handler() {
             public void handleMessage(android.os.Message msg) {
 
-                if (StartLog) {
+                if (StartLog==true) {
+                    Log.i("koniecpojazd", "dupa");
                     InsertLoginDataMysql();
                     showToast("Dane zostały zapisane");
-
                     Intent i = new Intent(koniec_pojazd.this,MainMenu.class);
                     i.putExtra("qr_code",qrcode);
                     i.putExtra("admin", dane[10]);

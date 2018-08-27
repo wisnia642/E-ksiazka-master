@@ -1,7 +1,9 @@
 package com.example.strzala.e_ksiazaka1;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -48,13 +50,15 @@ public class Custom_row_zgloszenie extends ArrayAdapter<String> {
 
                 try {
                     is = zm4.get(position).getBinaryStream();
-                    zdjecie.setImageBitmap(BitmapFactory.decodeStream(is));
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
+                Drawable d = Drawable.createFromStream(is , "src");
+                zdjecie.setImageDrawable(d);
+
 
                 //Bitmap bm = BitmapFactory.decodeByteArray(zm4.get(position), 0, zm4.size());
-                // zdjecie.setImageBitmap(bm);
+                 //zdjecie.setImageBitmap(bm);
             } else {
                 zdjecie.setImageDrawable(zdjecie.getResources().getDrawable(R.mipmap.car4));
             }

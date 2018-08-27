@@ -221,8 +221,12 @@ public class MainMenu extends AppCompatActivity
                         zm8.add(rs.getString("zgl.nr_rejestracyjny"));
                         zm9.add(rs.getString("zgl.Id"));
                         zdjecie.add( rs.getBlob("zgl.zdjecie_przed"));
-                        i = rs.getInt("zgl.punkty");
-                        punkty = i + punkty;
+                        if (zm7.get(0).equals("0")) {
+                            i = rs.getInt("zgl.punkty");
+                            punkty = i + punkty;
+                        }else{
+                            punkty=0;
+                        }
 
 
                     }
@@ -379,6 +383,7 @@ public class MainMenu extends AppCompatActivity
 
                 Intent i = new Intent(MainMenu.this,dane_pojazd.class);
                 i.putExtra("qr_code",dane[2]);
+                i.putExtra("admin",zm7.get(0));
                 startActivity(i);
 
             }

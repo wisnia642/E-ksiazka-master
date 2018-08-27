@@ -323,6 +323,7 @@ public class dane_pojazd extends AppCompatActivity {
                 i.putExtra("rocznik",dane[2]);
                 i.putExtra("silnik",dane[3]);
                 i.putExtra("qr_code",dane[4]);
+                i.putExtra("admin",'1');
                 i.putExtra("rejestracyjny",dane[5]);
                 i.putExtra("vin",dane[8]);
                 startActivity(i);
@@ -334,6 +335,7 @@ public class dane_pojazd extends AppCompatActivity {
             public void onClick(View v) {
                 Intent i = new Intent(dane_pojazd.this, MainMenu.class);
                 i.putExtra("qr_code",dane[4]);
+                i.putExtra("admin",'1');
                 startActivity(i);
             }
         });

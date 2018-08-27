@@ -180,8 +180,6 @@ public class lista_pojazd extends AppCompatActivity {
             qrcode = getIntent().getStringExtra("qr_code");
             admin = getIntent().getStringExtra("admin");
             liczba = Integer.parseInt(pozycja);
-            Log.i("pozycja",pozycja);
-            Log.i("qrcode",qrcode);
 
         }catch (Exception e)
         {
