@@ -46,6 +46,7 @@ public class Custom_row_zgloszenie extends ArrayAdapter<String> {
         zdjecie = (ImageView) rowView1.findViewById(R.id.imageView);
 
         if(zm2.get(position)!=null) {
+
             if (zm4.get(position) != null) {
 
                 try {
@@ -74,6 +75,10 @@ public class Custom_row_zgloszenie extends ArrayAdapter<String> {
             else if(zm3.get(position).equals("Zakończony"))
             {
                 tekst3.setTextColor(ContextCompat.getColor(context, R.color.akcept));
+            }
+            else if(zm3.get(position).equals("Akceptacja"))
+            {
+                tekst3.setTextColor(ContextCompat.getColor(context, R.color.bufor));
             }
         }
 

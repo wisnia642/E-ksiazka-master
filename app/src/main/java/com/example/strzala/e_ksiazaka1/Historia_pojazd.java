@@ -220,9 +220,18 @@ public class Historia_pojazd extends AppCompatActivity {
                  if(dane[3].equals("1") & filtr==true )
                 {
                     filtr=false;
-                    PreparedStatement stmt1 = connection.prepareStatement("select * from uzytkownik uzy join samochod sam on uzy.qr_code=sam.qr_code where uzy.email like '%" + dane[2] + "%' or nr_rejestracyjny like  '%" + dane[2] + "%' " +
-                            "and sam.qr_code in (Select qr_code from samochod)");
-                    rs = stmt1.executeQuery();
+                    if(dane[2].contains("@")) {
+                        PreparedStatement stmt1 = connection.prepareStatement("select * from uzytkownik uzy join samochod sam on uzy.qr_code=sam.qr_code where sam.qr_code in (Select qr_code from samochod) " +
+                                "and uzy.email like '%" + dane[2] + "%' @");
+                        rs = stmt1.executeQuery();
+                    }
+                    else
+                    {
+                        PreparedStatement stmt1 = connection.prepareStatement("select * from uzytkownik uzy join samochod sam on uzy.qr_code=sam.qr_code where sam.qr_code in (Select qr_code from samochod) " +
+                                "and nr_rejestracyjny like  '%" + dane[2] + "%' ");
+                        rs = stmt1.executeQuery();
+                    }
+
                 }
 
 

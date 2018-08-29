@@ -85,6 +85,7 @@ public class koniec_pojazd extends AppCompatActivity {
 
     Blob zdjecie_przed = null;
     Blob zdjecie_po = null;
+    Bitmap bitmap;
 
     private static final int REQUEST_CAMERA = 1;
 
@@ -115,7 +116,7 @@ public class koniec_pojazd extends AppCompatActivity {
 
             try {
 
-                String sql2 = "Update zgloszenie set akceptacja='1' and  status='Zaakceptowane' where Id='"+dane[2]+"' ";
+                String sql2 = "Update zgloszenie set akceptacja='1' , status='Akceptacja' where Id='"+dane[2]+"' ";
                 st.executeUpdate(sql2);
 
             }catch (Exception e)
@@ -545,7 +546,7 @@ public class koniec_pojazd extends AppCompatActivity {
             przelacznik.setVisibility(View.VISIBLE);
         }
 
-        if(dane[9].equals("edit") & dane[10].equals("1"))
+        if(dane[9].equals("edit") || dane[10].equals("1"))
         {
             readimage();
 
@@ -704,13 +705,13 @@ public class koniec_pojazd extends AppCompatActivity {
                 if(!przelacznik.isChecked() )
                 {
 
-                            galeria.setImageResource(android.R.drawable.ic_search_category_default);
-                            if(zdjecie_przed!=null) {
-                                try {
-                                    is = zdjecie_przed.getBinaryStream();
+                          galeria.setImageResource(android.R.drawable.ic_search_category_default);
+                          if(zdjecie_przed!=null) {
+                              try {
+                                   is = zdjecie_przed.getBinaryStream();
                                    // galeria.setImageBitmap(BitmapFactory.decodeStream(is));
                                     Drawable d = Drawable.createFromStream(is , "src");
-                                    zdjecie.setImageDrawable(d);
+                                    galeria.setImageDrawable(d);
                                 } catch (SQLException e) {
                                     e.printStackTrace();
                                 }
@@ -724,10 +725,12 @@ public class koniec_pojazd extends AppCompatActivity {
                                 Log.i("koniecpojazd","zdjęcie_po");
                                 try {
                                     is = zdjecie_po.getBinaryStream();
+                                    Drawable d = Drawable.createFromStream(is , "src");
+                                    galeria.setImageDrawable(d);
                                 } catch (SQLException e) {
                                     e.printStackTrace();
                                 }
-                                galeria.setImageBitmap(BitmapFactory.decodeStream(is));
+                                //galeria.setImageBitmap(BitmapFactory.decodeStream(is));
 
                             }
                 }
@@ -779,7 +782,7 @@ public class koniec_pojazd extends AppCompatActivity {
                 thumbnail.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
 
                 //to można zapisać do bazy danych
-                data1 = getBitmapAsByteArray(thumbnail); // this is a function
+               // data1 = getBitmapAsByteArray(thumbnail); // this is a function
 
                 //tutaj jest zapis na urządzeniu
                 file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), File.separator + data_zdj + "_trustcar.jpg");
@@ -814,8 +817,37 @@ public class koniec_pojazd extends AppCompatActivity {
                 c.close();
                 dane[8] = picturePath;
 
+
                 galeria.setImageBitmap(BitmapFactory.decodeFile(picturePath));
-                file = new File(picturePath);
+                //file = new File(picturePath);
+
+
+
+
+                //tutaj jest zapis na urządzeniu
+                file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), File.separator + data_zdj + "_trustcar.jpg");
+
+                //save and compres picture
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                Bitmap thumbnail = BitmapFactory.decodeFile(picturePath, options);
+                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+               // thumbnail.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+
+                try {
+                    FileOutputStream out = new FileOutputStream(file);
+                    thumbnail.compress(Bitmap.CompressFormat.PNG, 100, out);
+                    out.flush();
+                    out.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+
+                //tutaj jest zapis na urządzeniu
+               // file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), File.separator + data_zdj + "_trustcar.jpg");
+
+
 
             } catch (Exception e) {
                 Log.i("koniecpojazd", "" + e);

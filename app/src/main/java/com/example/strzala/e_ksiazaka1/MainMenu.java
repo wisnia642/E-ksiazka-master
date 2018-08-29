@@ -419,9 +419,10 @@ public class MainMenu extends AppCompatActivity
         if (id == R.id.nav_camera) {
             //wylogowanie uzytkownika
             Intent c = new Intent(MainMenu.this, MainActivity.class);
-            c.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            c.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            c.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(c);
-            finish();
+           // finish();
         } else if (id == R.id.nav_gallery) {
             //wyswietlanie samochodów
             Intent i = new Intent(MainMenu.this,Historia_pojazd.class);
