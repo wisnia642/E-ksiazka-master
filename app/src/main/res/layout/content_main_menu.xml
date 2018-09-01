@@ -27,7 +27,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="14dp"
             android:gravity="center_horizontal"
-            android:text="Przeciągnij aby odświerzyć" />
+            android:text="Przeciągnij aby odświeżyć" />
 
     </android.support.v4.widget.SwipeRefreshLayout>
 

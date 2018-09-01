@@ -1,6 +1,9 @@
 package com.example.strzala.e_ksiazaka1;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
@@ -10,6 +13,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -52,12 +57,15 @@ public class Custom_row_zgloszenie extends ArrayAdapter<String> {
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
-                Drawable d = Drawable.createFromStream(is , "src");
-                zdjecie.setImageDrawable(d);
+               // Drawable d = Drawable.createFromStream(is , "src");
+                BufferedInputStream bufferedInputStream = new BufferedInputStream(is);
+                 Bitmap bmp = BitmapFactory.decodeStream(bufferedInputStream);
+                zdjecie.setImageBitmap(bmp);
+               // zdjecie.setImageDrawable(d);
 
 
                 //Bitmap bm = BitmapFactory.decodeByteArray(zm4.get(position), 0, zm4.size());
-                 //zdjecie.setImageBitmap(bm);
+
             } else {
                 zdjecie.setImageDrawable(zdjecie.getResources().getDrawable(R.mipmap.car4));
             }
@@ -66,7 +74,7 @@ public class Custom_row_zgloszenie extends ArrayAdapter<String> {
             tekst1.setText(zm1.get(position));
             tekst2.setText(zm2.get(position));
             tekst3.setText(zm3.get(position));
-            if(zm3.get(position).equals("Nowy"))
+            if(zm3.get(position).equals("Nowy") || zm3.get(position).equals("Brak Akceptacji"))
             {
                 tekst3.setTextColor(ContextCompat.getColor(context, R.color.close));
             }
@@ -74,7 +82,7 @@ public class Custom_row_zgloszenie extends ArrayAdapter<String> {
             {
                 tekst3.setTextColor(ContextCompat.getColor(context, R.color.akcept));
             }
-            else if(zm3.get(position).equals("Akceptacja"))
+            else if(zm3.get(position).equals("Akceptacja")  )
             {
                 tekst3.setTextColor(ContextCompat.getColor(context, R.color.bufor));
             }

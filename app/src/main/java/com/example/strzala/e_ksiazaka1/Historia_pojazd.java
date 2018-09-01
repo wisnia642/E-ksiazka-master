@@ -140,15 +140,15 @@ public class Historia_pojazd extends AppCompatActivity {
                 //e1.printStackTrace();
             }
 
-            /*
-                if(status.equals("1")) {
+
+                if(checkBox3.isChecked()) {
                     String sql3 = "UPDATE uzytkownik SET czy_zapis = '1' WHERE qr_code = '" + dane[1] + "'";
                     try {
                         st.executeUpdate(sql3);
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
-                }else  if(status.equals("0"))
+                }else  if(!checkBox3.isChecked())
                 {
                     String sql3 = "UPDATE uzytkownik SET czy_zapis = '0' WHERE qr_code = '" + dane[1] + "'";
                     try {
@@ -156,15 +156,13 @@ public class Historia_pojazd extends AppCompatActivity {
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
-                }*/
+                }
 
-            Log.i("HISTORIAPOJAZDA_POZYCJA",String.valueOf(pozycja2));
-
-                String sql2 = "UPDATE samochod SET wyswietl = '"+status+"' WHERE nr_rejestracyjny = '" + nr_rejestracyjny + "'";
-               try {
-                st.executeUpdate(sql2);
-                } catch (SQLException e) {
-               e.printStackTrace(); }
+               // String sql2 = "UPDATE samochod SET wyswietl = '"+status+"' WHERE nr_rejestracyjny = '" + nr_rejestracyjny + "'";
+             //  try {
+               // st.executeUpdate(sql2);
+               // } catch (SQLException e) {
+             //  e.printStackTrace(); }
 
             }
             try {
@@ -258,11 +256,6 @@ public class Historia_pojazd extends AppCompatActivity {
                         status=false;
                     }
 
-                }
-
-                if(zm == null)
-                {
-                    showToast("Brak pojazdów do wyświetlenia");
                 }
 
                 if(delete==true) {
@@ -375,7 +368,7 @@ public class Historia_pojazd extends AppCompatActivity {
 
                 if(zm1 == null)
                 {
-                    showToast("Brak pojazdów do wyświetlenia");
+                    showToast("Brak zgłoszeń do tego pojazdu");
                 }
 
                 //usuwanie zgłoszenia
@@ -419,9 +412,6 @@ public class Historia_pojazd extends AppCompatActivity {
             Custom_row_zgloszenie adapter1 = new Custom_row_zgloszenie(this, zm8, zm6, zm5, zdjecie);
             lista_new.setAdapter(adapter1);
             adapter1.notifyDataSetChanged();
-        }else
-        {
-            showToast("Brak zgłoszeń dla danego samochodu");
         }
     }
 

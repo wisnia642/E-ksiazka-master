@@ -228,9 +228,10 @@ public class BarCodeScaner extends AppCompatActivity implements ZXingScannerView
                 dane[1] = getIntent().getStringExtra("model");
                 dane[2] = getIntent().getStringExtra("rocznik");
                 dane[3] = getIntent().getStringExtra("silnik");
-                dane[4] = getIntent().getStringExtra("rejestracyjny");
+                dane[5] = getIntent().getStringExtra("rejestracja");
                 dane[12] = getIntent().getStringExtra("qr_code");
                 dane[14] = getIntent().getStringExtra("admin");
+                dane[13] = getIntent().getStringExtra("vin");
             }
 
         }catch (Exception e)

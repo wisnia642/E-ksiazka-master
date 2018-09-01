@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -421,6 +422,9 @@ public class New_user extends AppCompatActivity {
                                                     i.putExtra("email", dane[0]);
                                                     i.putExtra("qr_code", dane[3]);
                                                     i.putExtra("admin", "0");
+                                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                                                        finishAffinity();
+                                                    }
                                                     startActivity(i);
                                                     showToast("Konto zostało utworzone");
                                                 } else {
@@ -488,10 +492,16 @@ public class New_user extends AppCompatActivity {
                 if(dane[4].equals("zmiana_hasla")) {
                     Intent i = new Intent(New_user.this, MainMenu.class);
                     i.putExtra("qr_code", dane[3]);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                        finishAffinity();
+                    }
                     startActivity(i);
                 }
                 else {
                     Intent i = new Intent(New_user.this, MainActivity.class);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                        finishAffinity();
+                    }
                     startActivity(i);
                 }
             }

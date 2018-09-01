@@ -33,7 +33,7 @@ public class dane_pojazd extends AppCompatActivity {
     TextView napis;
     String email="";
 
-    String dane[] = new String[10];
+    String dane[] = new String[11];
 
     static ResultSet rs;
     static Statement st;
@@ -334,6 +334,7 @@ public class dane_pojazd extends AppCompatActivity {
             dane[6] = getIntent().getStringExtra("qr_code_kod");
             dane[8] = getIntent().getStringExtra("vin");
             dane[9] = getIntent().getStringExtra("menu");
+            dane[10] = getIntent().getStringExtra("admin");
 
 
             if(dane[9]==null) {
@@ -363,11 +364,11 @@ public class dane_pojazd extends AppCompatActivity {
             }else
             {
                 marka.setHint("Imię");
-                rocznik.setHint("Nzwisko");
+                rocznik.setHint("Nazwisko");
                 model.setHint("Email");
                 silnik.setHint("Adres");
                 vin.setHint("Telefon");
-                nr_rejestracyjny.setHint("Dane_2");
+                nr_rejestracyjny.setHint("Inne");
                 vin.setInputType(InputType.TYPE_CLASS_NUMBER);
                 Datauser();
                 //importowanie danych o kliencie
@@ -380,7 +381,7 @@ public class dane_pojazd extends AppCompatActivity {
                     marka.setHint("Imię");
                 }else { marka.setText(dane[0]);}
                 if(dane[2]==null) {
-                    rocznik.setHint("Nzwisko");
+                    rocznik.setHint("Nazwisko");
                 }else { rocznik.setText(dane[2]);}
                 if(dane[5]==null) {
                     silnik.setHint("Adres");
@@ -389,7 +390,7 @@ public class dane_pojazd extends AppCompatActivity {
                     vin.setHint("Telefon");
                 }else { vin.setText(dane[8]);}
                 if(dane[3]==null)
-                { nr_rejestracyjny.setHint("Dane_2");
+                { nr_rejestracyjny.setHint("Inne");
                 }else { nr_rejestracyjny.setText(dane[3]);}
 
                 ok.setText("Zapisz");
@@ -404,7 +405,7 @@ public class dane_pojazd extends AppCompatActivity {
         vin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(dane[8]!=null) {
+                if(dane[8]!=null & dane[10].equals("1")) {
                     try {
                         dane[8] = vin.getText().toString();
                         Uri number = Uri.parse("tel:" + dane[8]);
@@ -427,12 +428,11 @@ public class dane_pojazd extends AppCompatActivity {
                     dane[1] = model.getText().toString();
                     dane[2] = rocznik.getText().toString();
                     dane[3] = silnik.getText().toString();
-                    dane[6] = qrCode.getText().toString();
                     dane[5] = nr_rejestracyjny.getText().toString();
                     dane[8] = vin.getText().toString();
                     SelectUser(dane[6]);
 
-                if(!dane[6].equals("konfiguracja")) {
+                if(dane[9]==null) {
                     if (!dane[0].equals("")) {
 
                         if (!dane[5].equals("")) {
@@ -497,7 +497,7 @@ public class dane_pojazd extends AppCompatActivity {
                 i.putExtra("silnik",dane[3]);
                 i.putExtra("qr_code",dane[4]);
                 i.putExtra("admin",'1');
-                i.putExtra("rejestracyjny",dane[5]);
+                i.putExtra("rejestracja",dane[5]);
                 i.putExtra("vin",dane[8]);
                 startActivity(i);
             }

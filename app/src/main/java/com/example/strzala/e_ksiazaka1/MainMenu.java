@@ -150,6 +150,9 @@ public class MainMenu extends AppCompatActivity
                 zm7.clear();
                 zm8.clear();
                 zdjecie.clear();
+                int i=0;
+                int j=0;
+                punkty=0;
 
 
                 PreparedStatement stmt1 = connection.prepareStatement("Select * from uzytkownik uzy where uzy.qr_code= '"+dane[2]+"'");
@@ -213,8 +216,6 @@ public class MainMenu extends AppCompatActivity
 
                 while (rs.next()) {
                     String zm = rs.getString("zgl.Id");
-                    int i=0;
-                    punkty=0;
                     if (zm != null) {
                         s3=true;
                         zm5.add(rs.getString("zgl.status"));
@@ -222,19 +223,19 @@ public class MainMenu extends AppCompatActivity
                         zm8.add(rs.getString("zgl.nr_rejestracyjny"));
                         zm9.add(rs.getString("zgl.Id"));
                         zdjecie.add( rs.getBlob("zgl.zdjecie_przed"));
-                        if (zm7.get(0).equals("0")) {
+
+                        if (zm7.get(0).equals("0") & zm5.get(j).equals("Zakończony")) {
                             i = rs.getInt("zgl.punkty");
-                            punkty = i + punkty;
+                            punkty = i + punkty ;
                         }else{
                             punkty=0;
                         }
-
-
+                        j++;
                     }
-                    zm4.add(String.valueOf(punkty));
+
 
                 }
-
+                zm4.add(String.valueOf(punkty));
                 if(s3==false)
                 {
 

@@ -73,7 +73,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignStart="@+id/qr_code"
         android:layout_marginBottom="150dp"
-        android:text="Akceptuję regulamin serwisu"
+        android:text="Akceptuję "
         android:textAllCaps="false" />
 
     <EditText
@@ -112,11 +112,11 @@
         android:id="@+id/regulamin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_alignBottom="@+id/checkBox"
         android:layout_alignParentStart="true"
-        android:layout_marginBottom="189dp"
-        android:layout_marginStart="79dp"
-        android:text="Podgląd regulaninu"
+        android:layout_marginBottom="5dp"
+        android:layout_marginStart="123dp"
+        android:text="regulamin serwisu"
         android:textColor="@color/colorPrimaryDark" />
 
 </RelativeLayout>

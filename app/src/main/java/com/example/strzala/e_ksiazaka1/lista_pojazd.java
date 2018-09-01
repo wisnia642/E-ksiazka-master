@@ -228,7 +228,6 @@ public class lista_pojazd extends AppCompatActivity {
                     Intent i = new Intent(lista_pojazd.this,koniec_pojazd.class);
                     i.putExtra("status","0");
                     i.putExtra("admin", "1");
-                    i.putExtra("menu", "");
                     i.putExtra("qr_code", qrcode);
                     i.putExtra("pozycja2",dane.get(position));
                     i.putExtra("rejestracyjny",rejestracyjny);

@@ -3,6 +3,7 @@ package com.example.strzala.e_ksiazaka1;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -120,14 +121,49 @@ public class koniec_pojazd extends AppCompatActivity {
             }
 
             try {
-
-                if (dane[10].equals("1")) {
+                if(!status.equals("Zakończony")){
                     String sql2 = "Update zgloszenie set akceptacja='1' , status='Akceptacja' where Id='" + dane[2] + "' ";
-                    st.executeUpdate(sql2);
-                }else
+                    st.executeUpdate(sql2);}
+                else
                 {
-                    String sql2 = "status='Brak akceptacji' where Id='" + dane[2] + "' ";
-                    st.executeUpdate(sql2);
+                    showToast("Zgłoszenie zostało zakończone");
+                }
+
+            }catch (Exception e)
+            {
+                Log.i("myTag", "8" + e);
+            }
+
+            try {
+                if (connection != null)
+                    connection.close();
+            } catch (SQLException se) {
+                Log.i("myTag", "4" + se);
+                showToast("brak polaczenia z internetem");
+            }
+        }
+    }
+
+    public void akceptacja_kosztów_brak()
+    {
+        podlaczenieDB();
+
+        if (connection != null) {
+
+            try {
+                st = connection.createStatement();
+            } catch (SQLException e1) {
+                //e1.printStackTrace();
+            }
+
+            try {
+                if(!status.equals("Zakończony")){
+                String sql2 = "Update zgloszenie set akceptacja='0' , status='Brak akceptacji' where Id='" + dane[2] + "' ";
+                st.executeUpdate(sql2);
+                }
+                else
+                {
+                    showToast("Zgłoszenie zostało zakończone");
                 }
 
             }catch (Exception e)
@@ -357,9 +393,9 @@ public class koniec_pojazd extends AppCompatActivity {
 
                 if (plik==false)
                 {
-                    dane[14] = "update zgloszenie SET cena_czesci=?,cena_uslugi=?,uwagi=?,data_dod=?,status=?,punkty=? where Id='"+dane[2]+"' ";
+                    dane[14] = "update zgloszenie SET cena_czesci=?,cena_uslugi=?,uwagi=?,punkty=? where Id='"+dane[2]+"' ";
                 }else if (plik==true){
-                    dane[14] = "update zgloszenie SET zdjecie_przed=?,cena_czesci=?,cena_uslugi=?,uwagi=?,data_dod=?,status=?,punkty=? where Id='" + dane[2] + "' ";
+                    dane[14] = "update zgloszenie SET zdjecie_przed=?,cena_czesci=?,cena_uslugi=?,uwagi=?,punkty=? where Id='" + dane[2] + "' ";
                 }
 
                 try {
@@ -369,17 +405,13 @@ public class koniec_pojazd extends AppCompatActivity {
                         ps.setString(2, dane[6]);
                         ps.setString(3, dane[7]);
                         ps.setString(4, dane[4]);
-                        ps.setString(5, data);
-                        ps.setString(6, "Nowy");
-                        ps.setString(7, dane[5]);
+                        ps.setString(5, dane[5]);
                     }else if (plik==false)
                     {
                         ps.setString(1, dane[6]);
                         ps.setString(2, dane[7]);
                         ps.setString(3, dane[4]);
-                        ps.setString(4, data);
-                        ps.setString(5, "Nowy");
-                        ps.setString(6, dane[5]);
+                        ps.setString(4, dane[5]);
                     }
 
                     ps.executeUpdate();
@@ -465,7 +497,7 @@ public class koniec_pojazd extends AppCompatActivity {
                 showToast("Dane zostały zapisane");
             }else {
                     akceptacja=true;
-                    showToast("Zgłoszenie nie zostało zaakceptowane");
+                    showToast("Zgłoszenie nie zostało jeszcze zaakceptowane przez klienta");
                 }
 
             }
@@ -551,13 +583,12 @@ public class koniec_pojazd extends AppCompatActivity {
             dane[9] = getIntent().getStringExtra("menu");
             dane[10] = getIntent().getStringExtra("admin");
             qrcode = getIntent().getStringExtra("qr_code");
-
         }catch (Exception e)
         {
             Log.i("koniecpojazd",""+e);
         }
 
-        if(dane[9].equals("") & dane[10].equals("1")) {
+        if(dane[9]==null & dane[10].equals("1")) {
             naprawa.setText(dane[2]);
             zdjecie.setVisibility(View.VISIBLE);
         }
@@ -566,12 +597,17 @@ public class koniec_pojazd extends AppCompatActivity {
         {
             opis.setText("Podgląd zgłoszenia");
             dodaj.setText("Akceptacja kosztów");
-            zapis.setText("Nie Akceptacja kosztów");
+            zapis.setText("Brak akceptacji kosztów");
             przelacznik.setVisibility(View.VISIBLE);
+            czesci1.setEnabled(false);
+            punkty1.setEnabled(false);
+            uslugi.setEnabled(false);
+            zapis.setVisibility(View.INVISIBLE);
         }
 
-        if(dane[9].equals("edit") || dane[10].equals("1"))
+        if(dane[9]!=null & (dane[10].equals("1") || dane[10].equals("0")))
         {
+
             readimage();
 
             czesci1.setText(String.valueOf(czesci_p));
@@ -792,7 +828,9 @@ public class koniec_pojazd extends AppCompatActivity {
                 if (!dane[10].equals("1"))
                 {
                     akceptacja_kosztów();
-                    showToast("Koszty zostały zaakceptowane");
+                    if(!status.equals("Zakończony")) {
+                        showToast("Koszty zostały zaakceptowane");
+                    }
                 }
                 else {
                     Intent i = new Intent(koniec_pojazd.this, lista_pojazd.class);
@@ -820,13 +858,14 @@ public class koniec_pojazd extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
             case PIERWSZY_ELEMENT:
+                try {
                 SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyHHmm");
                 String data_zdj = sdf.format(new Date());
 
                 file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), File.separator + data_zdj + "_trustcar.jpg");
 
                 //save and compres picture
-                try {
+
                     is = zdjecie_przed.getBinaryStream();
                     Drawable d = Drawable.createFromStream(is , "src");
                     bitmap = ((BitmapDrawable)d).getBitmap();
@@ -875,7 +914,10 @@ public class koniec_pojazd extends AppCompatActivity {
                // data1 = getBitmapAsByteArray(thumbnail); // this is a function
 
                 //tutaj jest zapis na urządzeniu
-                file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), File.separator + data_zdj + "_trustcar_dod.jpg");
+                ContextWrapper cw = new ContextWrapper(getApplicationContext());
+                File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
+                // Create imageDir
+                file=new File(directory,data_zdj + "_trustcar_dod.jpg");
 
                 //przekazywanie danych do pliku
                 dane[8] = String.valueOf(file);
@@ -907,36 +949,42 @@ public class koniec_pojazd extends AppCompatActivity {
                 c.close();
                 dane[8] = picturePath;
 
-
-                galeria.setImageBitmap(BitmapFactory.decodeFile(picturePath));
+                //galeria.setImageBitmap(BitmapFactory.decodeFile(picturePath));
                 //file = new File(picturePath);
 
-
-
-
                 //tutaj jest zapis na urządzeniu
-                file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), File.separator + data_zdj + "_trustcar_dod.jpg");
+                ContextWrapper cw = new ContextWrapper(getApplicationContext());
+                File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
+                // Create imageDir
+                file=new File(directory,data_zdj + "_trustcar_dod.jpg");
 
                 //save and compres picture
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                 Bitmap thumbnail = BitmapFactory.decodeFile(picturePath, options);
                 ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-               // thumbnail.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+                thumbnail.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
 
+                galeria.setImageDrawable(new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(thumbnail, 500, 500, true)));
+
+
+
+                FileOutputStream out = null;
                 try {
-                    FileOutputStream out = new FileOutputStream(file);
-                    thumbnail.compress(Bitmap.CompressFormat.PNG, 100, out);
-                    out.flush();
-                    out.close();
+                    out = new FileOutputStream(file);
+                    thumbnail.compress(Bitmap.CompressFormat.JPEG, 6, out); // bmp is your Bitmap instance
+                    // PNG is a lossless format, the compression factor (100) is ignored
                 } catch (Exception e) {
                     e.printStackTrace();
+                } finally {
+                    try {
+                        if (out != null) {
+                            out.close();
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
-
-
-                //tutaj jest zapis na urządzeniu
-               // file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), File.separator + data_zdj + "_trustcar.jpg");
-
 
 
             } catch (Exception e) {
