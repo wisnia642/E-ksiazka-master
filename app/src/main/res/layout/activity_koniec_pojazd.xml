@@ -49,10 +49,11 @@ tools:context="com.example.strzala.e_ksiazaka1.koniec_pojazd">
 
     <AutoCompleteTextView
         android:id="@+id/uwagi"
-        android:layout_width="342dp"
-        android:layout_height="100dp"
+        android:layout_width="256dp"
+        android:layout_height="75dp"
         android:layout_above="@+id/dodaj"
-        android:layout_centerHorizontal="true"
+        android:layout_alignStart="@+id/editText123"
+        android:layout_marginBottom="25dp"
         android:gravity="top"
         android:hint="Dodaj Uwagi" />
 
@@ -144,16 +145,25 @@ tools:context="com.example.strzala.e_ksiazaka1.koniec_pojazd">
         android:layout_alignBaseline="@+id/czesci"
         android:layout_alignParentStart="true"
         android:inputType="number"
-        android:text="Cena cześci" />
+        android:text="Cena cześci:" />
 
     <TextView
         android:id="@+id/textView6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/textView4"
+        android:layout_alignTop="@+id/uwagi"
+        android:inputType="number"
+        android:text="Uwagi:" />
+
+    <TextView
+        android:id="@+id/textView15"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/textView4"
         android:layout_centerVertical="true"
         android:inputType="number"
-        android:text="Cena usługi" />
+        android:text="Cena usługi:" />
 
     <TextView
         android:id="@+id/textView9"

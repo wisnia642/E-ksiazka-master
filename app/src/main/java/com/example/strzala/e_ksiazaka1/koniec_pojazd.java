@@ -24,6 +24,8 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -64,7 +66,7 @@ public class koniec_pojazd extends AppCompatActivity {
     private static final int CAMERA_PIC_REQUEST = 1111;
     public byte[] data1;
     Button zapis,anuluj,dodaj;
-    String data="",qrcode="",kategoria="",punkty_baza,sql1;
+    String data="",qrcode="",kategoria="",punkty_baza="",sql1="",czy_zapis="",status="";
     EditText czesci1,uslugi,punkty1;
     AutoCompleteTextView uwagi;
     TextView naprawa,opis;
@@ -78,15 +80,16 @@ public class koniec_pojazd extends AppCompatActivity {
     static Statement st;
     PreparedStatement ps;
     FileInputStream fis = null;
-    FileOutputStream fos =null;
     Connection connection = null;
     InputStream is;
-    Boolean plik=false;
+    Boolean plik=false, akceptacja=false;
 
     Blob zdjecie_przed = null;
     Blob zdjecie_po = null;
     Bitmap bitmap;
 
+    //dodanie opcji do menu
+    public static final int PIERWSZY_ELEMENT = 1;
     private static final int REQUEST_CAMERA = 1;
 
     File file=null;
@@ -100,6 +103,8 @@ public class koniec_pojazd extends AppCompatActivity {
                 message,
                 Toast.LENGTH_LONG).show();
     }
+
+
 
     //akceptacja kosztów zgłoszenia
     public void akceptacja_kosztów()
@@ -116,8 +121,14 @@ public class koniec_pojazd extends AppCompatActivity {
 
             try {
 
-                String sql2 = "Update zgloszenie set akceptacja='1' , status='Akceptacja' where Id='"+dane[2]+"' ";
-                st.executeUpdate(sql2);
+                if (dane[10].equals("1")) {
+                    String sql2 = "Update zgloszenie set akceptacja='1' , status='Akceptacja' where Id='" + dane[2] + "' ";
+                    st.executeUpdate(sql2);
+                }else
+                {
+                    String sql2 = "status='Brak akceptacji' where Id='" + dane[2] + "' ";
+                    st.executeUpdate(sql2);
+                }
 
             }catch (Exception e)
             {
@@ -161,6 +172,7 @@ public class koniec_pojazd extends AppCompatActivity {
                        zdjecie_po = rs.getBlob("zgl.zdjecie_po");
                        kategoria = rs.getString("kategoria");
                        punkty_p = rs.getInt("punkty");
+                       status = rs.getString("status");
                    }
 
                }
@@ -280,36 +292,8 @@ public class koniec_pojazd extends AppCompatActivity {
             }
 
 
-            try {
-                st = connection.createStatement();
-            } catch (SQLException e1) {
-                e1.printStackTrace();
-            }
-
             if(dane[1].equals("0") & dane[10].equals("1")) {
-
-                PreparedStatement stmt1 = null;
-                try {
-                    stmt1 = connection.prepareStatement("Select * from uzytkownik uzy where uzy.qr_code= '"+qrcode+"'");
-                    rs = stmt1.executeQuery();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-
-                try {
-                while (rs.next()) {
-                    String zm = rs.getString("uzy.Id");
-
-                    if (zm != null) {
-                        punkty_baza = ( rs.getString("uzy.punkty"));
-
-
-                    }
-                }
-                } catch (SQLException e) {
-                        Log.i("koniecpojazd", "" + e);
-                }
-                if(file!=null) {
+                if(file!=null ) {
 
                      sql1 = "INSERT INTO zgloszenie (data_dod,zdjecie_przed,cena_czesci,cena_uslugi,uwagi," +
                             "data_wykonania,status,nr_rejestracyjny,akceptacja,kategoria,punkty) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
@@ -336,6 +320,8 @@ public class koniec_pojazd extends AppCompatActivity {
                         Log.i("koniecpojazd", "" + e);
                     }
 
+                    showToast("Dane zostały zapisane");
+
                 }else
                 {
 
@@ -360,6 +346,8 @@ public class koniec_pojazd extends AppCompatActivity {
                     } catch (SQLException e) {
                         Log.i("koniecpojazd", "" + e);
                     }
+
+                    showToast("Dane zostały zapisane");
 
                 }
 
@@ -402,22 +390,55 @@ public class koniec_pojazd extends AppCompatActivity {
                     showToast("" + e);
                 }
 
+                showToast("Dane zostały zapisane");
+
             }
 
             //ekran mainmenu update zgłoszenie przed
-            else if(dane[1].equals("1") & dane[10].equals("1") & przelacznik.isChecked())
-            {
+            else if(dane[1].equals("1") & dane[10].equals("1") & przelacznik.isChecked()) {
+                try {
+                    st = connection.createStatement();
+                } catch (SQLException e1) {
+                    e1.printStackTrace();
+                }
 
-                if (plik==false)
-                {
-                    dane[14] = "update zgloszenie SET cena_czesci=?,cena_uslugi=?,uwagi=?,data_wykonania=?,status=?,punkty=? where Id='"+dane[2]+"' ";
-                }else if (plik==true){
-                    dane[14] = "update zgloszenie SET zdjecie_po=?,cena_czesci=?,cena_uslugi=?,uwagi=?,data_wykonania=?,status=?,punkty=? where Id='" + dane[2] + "' ";
+                punkty_baza = "";
+                czy_zapis = "";
+
+                PreparedStatement stmt1 = null;
+                try {
+                    stmt1 = connection.prepareStatement("Select * from uzytkownik uzy where uzy.qr_code= '" + qrcode + "'");
+                    rs = stmt1.executeQuery();
+                } catch (SQLException e) {
+                    e.printStackTrace();
                 }
 
                 try {
+                    while (rs.next()) {
+                        String zm = rs.getString("uzy.Id");
+
+                        if (zm != null) {
+                            czy_zapis = (rs.getString("uzy.czy_zapis"));
+
+
+                        }
+                    }
+                } catch (SQLException e) {
+                    Log.i("koniecpojazd", "" + e);
+                }
+
+
+                if (plik == false) {
+                    dane[14] = "update zgloszenie SET cena_czesci=?,cena_uslugi=?,uwagi=?,data_wykonania=?,status=?,punkty=? where Id='" + dane[2] + "' ";
+                } else if (plik == true) {
+                    dane[14] = "update zgloszenie SET zdjecie_po=?,cena_czesci=?,cena_uslugi=?,uwagi=?,data_wykonania=?,status=?,punkty=? where Id='" + dane[2] + "' ";
+                }
+
+                if(czy_zapis.equals("1") || status.equals("Akceptacja"))
+                {
+                try {
                     ps = connection.prepareStatement(dane[14]);
-                    if(plik==true) {
+                    if (plik == true) {
                         ps.setBinaryStream(1, fis, (int) file.length());
                         ps.setString(2, dane[6]);
                         ps.setString(3, dane[7]);
@@ -425,8 +446,7 @@ public class koniec_pojazd extends AppCompatActivity {
                         ps.setString(5, data);
                         ps.setString(6, "Zakończony");
                         ps.setString(7, dane[5]);
-                    }else if (plik==false)
-                    {
+                    } else if (plik == false) {
                         ps.setString(1, dane[6]);
                         ps.setString(2, dane[7]);
                         ps.setString(3, dane[4]);
@@ -441,8 +461,12 @@ public class koniec_pojazd extends AppCompatActivity {
                     Log.i("koniec pojazd", "" + e);
                     showToast("" + e);
                 }
-
-
+                akceptacja=false;
+                showToast("Dane zostały zapisane");
+            }else {
+                    akceptacja=true;
+                    showToast("Zgłoszenie nie zostało zaakceptowane");
+                }
 
             }
             try {
@@ -542,7 +566,7 @@ public class koniec_pojazd extends AppCompatActivity {
         {
             opis.setText("Podgląd zgłoszenia");
             dodaj.setText("Akceptacja kosztów");
-            zapis.setVisibility(View.INVISIBLE);
+            zapis.setText("Nie Akceptacja kosztów");
             przelacznik.setVisibility(View.VISIBLE);
         }
 
@@ -668,18 +692,36 @@ public class koniec_pojazd extends AppCompatActivity {
 
                 if (activeNetwork()) {
 
-                    if(file==null)
+                    if (dane[10].equals("1")) {
+
+                        //jeżeli nie ma zdjęcia był problem z zapisem dlatego tak :)
+                        if (file == null) {
+                            simpleProgressBar_new.setVisibility(View.VISIBLE);
+                            InsertLoginDataMysql();
+
+                            if (akceptacja == false) {
+                                Intent i = new Intent(koniec_pojazd.this, MainMenu.class);
+                                i.putExtra("qr_code", qrcode);
+                                i.putExtra("admin", dane[10]);
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                                    finishAffinity();
+                                }
+
+                                startActivity(i);
+                            } else {
+                                simpleProgressBar_new.setVisibility(View.INVISIBLE);
+
+                            }
+                        } else if (file != null)
+                            simpleProgressBar_new.setVisibility(View.VISIBLE);
+                        StartLog = true;
+
+                    }else
                     {
-                        simpleProgressBar_new.setVisibility(View.VISIBLE);
-                        InsertLoginDataMysql();
-                        showToast("Dane zostały zapisane");
-                        Intent i = new Intent(koniec_pojazd.this,MainMenu.class);
-                        i.putExtra("qr_code",qrcode);
-                        i.putExtra("admin", dane[10]);
-                        startActivity(i);
-                    } else if (file!=null)
-                        simpleProgressBar_new.setVisibility(View.VISIBLE);
-                         StartLog = true;
+                        akceptacja_kosztów();
+                        showToast("Koszty nie zostały zaakceptowane");
+                    }
+
 
                 }
                 else {
@@ -695,6 +737,9 @@ public class koniec_pojazd extends AppCompatActivity {
                 Intent i = new Intent(koniec_pojazd.this,MainMenu.class);
                 i.putExtra("qr_code",qrcode);
                 i.putExtra("admin", dane[10]);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    finishAffinity();
+                }
                 startActivity(i);
             }
         });
@@ -766,12 +811,57 @@ public class koniec_pojazd extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.add(0, PIERWSZY_ELEMENT, 0, "Zapisz zdjęcie");
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case PIERWSZY_ELEMENT:
+                SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyHHmm");
+                String data_zdj = sdf.format(new Date());
+
+                file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), File.separator + data_zdj + "_trustcar.jpg");
+
+                //save and compres picture
+                try {
+                    is = zdjecie_przed.getBinaryStream();
+                    Drawable d = Drawable.createFromStream(is , "src");
+                    bitmap = ((BitmapDrawable)d).getBitmap();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                //galeria.setImageBitmap(BitmapFactory.decodeStream(is));
+
+
+                try {
+                    FileOutputStream out = new FileOutputStream(file);
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+                    out.flush();
+                    out.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                showToast("Zdjęcie zostało zapisane w katalogu" +String.valueOf(file));
+
+                break;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+
+        return true;
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == CAMERA_PIC_REQUEST) {
             try {
-                SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyHHmm");
+                SimpleDateFormat sdf = new SimpleDateFormat("ddMMyy_HHmm");
                 String data_zdj = sdf.format(new Date());
 
                 Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
@@ -785,7 +875,7 @@ public class koniec_pojazd extends AppCompatActivity {
                // data1 = getBitmapAsByteArray(thumbnail); // this is a function
 
                 //tutaj jest zapis na urządzeniu
-                file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), File.separator + data_zdj + "_trustcar.jpg");
+                file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), File.separator + data_zdj + "_trustcar_dod.jpg");
 
                 //przekazywanie danych do pliku
                 dane[8] = String.valueOf(file);
@@ -825,7 +915,7 @@ public class koniec_pojazd extends AppCompatActivity {
 
 
                 //tutaj jest zapis na urządzeniu
-                file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), File.separator + data_zdj + "_trustcar.jpg");
+                file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), File.separator + data_zdj + "_trustcar_dod.jpg");
 
                 //save and compres picture
                 BitmapFactory.Options options = new BitmapFactory.Options();
@@ -862,11 +952,18 @@ public class koniec_pojazd extends AppCompatActivity {
                 if (StartLog==true) {
                     Log.i("koniecpojazd", "dupa");
                     InsertLoginDataMysql();
-                    showToast("Dane zostały zapisane");
-                    Intent i = new Intent(koniec_pojazd.this,MainMenu.class);
-                    i.putExtra("qr_code",qrcode);
-                    i.putExtra("admin", dane[10]);
-                    startActivity(i);
+                    if (akceptacja==false) {
+                        Intent i = new Intent(koniec_pojazd.this, MainMenu.class);
+                        i.putExtra("qr_code", qrcode);
+                        i.putExtra("admin", dane[10]);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                            finishAffinity();
+                        }
+                        startActivity(i);
+                    }else
+                    {
+                        simpleProgressBar_new.setVisibility(View.INVISIBLE);
+                    }
                     StartLog=false;
                 }
 

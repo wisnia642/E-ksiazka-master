@@ -1,8 +1,6 @@
 package com.example.strzala.e_ksiazaka1;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
@@ -40,7 +38,7 @@ public class Custom_row_zgloszenie extends ArrayAdapter<String> {
         LayoutInflater inflater=context.getLayoutInflater();
         View rowView1=inflater.inflate(R.layout.activity_custom_row_zgloszenie, null,true);
 
-        tekst1 = (TextView) rowView1.findViewById(R.id.email_lista);
+        tekst1 = (TextView) rowView1.findViewById(R.id.model);
         tekst2 = (TextView) rowView1.findViewById(R.id.email_punkty);
         tekst3 = (TextView) rowView1.findViewById(R.id.status);
         zdjecie = (ImageView) rowView1.findViewById(R.id.imageView);

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -340,6 +341,29 @@ public class MainMenu extends AppCompatActivity
             Log.i("mainmenu",""+e);
         }
 
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if(!zm7.get(0).equals("1")) {
+                    //wyswietlanie samochodów
+                    Intent i = new Intent(MainMenu.this, Historia_pojazd.class);
+                    i.putExtra("menu", "konfiguracja");
+                    i.putExtra("qr_code", dane[2]);
+                    i.putExtra("admin", zm7.get(0));
+                    i.putExtra("czy_zapis", dane[3]);
+                    startActivity(i);
+                }else
+                {
+                    Intent i = new Intent(MainMenu.this, dane_pojazd.class);
+                    i.putExtra("menu", "konfiguracja");
+                    i.putExtra("qr_code", dane[2]);
+                    i.putExtra("model",zm3.get(0));
+                    i.putExtra("admin", zm7.get(0));
+                    startActivity(i);
+                }
+            }
+        });
+
         list1.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -419,8 +443,11 @@ public class MainMenu extends AppCompatActivity
         if (id == R.id.nav_camera) {
             //wylogowanie uzytkownika
             Intent c = new Intent(MainMenu.this, MainActivity.class);
-            c.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            c.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                finishAffinity();
+            }
+            // c.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            //c.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(c);
            // finish();
         } else if (id == R.id.nav_gallery) {

@@ -4,13 +4,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
+import android.os.Build;
 import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.FileInputStream;
@@ -26,6 +30,8 @@ public class dane_pojazd extends AppCompatActivity {
     EditText marka,model,rocznik,silnik,qrCode,nr_rejestracyjny,vin;
     Button ok,powrót,skan;
     Boolean status = false;
+    TextView napis;
+    String email="";
 
     String dane[] = new String[10];
 
@@ -34,6 +40,7 @@ public class dane_pojazd extends AppCompatActivity {
     PreparedStatement ps;
     FileInputStream fis = null;
     Connection connection = null;
+    String status_rejestracji="";
 
     public void showToast(String message) {
         Toast.makeText(getApplicationContext(),
@@ -89,11 +96,43 @@ public class dane_pojazd extends AppCompatActivity {
 
     }
 
+    public void update_uzytkownik()
+    {
+        podlaczenieDB();
+
+        if (connection != null) {
+
+
+            try {
+                st = connection.createStatement();
+            } catch (SQLException e1) {
+                //e1.printStackTrace();
+            }
+
+            String sql2 = "UPDATE uzytkownik SET imie = '"+dane[0]+"',nazwisko = '"+dane[2]+"'," +
+                    "adres = '"+dane[3]+"',dane1 = '"+dane[8]+"',dane2 = '"+dane[5]+"'" +
+                    " WHERE qr_code = '" + dane[4] + "'";
+            try {
+                st.executeUpdate(sql2);
+            } catch (SQLException e) {
+                e.printStackTrace(); }
+
+        }
+        try {
+            if (connection != null)
+                connection.close();
+        } catch (SQLException se) {
+            Log.i("New user",""+se);
+            //  showToast("brak połączenia z internetem" +se);
+        }
+
+    }
+
     private void InsertCar()
     {
         try {
                 podlaczenieDB();
-
+                status_rejestracji="";
                 try {
                     st = connection.createStatement();
                 } catch (SQLException e1) {
@@ -108,21 +147,21 @@ public class dane_pojazd extends AppCompatActivity {
 
 
                     while (rs.next()) {
-                        String zm = rs.getString("nr_rejestracyjny");
+                         status_rejestracji = rs.getString("nr_rejestracyjny");
 
-                        if (zm != null) {
-                            Log.i("danepojazd","tak"+ dane[5]);
+                        if (status_rejestracji != null) {
+                            Log.i("danepojazd","tak"+ status_rejestracji);
                             status=true;
 
 
                         } else  {
-                            Log.i("danepojazd","nie"+ dane[5]);
+                            Log.i("danepojazd","nie"+ status_rejestracji);
                             status=false;
                         }
 
                     }
 
-                        if (status==false)
+                        if (status_rejestracji.equals(""))
                         {
 
                             String sql1 = "INSERT INTO samochod (marka,model,rocznik,silnik,nr_rejestracyjny,qr_code,wyswietl,vin) " +
@@ -136,8 +175,8 @@ public class dane_pojazd extends AppCompatActivity {
                             ps.setString(6, dane[6]);
                             ps.setString(7, "1");
                             ps.setString(8, dane[8]);
-                            ps.executeUpdate();}
-                            else
+                            ps.executeUpdate();
+                        }else if(status_rejestracji.equals(dane[5]))
                         {
                             showToast("Podane auto z nr rejestracyjnym już istnieje w systemie");
                         }
@@ -179,14 +218,71 @@ public class dane_pojazd extends AppCompatActivity {
                 PreparedStatement stmt1 = connection.prepareStatement("select * from uzytkownik where qr_code like '%"+tekst+"%' ");
                 rs = stmt1.executeQuery();
 
+                if(!tekst.equals("")) {
+                    while (rs.next()) {
+                        String zm = rs.getString("qr_code");
 
-                while (rs.next()) {
-                    String zm = rs.getString("qr_code");
+                        if (zm != null) {
+                            dane[7] = rs.getString("qr_code");
+                           // dane[2] = rs.getString("email");
 
-                    if (zm != null) {
-                        dane[7] = rs.getString("qr_code");
-
+                        }
                     }
+                }
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+                Log.i("myTag", "3" + e1);
+            }
+
+            try {
+                if (connection != null)
+                    connection.close();
+            } catch (SQLException se) {
+                Log.i("myTag", "4" + se);
+
+            }
+
+        }
+    }
+
+    private void Datauser()
+    {
+        podlaczenieDB();
+
+
+        if (connection != null) {
+            dane[0]="";
+            dane[2]="";
+            dane[3]="";
+            dane[8]="";
+            dane[5]="";
+            try {
+                st = connection.createStatement();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+                Log.i("myTag", "1" + e1);
+            }
+
+            String sql2 = "UPDATE uzytkownik SET imie = '"+dane[0]+"',nazwisko = '"+dane[2]+"'," +
+                    "adres = '"+dane[3]+"',dane1 = '"+dane[8]+"',dane2 = '"+dane[5]+"'" +
+                    " WHERE qr_code = '" + dane[4] + "'";
+
+            try {
+                PreparedStatement stmt1 = connection.prepareStatement("select * from uzytkownik where qr_code like '%"+dane[4]+"%' ");
+                rs = stmt1.executeQuery();
+
+                    while (rs.next()) {
+                        String zm = rs.getString("qr_code");
+
+                        if (zm != null) {
+                            dane[0] = rs.getString("imie");
+                            dane[2] = rs.getString("nazwisko");
+                            dane[3] = rs.getString("adres");
+                            dane[8] = rs.getString("dane1");
+                            dane[5] = rs.getString("dane2");
+                            email = rs.getString("email");
+                        }
+
                 }
             } catch (SQLException e1) {
                 e1.printStackTrace();
@@ -213,12 +309,13 @@ public class dane_pojazd extends AppCompatActivity {
         setContentView(R.layout.activity_pojazd);
 
         marka = (EditText) findViewById(R.id.marka);
-        model = (EditText) findViewById(R.id.email_lista);
+        model = (EditText) findViewById(R.id.model);
         rocznik = (EditText) findViewById(R.id.rocznik);
         silnik = (EditText) findViewById(R.id.qr_code4);
         qrCode = (EditText) findViewById(R.id.qr_code);
         nr_rejestracyjny = (EditText) findViewById(R.id.rejestracyjny);
         vin = (EditText) findViewById(R.id.numer_vin);
+        napis = (TextView) findViewById(R.id.textView8);
 
         ok = (Button) findViewById(R.id.zapisz_p);
         powrót = (Button) findViewById(R.id.powrot);
@@ -227,6 +324,7 @@ public class dane_pojazd extends AppCompatActivity {
 
         //Odbieranie danych z poprzedniego layoutu
         try {
+
             dane[0] = getIntent().getStringExtra("marka");
             dane[1] = getIntent().getStringExtra("model");
             dane[2] = getIntent().getStringExtra("rocznik");
@@ -235,24 +333,91 @@ public class dane_pojazd extends AppCompatActivity {
             dane[5] = getIntent().getStringExtra("rejestracja");
             dane[6] = getIntent().getStringExtra("qr_code_kod");
             dane[8] = getIntent().getStringExtra("vin");
-            marka.setText(dane[0]);
-            model.setText(dane[1]);
-            rocznik.setText(dane[2]);
-            silnik.setText(dane[3]);
-            vin.setText(dane[8]);
-            if(dane[6].contains("https://vicards.pl/")) {
-                String new_result = dane[6].replace("https://vicards.pl/", "");
-                qrCode.setText(new_result);
+            dane[9] = getIntent().getStringExtra("menu");
+
+
+            if(dane[9]==null) {
+                marka.setHint("Marka");
+                model.setHint("Model");
+                rocznik.setHint("Rocznik");
+                silnik.setHint("Silnik");
+                nr_rejestracyjny.setHint("Nr. Rejestracyjny");
+                qrCode.setHint("Qr code");
+                vin.setHint("Nr. Vin");
+                napis.setText("Dodanie nowego pojazdu");
+
+                marka.setText(dane[0]);
+                model.setText(dane[1]);
+                rocznik.setText(dane[2]);
+                silnik.setText(dane[3]);
+                vin.setText(dane[8]);
+                if(dane[6].contains("https://vicards.pl/")) {
+                    String new_result = dane[6].replace("https://vicards.pl/", "");
+                    qrCode.setText(new_result);
+                }else
+                {
+                    qrCode.setText(dane[6]);
+                }
+                nr_rejestracyjny.setText(dane[5]);
+
             }else
             {
-                qrCode.setText(dane[6]);
+                marka.setHint("Imię");
+                rocznik.setHint("Nzwisko");
+                model.setHint("Email");
+                silnik.setHint("Adres");
+                vin.setHint("Telefon");
+                nr_rejestracyjny.setHint("Dane_2");
+                vin.setInputType(InputType.TYPE_CLASS_NUMBER);
+                Datauser();
+                //importowanie danych o kliencie
+                skan.setVisibility(View.INVISIBLE);
+                qrCode.setVisibility(View.INVISIBLE);
+                napis.setText("Dane klienta");
+                model.setText(email);
+
+                if(dane[0]==null) {
+                    marka.setHint("Imię");
+                }else { marka.setText(dane[0]);}
+                if(dane[2]==null) {
+                    rocznik.setHint("Nzwisko");
+                }else { rocznik.setText(dane[2]);}
+                if(dane[5]==null) {
+                    silnik.setHint("Adres");
+                }else { silnik.setText(dane[5]);}
+                if(dane[8]==null) {
+                    vin.setHint("Telefon");
+                }else { vin.setText(dane[8]);}
+                if(dane[3]==null)
+                { nr_rejestracyjny.setHint("Dane_2");
+                }else { nr_rejestracyjny.setText(dane[3]);}
+
+                ok.setText("Zapisz");
             }
-            nr_rejestracyjny.setText(dane[5]);
+
 
         }catch (Exception e)
         {
             Log.i("BarCode",""+e);
         }
+
+        vin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(dane[8]!=null) {
+                    try {
+                        dane[8] = vin.getText().toString();
+                        Uri number = Uri.parse("tel:" + dane[8]);
+                        Intent callIntent = new Intent(Intent.ACTION_DIAL, number);
+                        startActivity(callIntent);
+                    }catch (Exception e)
+                    {
+                        Log.i("dane_pojazd",""+e);
+                    }
+                }
+            }
+        });
+
 
         ok.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -265,44 +430,52 @@ public class dane_pojazd extends AppCompatActivity {
                     dane[6] = qrCode.getText().toString();
                     dane[5] = nr_rejestracyjny.getText().toString();
                     dane[8] = vin.getText().toString();
-
                     SelectUser(dane[6]);
 
-                if(!dane[0].equals("") ) {
+                if(!dane[6].equals("konfiguracja")) {
+                    if (!dane[0].equals("")) {
 
-                    if(!dane[5].equals("")) {
-                        if(!dane[7].equals("")) {
+                        if (!dane[5].equals("")) {
 
-                            InsertCar();
-                                if (status == false) {
+                            if (!dane[7].equals("")) {
 
+                                InsertCar();
+                                if (status_rejestracji.equals("")) {
 
-                                Intent i = new Intent(dane_pojazd.this, lista_pojazd.class);
-                                i.putExtra("rejestracyjny", dane[5]);
-                                i.putExtra("kategoria", "kat_1");
-                                i.putExtra("qr_code", dane[4]);
-                                i.putExtra("liczba", "");
-                                i.putExtra("pozycja", "");
-                                i.putExtra("nazwa", "");
-                                i.putExtra("admin", "1");
-                                startActivity(i);
-
+                                    Intent i = new Intent(dane_pojazd.this, lista_pojazd.class);
+                                    i.putExtra("rejestracyjny", dane[5]);
+                                    i.putExtra("kategoria", "kat_1");
+                                    i.putExtra("qr_code", dane[4]);
+                                    i.putExtra("liczba", "");
+                                    i.putExtra("pozycja", "");
+                                    i.putExtra("nazwa", "");
+                                    i.putExtra("admin", "1");
+                                    startActivity(i);
+                                }
+                            } else {
+                                showToast("Brak użytkownika z przypisanym kodem QR");
                             }
-                        }else
-                        {
-                            showToast("Brak użytkownika z przypisanym kodem QR");
+                        } else {
+                            showToast("uzupełnij numer rejestracyjny samochodu.");
                         }
-                    }else
-                    {
-                        showToast("uzupełnij numer rejestracyjny samochodu.");
+                    } else {
+                        showToast("Uzupełnij Markę samochodu.");
                     }
                 }else
                 {
-                    showToast("Uzupełnij Markę samochodu.");
+                    update_uzytkownik();
+                    showToast("Dane zostały zapisane");
+                    Intent i = new Intent(dane_pojazd.this, MainMenu.class);
+                    i.putExtra("qr_code",dane[4]);
+                    i.putExtra("admin",'1');
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                        finishAffinity();
+                    }
+                    startActivity(i);
                 }
 
-
             }
+
         });
 
         skan.setOnClickListener(new View.OnClickListener() {
@@ -336,6 +509,9 @@ public class dane_pojazd extends AppCompatActivity {
                 Intent i = new Intent(dane_pojazd.this, MainMenu.class);
                 i.putExtra("qr_code",dane[4]);
                 i.putExtra("admin",'1');
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    finishAffinity();
+                }
                 startActivity(i);
             }
         });

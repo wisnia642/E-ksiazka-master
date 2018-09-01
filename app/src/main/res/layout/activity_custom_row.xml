@@ -22,14 +22,14 @@
             android:id="@+id/email_punkty"
             android:layout_width="272dp"
             android:layout_height="wrap_content"
-            android:layout_alignStart="@+id/email_lista"
-            android:layout_below="@+id/email_lista"
+            android:layout_alignStart="@+id/model"
+            android:layout_below="@+id/model"
             android:textColor="@android:color/black"
             android:textSize="18sp"
             tools:text="Punkty: 0" />
 
         <TextView
-            android:id="@+id/email_lista"
+            android:id="@+id/model"
             android:layout_width="274dp"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"

@@ -27,7 +27,7 @@ public View getView(int position, View view, ViewGroup parent) {
         LayoutInflater inflater=context.getLayoutInflater();
         View rowView=inflater.inflate(R.layout.activity_custom_row, null,true);
 
-     tekst1 = (TextView) rowView.findViewById(R.id.email_lista);
+     tekst1 = (TextView) rowView.findViewById(R.id.model);
      tekst2 = (TextView) rowView.findViewById(R.id.email_punkty);
 
      //Log.i("uzytkownik",zm1.get(position)+zm2.get(position));

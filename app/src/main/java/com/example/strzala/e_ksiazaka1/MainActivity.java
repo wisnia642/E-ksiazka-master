@@ -135,8 +135,6 @@ public class MainActivity extends AppCompatActivity {
         if (connection != null) {
             password="";
 
-            sampleDB = this.openOrCreateDatabase(SAMPLE_DB_NAME, MODE_PRIVATE, null);
-
             try {
                 st = connection.createStatement();
             } catch (SQLException e1) {
@@ -172,7 +170,6 @@ public class MainActivity extends AppCompatActivity {
 
             try {
                 if (connection != null)
-                    sampleDB.close();
                 connection.close();
             } catch (SQLException se) {
                 Log.i("myTag", "4" + se);

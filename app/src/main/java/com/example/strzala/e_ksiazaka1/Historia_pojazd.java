@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.StrictMode;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -43,7 +44,7 @@ public class Historia_pojazd extends AppCompatActivity {
     TextView pole,liczba;
     ListView lista_new=null;
     String tekst,email,zm,zm1;
-    Integer pozycja;
+    Integer pozycja, pozycja2;
     EditText szukaj2;
     CheckBox checkBox3;
 
@@ -139,14 +140,15 @@ public class Historia_pojazd extends AppCompatActivity {
                 //e1.printStackTrace();
             }
 
-                if(checkBox3.isChecked()) {
+            /*
+                if(status.equals("1")) {
                     String sql3 = "UPDATE uzytkownik SET czy_zapis = '1' WHERE qr_code = '" + dane[1] + "'";
                     try {
                         st.executeUpdate(sql3);
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
-                }else  if(!checkBox3.isChecked())
+                }else  if(status.equals("0"))
                 {
                     String sql3 = "UPDATE uzytkownik SET czy_zapis = '0' WHERE qr_code = '" + dane[1] + "'";
                     try {
@@ -154,16 +156,15 @@ public class Historia_pojazd extends AppCompatActivity {
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
-                }
+                }*/
+
+            Log.i("HISTORIAPOJAZDA_POZYCJA",String.valueOf(pozycja2));
 
                 String sql2 = "UPDATE samochod SET wyswietl = '"+status+"' WHERE nr_rejestracyjny = '" + nr_rejestracyjny + "'";
-                try {
+               try {
                 st.executeUpdate(sql2);
                 } catch (SQLException e) {
-                e.printStackTrace(); }
-
-
-
+               e.printStackTrace(); }
 
             }
             try {
@@ -228,7 +229,7 @@ public class Historia_pojazd extends AppCompatActivity {
                     else
                     {
                         PreparedStatement stmt1 = connection.prepareStatement("select * from uzytkownik uzy join samochod sam on uzy.qr_code=sam.qr_code where sam.qr_code in (Select qr_code from samochod) " +
-                                "and nr_rejestracyjny like  '%" + dane[2] + "%' ");
+                                "and (nr_rejestracyjny like  '%" + dane[2] + "%' or marka like  '%" + dane[2] + "%' or model like  '%" + dane[2] + "%') ");
                         rs = stmt1.executeQuery();
                     }
 
@@ -523,6 +524,7 @@ public class Historia_pojazd extends AppCompatActivity {
         lista_new.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
                 if(click==false) {
                     if (dane[0].equals("zgloszenie")) {
                         Intent i = new Intent(Historia_pojazd.this, lista_pojazd.class);
@@ -565,13 +567,13 @@ public class Historia_pojazd extends AppCompatActivity {
             }
         });
 
+
+
         lista_new.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
-
                 final AlertDialog.Builder builder = new AlertDialog.Builder(Historia_pojazd.this);
                 click=true;
-
                 if(dane[0].equals("zgloszenie") || dane[0].equals("zgloszenie_1"))
                 {
                     builder.setTitle("Czy na pewno chcesz usunąć Zgłoszenie ");
@@ -595,11 +597,14 @@ public class Historia_pojazd extends AppCompatActivity {
                             SelectDataUserSkan();
 
                             ///TODO do sprawdzenia
-                            //Intent i = new Intent(Historia_pojazd.this, MainMenu.class);
-                           // i.putExtra("menu", "historia");
-                            //i.putExtra("admin", dane[3]);
-                            //i.putExtra("qr_code", dane[1]);
-                           // startActivity(i);
+                            Intent i = new Intent(Historia_pojazd.this, MainMenu.class);
+                            i.putExtra("menu", "historia");
+                            i.putExtra("admin", dane[3]);
+                            i.putExtra("qr_code", dane[1]);
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                                finishAffinity();
+                            }
+                            startActivity(i);
                             dialog.cancel();
 
                         }
@@ -664,6 +669,9 @@ public class Historia_pojazd extends AppCompatActivity {
                     i.putExtra("menu", "historia");
                     i.putExtra("admin", dane[3]);
                     i.putExtra("qr_code", dane[1]);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                        finishAffinity();
+                    }
                     startActivity(i);
                 } else if (dane[0].equals("zgloszenie_1") ) {
                     Intent i = new Intent(Historia_pojazd.this, Historia_pojazd.class);
@@ -674,11 +682,15 @@ public class Historia_pojazd extends AppCompatActivity {
                 }
                 else if (dane[0].equals("konfiguracja") ) {
 
+                    //update pola czy na pewno zapisać zmany aktywna akceptacja
                     update_konfiguracj("","");
 
                     Intent i = new Intent(Historia_pojazd.this, MainMenu.class);
                     i.putExtra("admin", dane[3]);
                     i.putExtra("qr_code", dane[1]);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                        finishAffinity();
+                    }
                     startActivity(i);
                 }
                 else {
@@ -686,6 +698,9 @@ public class Historia_pojazd extends AppCompatActivity {
                     i.putExtra("menu", "historia");
                     i.putExtra("qr_code", dane[1]);
                     i.putExtra("admin", dane[3]);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                        finishAffinity();
+                    }
                     startActivity(i);
                 }
             }

@@ -12,25 +12,24 @@
     android:background="@color/truscar_background">
 
     <EditText
-        android:id="@+id/email_lista"
+        android:id="@+id/model"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_marginTop="161dp"
         android:layout_toStartOf="@+id/powrot"
         android:ems="10"
-        android:hint="Model"
         android:inputType="textPersonName" />
 
     <EditText
         android:id="@+id/rocznik"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/email_lista"
+        android:layout_alignStart="@+id/model"
         android:layout_below="@+id/marka"
         android:ems="10"
-        android:hint="Rocznik"
-        android:inputType="textPersonName" />
+        android:inputType="textPersonName"
+        android:visibility="visible" />
 
     <Button
         android:text="Dodaj"
@@ -94,20 +93,18 @@
         android:id="@+id/rejestracyjny"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/email_lista"
+        android:layout_alignStart="@+id/model"
         android:layout_below="@+id/qr_code4"
         android:ems="10"
-        android:hint="Nr_rejestracyjny"
         android:inputType="textPersonName" />
 
     <EditText
         android:id="@+id/qr_code4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/email_lista"
+        android:layout_alignStart="@+id/model"
         android:layout_below="@+id/numer_vin"
         android:ems="10"
-        android:hint="Silnik"
         android:inputType="textPersonName" />
 
     <EditText
@@ -115,22 +112,22 @@
         android:layout_width="216dp"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_alignStart="@+id/email_lista"
+        android:layout_alignStart="@+id/model"
         android:layout_marginTop="69dp"
         android:ems="10"
-        android:hint="Marka"
         android:inputType="textPersonName"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        android:visibility="visible" />
 
     <EditText
         android:id="@+id/numer_vin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/email_lista"
-        android:layout_below="@+id/email_lista"
+        android:layout_alignStart="@+id/model"
+        android:layout_below="@+id/model"
         android:ems="10"
-        android:hint="Numer Vin"
-        android:inputType="textPersonName" />
+        android:inputType="textPersonName"
+        android:visibility="visible" />
 
 
 </RelativeLayout>

@@ -1,6 +1,7 @@
 package com.example.strzala.e_ksiazaka1;
 
 import android.app.Activity;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,7 +23,8 @@ public class Custom_row_pojazd extends ArrayAdapter<String> {
     ImageView txtTitle;
     TextView marka_b,nr_rejestracyjny;
     CheckBox checkBox2;
-    int pozycja;
+    private Handler handler = new Handler();
+    boolean StartLog=false;
     String tab[] = {"Acura","Alfa","Audi","Bmw","Chrysler","Citroen","Dacia","Dodge",
     "Fiat","Ford","Gm","Hiundai","Honda","Infiniti","Jaguar","Jeep","Kia","Lancia","Land",
     "Lexus","Mazda","Mercedes","Mini","Mitsubishi","Nissan","Opel","Peugeot","Porshe",
@@ -36,16 +38,15 @@ public class Custom_row_pojazd extends ArrayAdapter<String> {
         this.zm2 = zma;
         this.zm1 = zma1;
     }
-    public View getView(int position, View view, ViewGroup parent) {
+    public View getView(final int position, View view, ViewGroup parent) {
         LayoutInflater inflater=context.getLayoutInflater();
         View rowView2=inflater.inflate(R.layout.activity_custom_row_pojazd, null,true);
 
         txtTitle = (ImageView) rowView2.findViewById(R.id.zdjecieP);
-        marka_b = (TextView) rowView2.findViewById(R.id.email_lista);
+        marka_b = (TextView) rowView2.findViewById(R.id.model);
         nr_rejestracyjny = (TextView) rowView2.findViewById(R.id.nr_rejestracyjny);
         checkBox2 = (CheckBox) rowView2.findViewById(R.id.checkBox2);
 
-        pozycja=position;
         marka_b.setText(zm1.get(position));
         nr_rejestracyjny.setText(zm2.get(position));
 
@@ -61,6 +62,13 @@ public class Custom_row_pojazd extends ArrayAdapter<String> {
             checkBox2.setVisibility(View.VISIBLE);
 
         }
+
+        checkBox2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                StartLog=true;
+            }
+        });
 
         for(int i=0;i<tab.length;i++) {
             if(zm2.get(position).contains(tab[i])) {
@@ -185,23 +193,35 @@ public class Custom_row_pojazd extends ArrayAdapter<String> {
             }
         }
 
+        handler = new Handler()
+        {
+            public void handleMessage(android.os.Message msg)
+            {
 
-        checkBox2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked )
+                if(StartLog)
                 {
-                    Log.i("Custom_row_pojazd",zm1.get(pozycja));
-                    Historia_pojazd.getInstance().update_konfiguracj(zm1.get(pozycja), "1");
+                    if (checkBox2.isChecked())
+                    {
+                        ///TODO Do sprawdzenia dlaczego nie działą
+                        Log.i("Custom_row_pojazd1",zm1.get(position));
+                        //Historia_pojazd.getInstance().update_konfiguracj(zm1.get(position), "1");
+                    }
+                    else if (!checkBox2.isChecked())
+                    {
+                        ///TODO Do sprawdzenia dlaczego nie działą
+                        Log.i("Custom_row_pojazd2",zm1.get(position));
+                       // Historia_pojazd.getInstance().update_konfiguracj(zm1.get(position), "0");
+                    }
+                    StartLog=false;
                 }
-                else if (!isChecked )
-                {
-                    Log.i("Custom_row_pojazd",zm1.get(pozycja));
-                    Historia_pojazd.getInstance().update_konfiguracj(zm1.get(pozycja), "0");
-                }
+
+
+                //  simpleProgressBar.setProgress(suma);
+                handler.sendEmptyMessageDelayed(0, 100);
             }
-        });
+        };
 
+        handler.sendEmptyMessage(0);
 
         return rowView2;
     }
