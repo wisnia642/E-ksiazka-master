@@ -4,6 +4,7 @@
     android:id="@+id/activity_new_user"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@mipmap/tlo"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
@@ -11,29 +12,29 @@
     tools:context="com.example.strzala.e_ksiazaka1.New_user">
 
     <Button
-        android:text="Utwórz"
         android:id="@+id/zapisz_p"
-        android:background="@drawable/button_style"
-        android:layout_height="50dp"
         android:layout_width="100dp"
-        android:textColor="@android:color/background_light"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:layout_marginBottom="27dp"
         android:layout_marginLeft="36dp"
         android:layout_marginStart="36dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:background="@drawable/button_style"
+        android:text="Utwórz"
+        android:textColor="@android:color/background_light" />
 
     <Button
-        android:text="Powrót"
-        android:textColor="@android:color/background_light"
-        android:background="@drawable/button_style"
+        android:id="@+id/powrot"
         android:layout_width="100dp"
         android:layout_height="50dp"
         android:layout_alignTop="@+id/zapisz_p"
-        android:layout_toRightOf="@+id/qr_code"
         android:layout_toEndOf="@+id/qr_code"
-        android:id="@+id/powrot" />
+        android:layout_toRightOf="@+id/qr_code"
+        android:background="@drawable/button_style"
+        android:text="Powrót"
+        android:textColor="@android:color/background_light" />
 
     <TextView
         android:id="@+id/napis"
@@ -57,14 +58,14 @@
         android:inputType="textPersonName" />
 
     <Button
-        android:text="Skanuj"
-        android:layout_height="50dp"
         android:id="@+id/skanuj"
-        android:background="@drawable/button_style2"
         android:layout_width="100dp"
+        android:layout_height="50dp"
         android:layout_alignBottom="@+id/qr_code"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:background="@drawable/button_style2"
+        android:text="Skanuj" />
 
     <CheckBox
         android:id="@+id/checkBox"

@@ -58,9 +58,17 @@ public class Custom_row_zgloszenie extends ArrayAdapter<String> {
                     e.printStackTrace();
                 }
                // Drawable d = Drawable.createFromStream(is , "src");
-                BufferedInputStream bufferedInputStream = new BufferedInputStream(is);
-                 Bitmap bmp = BitmapFactory.decodeStream(bufferedInputStream);
-                zdjecie.setImageBitmap(bmp);
+
+                //teraz to zakomentowałem
+               // BufferedInputStream bufferedInputStream = new BufferedInputStream(is);
+              //  Bitmap bmp = BitmapFactory.decodeStream(bufferedInputStream);
+
+                //mega rozwiązanie wprowadzone testowo
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inSampleSize = 8;
+                Bitmap preview_bitmap = BitmapFactory.decodeStream(is, null, options);
+
+                zdjecie.setImageBitmap(preview_bitmap);
                // zdjecie.setImageDrawable(d);
 
 

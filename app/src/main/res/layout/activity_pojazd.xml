@@ -4,12 +4,12 @@
     android:id="@+id/activity_main_activity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@mipmap/tlo"
+    android:orientation="vertical"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_vertical_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:orientation="vertical"
-    android:background="@color/truscar_background">
+    android:paddingTop="@dimen/activity_vertical_margin">
 
     <EditText
         android:id="@+id/model"
@@ -32,29 +32,29 @@
         android:visibility="visible" />
 
     <Button
-        android:text="Dodaj"
         android:id="@+id/zapisz_p"
-        android:background="@drawable/button_style"
-        android:layout_height="50dp"
         android:layout_width="100dp"
-        android:textColor="@android:color/background_light"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:layout_marginBottom="27dp"
         android:layout_marginLeft="36dp"
         android:layout_marginStart="36dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:background="@drawable/button_style"
+        android:text="Dodaj"
+        android:textColor="@android:color/background_light" />
 
     <Button
-        android:text="Powrót"
-        android:textColor="@android:color/background_light"
-        android:background="@drawable/button_style"
+        android:id="@+id/powrot"
         android:layout_width="100dp"
         android:layout_height="50dp"
         android:layout_alignTop="@+id/zapisz_p"
-        android:layout_toRightOf="@+id/qr_code"
         android:layout_toEndOf="@+id/qr_code"
-        android:id="@+id/powrot" />
+        android:layout_toRightOf="@+id/qr_code"
+        android:background="@drawable/button_style"
+        android:text="Powrót"
+        android:textColor="@android:color/background_light" />
 
     <TextView
         android:id="@+id/textView8"

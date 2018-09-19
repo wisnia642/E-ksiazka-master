@@ -653,7 +653,7 @@ public class koniec_pojazd extends AppCompatActivity {
         zdjecie.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(dane[9].equals("edit") & dane[10].equals("0"))
+                if(dane[9]!=null & dane[10].equals("0"))
                 {
 
                 }else {
@@ -691,7 +691,7 @@ public class koniec_pojazd extends AppCompatActivity {
         galeria.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(dane[9].equals("edit") & dane[10].equals("0"))
+                if(dane[9]!=null & dane[10].equals("0"))
                 {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 

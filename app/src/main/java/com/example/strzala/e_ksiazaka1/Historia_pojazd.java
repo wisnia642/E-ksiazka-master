@@ -406,6 +406,49 @@ public class Historia_pojazd extends AppCompatActivity {
 
     }
 
+    private void SelectUser()
+    {
+        podlaczenieDB();
+        if (connection != null) {
+
+            try {
+                st = connection.createStatement();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+                Log.i("myTag", "1" + e1);
+            }
+
+            try {
+                PreparedStatement stmt1 = connection.prepareStatement("select * from uzytkownik ");
+                rs = stmt1.executeQuery();
+
+
+                    while (rs.next()) {
+                        String zm = rs.getString("email");
+
+                        if (zm != null) {
+                            marka_a.add(rs.getString("email"));
+                            nr_rejestracyjny_a.add(rs.getString("punkty"));
+                        }
+                    }
+
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+                Log.i("myTag", "3" + e1);
+            }
+
+            try {
+                if (connection != null)
+                    connection.close();
+            } catch (SQLException se) {
+                Log.i("myTag", "4" + se);
+
+            }
+
+        }
+    }
+
+    //wyswietlqanie zgloszenia
     public void adapter_Zgloszenie()
     {
         if(zm1 != null) {
@@ -451,7 +494,7 @@ public class Historia_pojazd extends AppCompatActivity {
         }
 
 
-        SelectDataUser();
+
 
         try {
             if (dane[5] != null & dane[5].equals("1")) {
@@ -483,13 +526,19 @@ public class Historia_pojazd extends AppCompatActivity {
             szukaj2.setVisibility(View.INVISIBLE);
             szukaj1.setVisibility(View.INVISIBLE);
             pole.setText("Zgłoszenia pojazdu");
-            //wyswietlanie liczby zgłoszeń
-            liczba.setText("Zgłoszenia("+zm4.size()+")");
+
             dane[0]="zgloszenie_1";
          //   Log.i("rejestra ",dane[2]);
             dane[2]=dane[4];
+
+            //pobieranie danych
             SelectDataUserSkan();
+
+            //wyswietlanie zgłoszęń
             adapter_Zgloszenie();
+
+            //wyswietlanie liczby zgłoszeń
+            liczba.setText("Zgłoszenia("+zm4.size()+")");
             if(status==false)
             {
                 dane[0]="historia";
@@ -503,13 +552,30 @@ public class Historia_pojazd extends AppCompatActivity {
             szukaj2.setVisibility(View.INVISIBLE);
             checkBox3.setVisibility(View.VISIBLE);
         }
-        //zmiana wyswietlenia
+        else if (dane[0].equals("konta"))
+        {
+            pole.setText("Użytkownicy systemu");
+            szukaj1.setVisibility(View.INVISIBLE);
+            szukaj2.setVisibility(View.INVISIBLE);
+            checkBox3.setVisibility(View.INVISIBLE);
+        }
 
-        if (!dane[0].equals("zgloszenie_1")) {
+        //wyswietlanie pobranych danych w liscie
+         if (!dane[0].equals("zgloszenie_1") & !dane[0].equals("konta")) {
+            SelectDataUser();
+             liczba.setText("Samochody("+marka_a.size()+")");
             Custom_row_pojazd adapter2 = new Custom_row_pojazd(Historia_pojazd.this, marka_a, nr_rejestracyjny_a,aktywne);
             lista_new.setAdapter(adapter2);
             adapter2.notifyDataSetChanged();
-        }
+        }else if (dane[0].equals("konta"))
+         {
+             SelectUser();
+             liczba.setText("Użytkownicy("+marka_a.size()+")");
+             Custom_row adapter3 = new Custom_row(Historia_pojazd.this,marka_a,nr_rejestracyjny_a);
+             lista_new.setAdapter(adapter3);
+             adapter3.notifyDataSetChanged();
+
+         }
 
         lista_new.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -550,6 +616,16 @@ public class Historia_pojazd extends AppCompatActivity {
                         i.putExtra("admin", dane[3]);
                         i.putExtra("rejestracyjny", zm8.get(position));
                         i.putExtra("pozycja2", zm4.get(position));
+                        startActivity(i);
+                    }
+
+                    //przejście do danych u żytkownika
+                    else if (dane[0].equals("konta")) {
+                        Intent i = new Intent(Historia_pojazd.this, dane_pojazd.class);
+                        i.putExtra("menu", "konfiguracja");
+                        i.putExtra("qr_code", dane[1]);
+                        i.putExtra("model",marka_a.get(position));
+                        i.putExtra("admin", dane[3]);
                         startActivity(i);
                     }
                 }

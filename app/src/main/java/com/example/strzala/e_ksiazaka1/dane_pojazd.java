@@ -111,7 +111,7 @@ public class dane_pojazd extends AppCompatActivity {
 
             String sql2 = "UPDATE uzytkownik SET imie = '"+dane[0]+"',nazwisko = '"+dane[2]+"'," +
                     "adres = '"+dane[3]+"',dane1 = '"+dane[8]+"',dane2 = '"+dane[5]+"'" +
-                    " WHERE qr_code = '" + dane[4] + "'";
+                    " WHERE email = '" + dane[1] + "'";
             try {
                 st.executeUpdate(sql2);
             } catch (SQLException e) {
@@ -201,6 +201,7 @@ public class dane_pojazd extends AppCompatActivity {
         }
     }
 
+    //sprawdzam czy dany qr_code jest w bazie danych po zeskanowaniu ponownie
     private void SelectUser(String tekst)
     {
         podlaczenieDB();
@@ -218,7 +219,7 @@ public class dane_pojazd extends AppCompatActivity {
                 PreparedStatement stmt1 = connection.prepareStatement("select * from uzytkownik where qr_code like '%"+tekst+"%' ");
                 rs = stmt1.executeQuery();
 
-                if(!tekst.equals("")) {
+                if(tekst!=null) {
                     while (rs.next()) {
                         String zm = rs.getString("qr_code");
 
@@ -263,16 +264,16 @@ public class dane_pojazd extends AppCompatActivity {
                 Log.i("myTag", "1" + e1);
             }
 
-            String sql2 = "UPDATE uzytkownik SET imie = '"+dane[0]+"',nazwisko = '"+dane[2]+"'," +
-                    "adres = '"+dane[3]+"',dane1 = '"+dane[8]+"',dane2 = '"+dane[5]+"'" +
-                    " WHERE qr_code = '" + dane[4] + "'";
+           // String sql2 = "UPDATE uzytkownik SET imie = '"+dane[0]+"',nazwisko = '"+dane[2]+"'," +
+           //         "adres = '"+dane[3]+"',dane1 = '"+dane[8]+"',dane2 = '"+dane[5]+"'" +
+           //         " WHERE qr_code = '" + dane[4] + "'";
 
             try {
-                PreparedStatement stmt1 = connection.prepareStatement("select * from uzytkownik where qr_code like '%"+dane[4]+"%' ");
+                PreparedStatement stmt1 = connection.prepareStatement("select * from uzytkownik where email = '"+dane[1]+"' ");
                 rs = stmt1.executeQuery();
 
                     while (rs.next()) {
-                        String zm = rs.getString("qr_code");
+                        String zm = rs.getString("email");
 
                         if (zm != null) {
                             dane[0] = rs.getString("imie");
@@ -424,6 +425,9 @@ public class dane_pojazd extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+
+                if(dane[9]==null) {
+
                     dane[0] = marka.getText().toString();
                     dane[1] = model.getText().toString();
                     dane[2] = rocznik.getText().toString();
@@ -431,8 +435,6 @@ public class dane_pojazd extends AppCompatActivity {
                     dane[5] = nr_rejestracyjny.getText().toString();
                     dane[8] = vin.getText().toString();
                     SelectUser(dane[6]);
-
-                if(dane[9]==null) {
                     if (!dane[0].equals("")) {
 
                         if (!dane[5].equals("")) {
@@ -463,6 +465,14 @@ public class dane_pojazd extends AppCompatActivity {
                     }
                 }else
                 {
+
+                    dane[0] = marka.getText().toString();
+                    dane[1] = model.getText().toString();
+                    dane[2] = rocznik.getText().toString();
+                    dane[3] = silnik.getText().toString();
+                    dane[5] = nr_rejestracyjny.getText().toString();
+                    dane[8] = vin.getText().toString();
+                    //SelectUser(dane[4]);
                     update_uzytkownik();
                     showToast("Dane zostały zapisane");
                     Intent i = new Intent(dane_pojazd.this, MainMenu.class);

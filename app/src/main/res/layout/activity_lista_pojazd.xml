@@ -4,6 +4,7 @@
     android:id="@+id/activity_lista_pojazd"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@mipmap/tlo"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
@@ -11,12 +12,12 @@
     tools:context="com.example.strzala.e_ksiazaka1.lista_pojazd">
 
     <ListView
+        android:id="@+id/kategoria_naprawy"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="57dp"
-        android:id="@+id/kategoria_naprawy" />
+        android:layout_marginTop="57dp" />
 
     <TextView
         android:id="@+id/tekst"

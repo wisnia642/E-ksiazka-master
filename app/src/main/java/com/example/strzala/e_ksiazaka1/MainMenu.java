@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -321,6 +322,9 @@ public class MainMenu extends AppCompatActivity
         list1=(ListView)findViewById(R.id.zgloszenia);
         list2=(ListView)findViewById(R.id.pojazdy);
 
+
+
+
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.activity_main_swipe_refresh_layout);
 
         SelectDataUser();
@@ -334,6 +338,10 @@ public class MainMenu extends AppCompatActivity
             if (zm7.get(0).equals("1")) {
                 zgloszenie.setVisibility(View.VISIBLE);
                 samochod.setVisibility(View.VISIBLE);
+
+                //ustawienie elemntu menu jako widoczny
+                Menu nav_Menu = navigationView.getMenu();
+                nav_Menu.findItem(R.id.konta1).setVisible(true);
 
             }
 
@@ -468,6 +476,13 @@ public class MainMenu extends AppCompatActivity
         }else if (id == R.id.historia) {
             Intent i = new Intent(MainMenu.this,Historia_pojazd.class);
             i.putExtra("menu","historia");
+            i.putExtra("qr_code",dane[2]);
+            i.putExtra("admin",zm7.get(0));
+            startActivity(i);
+        }
+        else if (id == R.id.konta1) {
+            Intent i = new Intent(MainMenu.this,Historia_pojazd.class);
+            i.putExtra("menu","konta");
             i.putExtra("qr_code",dane[2]);
             i.putExtra("admin",zm7.get(0));
             startActivity(i);

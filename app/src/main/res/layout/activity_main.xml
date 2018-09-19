@@ -5,108 +5,108 @@
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@mipmap/tlo"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:background="@android:color/white">
+    android:paddingTop="@dimen/activity_vertical_margin">
 
     <Button
         android:id="@+id/przypomnienie_hasla"
-        android:textColor="@android:color/background_light"
-        android:text="@string/przypomnienie_hasla"
-        android:shadowRadius="5"
-        android:textSize="12sp"
-        android:background="@drawable/button_style2"
-        android:layout_height="40dp"
         android:layout_width="120dp"
-        android:layout_alignParentBottom="true"
+        android:layout_height="40dp"
         android:layout_alignLeft="@+id/logowanie_qr"
-        android:layout_alignStart="@+id/logowanie_qr" />
+        android:layout_alignParentBottom="true"
+        android:layout_alignStart="@+id/logowanie_qr"
+        android:background="@drawable/button_style2"
+        android:shadowRadius="5"
+        android:text="@string/przypomnienie_hasla"
+        android:textColor="@android:color/background_light"
+        android:textSize="12sp" />
 
     <Button
-        android:layout_height="40dp"
         android:id="@+id/konto"
-        android:textColorLink="?attr/actionMenuTextColor"
-        android:background="@drawable/button_style2"
-        android:textColor="@android:color/background_light"
-        android:text="@string/utworz_konto"
-        android:shadowRadius="5"
-        android:textSize="12sp"
         android:layout_width="120dp"
+        android:layout_height="40dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:background="@drawable/button_style2"
+        android:shadowRadius="5"
+        android:text="@string/utworz_konto"
+        android:textColor="@android:color/background_light"
+        android:textColorLink="?attr/actionMenuTextColor"
+        android:textSize="12sp" />
 
     <Button
         android:id="@+id/logowanie_qr"
-        android:textColor="@android:color/background_light"
-        android:text="@string/button_login_qr"
-        android:shadowRadius="5"
-        android:textSize="14sp"
-        android:background="@drawable/button_style"
-        android:layout_height="40dp"
         android:layout_width="120dp"
-        android:layout_alignTop="@+id/logowanie"
-        android:layout_alignParentRight="true"
+        android:layout_height="40dp"
         android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@+id/logowanie"
+        android:layout_marginEnd="14dp"
         android:layout_marginRight="14dp"
-        android:layout_marginEnd="14dp" />
+        android:background="@drawable/button_style"
+        android:shadowRadius="5"
+        android:text="@string/button_login_qr"
+        android:textColor="@android:color/background_light"
+        android:textSize="14sp" />
 
     <Button
-        android:layout_height="40dp"
         android:id="@+id/logowanie"
-        android:textColorLink="?attr/actionMenuTextColor"
-        android:background="@drawable/button_style"
-        android:textColor="@android:color/background_light"
-        android:text="@string/button_login"
-        android:shadowRadius="5"
-        android:textSize="14sp"
         android:layout_width="120dp"
+        android:layout_height="40dp"
         android:layout_above="@+id/konto"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_marginBottom="29dp" />
+        android:layout_marginBottom="29dp"
+        android:background="@drawable/button_style"
+        android:shadowRadius="5"
+        android:text="@string/button_login"
+        android:textColor="@android:color/background_light"
+        android:textColorLink="?attr/actionMenuTextColor"
+        android:textSize="14sp" />
 
     <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="textPersonName"
-        android:ems="10"
         android:id="@+id/login"
-        android:hint="Adres email"
-        android:textColorHighlight="@android:color/background_dark"
-        android:textColorHint="@android:color/background_dark"
-        android:textAlignment="center"
-        android:layout_below="@+id/imageView2"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
-
-    <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:inputType="textPassword"
-        android:ems="10"
-        android:id="@+id/password"
-        android:hint="@string/haslo"
-        android:textColorHint="@android:color/background_dark"
-        android:textAlignment="center"
-        android:layout_below="@+id/login"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/imageView2"
+        android:ems="10"
+        android:hint="Adres email"
+        android:inputType="textPersonName"
+        android:textAlignment="center"
+        android:textColorHighlight="@android:color/background_dark"
+        android:textColorHint="@android:color/background_dark" />
+
+    <EditText
+        android:id="@+id/password"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/login"
+        android:ems="10"
+        android:hint="@string/haslo"
+        android:inputType="textPassword"
+        android:textAlignment="center"
+        android:textColorHint="@android:color/background_dark" />
 
     <CheckBox
-        android:text="Zezwól na zapisywanie hasła"
+        android:id="@+id/checkBoks"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/checkBoks"
-        android:layout_marginBottom="25dp"
         android:layout_above="@+id/logowanie_qr"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="25dp"
+        android:text="Zezwól na zapisywanie hasła" />
 
     <ImageView
         android:id="@+id/imageView2"

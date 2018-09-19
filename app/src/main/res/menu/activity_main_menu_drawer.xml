@@ -18,6 +18,11 @@
             android:id="@+id/historia"
             android:icon="@android:drawable/star_off"
             android:title="Historia pojazdu" />
+        <item
+            android:id="@+id/konta1"
+            android:icon="@drawable/ic_menu_share"
+            android:title="Użytkownicy"
+            android:visible="false" />
     </group>
 
 </menu>
