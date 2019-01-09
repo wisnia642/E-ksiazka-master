@@ -236,7 +236,7 @@ public class MainMenu extends AppCompatActivity
 
 
                 }
-                zm4.add(String.valueOf(punkty));
+                zm4.add("Punkty: "+String.valueOf(punkty));
                 if(s3==false)
                 {
 

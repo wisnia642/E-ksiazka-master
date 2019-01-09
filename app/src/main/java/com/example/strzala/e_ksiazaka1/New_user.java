@@ -31,8 +31,8 @@ public class New_user extends AppCompatActivity {
     public EditText email,haslo,haslo_pow,qrcode;
     public TextView rekulamin_akceptacja,napis;
     public Button skan,ok,anuluj;
-    public CheckBox checkBox;
-    public boolean status =true;
+    public CheckBox checkBox,szybk_log;
+    public boolean status =false;
     public String hash;
 
     String subject = "",data="",kod="";
@@ -159,6 +159,7 @@ public class New_user extends AppCompatActivity {
     {
 
         podlaczenieDB();
+        status=false;
 
         if (connection != null) {
             try {
@@ -171,11 +172,11 @@ public class New_user extends AppCompatActivity {
             try {
                 if (dane[4].equals("zmiana_hasla"))
                 {
-                    PreparedStatement stmt1 = connection.prepareStatement("Select * from uzytkownik where qr_code = '" + dane[3] + "' ");
+                    PreparedStatement stmt1 = connection.prepareStatement("Select email,haslo from uzytkownik where qr_code = '" + dane[3] + "' ");
                     rs = stmt1.executeQuery();
                 }else
                 {
-                    PreparedStatement stmt1 = connection.prepareStatement("Select * from uzytkownik where email = '" + dane[0] + "' ");
+                    PreparedStatement stmt1 = connection.prepareStatement("Select email,haslo from uzytkownik where email = '" + dane[0] + "' ");
                     rs = stmt1.executeQuery();
                 }
 
@@ -185,7 +186,7 @@ public class New_user extends AppCompatActivity {
                     haslo_old = rs.getString("haslo");
 
 
-                    status = zm == null;
+                    status = true;
 
                 }
             } catch (SQLException e1) {
@@ -209,11 +210,13 @@ public class New_user extends AppCompatActivity {
 
         dane[0] = email.getText().toString();
 
-            message = "Witaj "+dane[0]+",\n" +
-                    "\n"+
+        if (dane[0].contains("@")) {
+
+            message = "Witaj " + dane[0] + ",\n" +
+                    "\n" +
                     " Utworzyłeś konto w Trust Serwis Book, Od teraz będziesz \n" +
-                    " mógł przeglądać historię napraw pojazdów w swoim telefonie.\n"+
-                    "\n"+
+                    " mógł przeglądać historię napraw pojazdów w swoim telefonie.\n" +
+                    "\n" +
                     " Pozdrawiam Zespół TrustCar. \n";
             subject = "Utworzenie konta Trust Serwis Book.";
             //Creating SendMail object
@@ -226,7 +229,12 @@ public class New_user extends AppCompatActivity {
             } catch (Exception e) {
                 Log.i("MainActivity", "" + e);
             }
+
         }
+    }
+
+
+        //sprawdzanie kodu qr zrezygnowane na życzenie klienta
 
     public void SelectDataUser_qrcode()
     {
@@ -240,8 +248,25 @@ public class New_user extends AppCompatActivity {
                 Log.i("myTag", "1" + e1);
             }
 
+            //insert brakującego kodyu qr
+            String sql1 = "INSERT INTO qr_code (kod, aktywne) " +
+                    "SELECT '"+dane[3]+"','1' FROM qr_code WHERE NOT EXISTS " +
+                    "(SELECT * FROM qr_code WHERE kod='"+dane[3]+"') LIMIT 1 ";
+
+
             try {
-                PreparedStatement stmt1 = connection.prepareStatement("select * from qr_code where kod='"+dane[3]+"' and aktywne='1' ");
+                st.executeUpdate(sql1);
+
+
+
+
+
+            } catch (SQLException e) {
+                Log.i("New user", "" + e);
+            }
+
+            try {
+                PreparedStatement stmt1 = connection.prepareStatement("select kod from qr_code where kod='"+dane[3]+"' and aktywne='1' ");
                 rs = stmt1.executeQuery();
 
 
@@ -259,6 +284,10 @@ public class New_user extends AppCompatActivity {
 
 
                     }
+
+                    //zaznaczanie jako dezaktywne qr_code
+                    String sql2 = "UPDATE qr_code SET aktywne = '0' WHERE kod = '" + dane[3] + "'";
+                    st.executeUpdate(sql2);
 
                 }
             } catch (SQLException e1) {
@@ -323,6 +352,7 @@ public class New_user extends AppCompatActivity {
         anuluj = (Button) findViewById(R.id.powrot);
 
         checkBox = (CheckBox) findViewById(R.id.checkBox);
+        szybk_log = (CheckBox) findViewById(R.id.log);
 
         try {
 
@@ -396,18 +426,25 @@ public class New_user extends AppCompatActivity {
                     //moduł do dodawania nowego użytkownika
                 }else {
                     if (activeNetwork()) {
+
+                        //pobieranie kodu qr
                         dane[3] = qrcode.getText().toString();
                         SelectDataUser();
                         SelectDataUser_qrcode();
 
                         //sprawdzanie czy pole email jest uzupełnione
-                        if (dane[0].contains("@")) {
-                            if (status == true) {
+
+                        //wyłączenie na życzenie klienta sprawdzanie poprawności konta email
+                       // if (dane[0].contains("@")) {
+                            if (status == false) {
                                 if (!dane[1].equals("") & !dane[2].equals("")) {
                                     if (dane[1].equals(dane[2])) {
                                         if (!dane[3].equals("")) {
                                             Log.i("user1", kod);
+
                                             if (dane[3].equals(kod)) {
+
+                                                //tworzenie urzytkonika
                                                 if (checkBox.isChecked()) {
                                                     dane[0].replace(" ", "");
                                                     hash();
@@ -416,7 +453,10 @@ public class New_user extends AppCompatActivity {
                                                     InsertLoginDataMysql();
 
 
-                                                    sendemail_execiut();
+                                                    //szybkie logowanie, wyłączanie maila
+                                                    if(!szybk_log.isChecked()) {
+                                                        sendemail_execiut();
+                                                    }
 
                                                     Intent i = new Intent(New_user.this, MainMenu.class);
                                                     i.putExtra("email", dane[0]);
@@ -435,7 +475,7 @@ public class New_user extends AppCompatActivity {
                                             }
 
                                         } else {
-                                            showToast("Podaj kod zabezpieczający kodu QE");
+                                            showToast("Podaj kod");
                                         }
                                     } else {
                                         showToast("Hasła nie są identyczne");
@@ -450,9 +490,9 @@ public class New_user extends AppCompatActivity {
                                 showToast("Email już istnieje");
                             }
 
-                        } else {
-                            showToast("Uzupełnij poprawnie email");
-                        }
+                        //} else {
+                        //    showToast("Uzupełnij poprawnie email");
+                      //  }
 
                     } else {
                         showToast("Brak dostępu do internetu");

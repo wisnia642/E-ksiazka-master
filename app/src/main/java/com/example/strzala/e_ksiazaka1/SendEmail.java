@@ -76,11 +76,18 @@ public class SendEmail extends AsyncTask<Void,Void,Void> {
     @Override
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
-        //Dismissing the progress dialog
-        progressDialog.dismiss();
+
         //Showing a success message
         if(!stan) {
             Toast.makeText(context, "Wiadomość wysłana", Toast.LENGTH_LONG).show();
+        }
+
+        //Dismissing the progress dialog
+        try {
+            progressDialog.dismiss();
+        }catch (Exception e)
+        {
+            Log.i("sendEmiail",""+e);
         }
     }
 

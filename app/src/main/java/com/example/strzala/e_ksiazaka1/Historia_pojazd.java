@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
+import android.os.Handler;
 import android.os.StrictMode;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -50,6 +51,7 @@ public class Historia_pojazd extends AppCompatActivity {
 
     String dane[] = new String[10];
     Boolean status=false,delete=false,click=false,filtr=false,filtr2=false;
+    private Handler handler = new Handler();
 
     static ResultSet rs;
     static Statement st;
@@ -186,6 +188,7 @@ public class Historia_pojazd extends AppCompatActivity {
             nr_rejestracyjny_a.clear();
             qrcode_tab.clear();
             aktywne.clear();
+            Log.i("Czy_admin",String.valueOf(dane[3]));
 
             try {
                 st = connection.createStatement();
@@ -196,43 +199,103 @@ public class Historia_pojazd extends AppCompatActivity {
             try {
 
                 //pobieranie samochodów dla zywkłego użytkownika
-                if (dane[3].equals("0") ) {
-                    PreparedStatement stmt1 = connection.prepareStatement("Select * from samochod where qr_code = '" + dane[1] + "' and wyswietl='1'  ");
+                if (dane[3].equals("0") & filtr == false & filtr2 == false) {
+                    PreparedStatement stmt1 = connection.prepareStatement("Select * from uzytkownik where qr_code = '" + dane[1] + "' and imie = '"+dane[2]+"' ");
                     rs = stmt1.executeQuery();
-                } if (dane[3].equals("0") & dane[0].equals("konfiguracja"))
-                {
-                    PreparedStatement stmt1 = connection.prepareStatement("Select * from samochod where qr_code = '" + dane[1] + "'   ");
+                    Log.i("Zap","1");
+                } if (dane[3].equals("0") & dane[0].equals("konfiguracja")) {
+                    PreparedStatement stmt1 = connection.prepareStatement("Select * from samochod sam where qr_code = '" + dane[1] + "'   ");
                     rs = stmt1.executeQuery();
-
+                    Log.i("Zap","2");
                     //powbieranie wszystkich samochodów dla admina
-                }  if(dane[3].equals("0") & filtr==true)
-                {
-                    filtr=false;
-                    PreparedStatement stmt1 = connection.prepareStatement("Select * from samochod where nr_rejestracyjny like  '%" + dane[2] + "%' and qr_code = '" + dane[1] + "'");
-                    rs = stmt1.executeQuery();
                 }
-                 if(dane[3].equals("1") )
-                {
-                    PreparedStatement stmt1 = connection.prepareStatement("Select * from samochod ");
+                if (dane[3].equals("1") & dane[0].equals("konfiguracja")) {
+                    PreparedStatement stmt1 = connection.prepareStatement("Select * from samochod  ");
                     rs = stmt1.executeQuery();
+                    Log.i("Zap","12");
+                    //powbieranie wszystkich samochodów dla admina
                 }
-                 if(dane[3].equals("1") & filtr==true )
-                {
-                    filtr=false;
-                    if(dane[2].contains("@")) {
+                 if (dane[3].equals("0") & dane[0].equals("historia")) {
+                    PreparedStatement stmt1 = connection.prepareStatement("Select * from samochod sam where qr_code = '" + dane[1] + "'   ");
+                    rs = stmt1.executeQuery();
+                     Log.i("Zap","3");
+                }
+                if (dane[3].equals("0") & dane[0].equals("zgloszenie")) {
+                    PreparedStatement stmt1 = connection.prepareStatement("Select * from samochod sam where qr_code = '" + dane[1] + "'   ");
+                    rs = stmt1.executeQuery();
+                    Log.i("Zap","4");
+                }
+                if (dane[3].equals("0") & filtr == true) {
+                    filtr = false;
+                    PreparedStatement stmt1 = connection.prepareStatement("Select * from samochod sam where nr_rejestracyjny like  '%" + dane[2] + "%' and qr_code = '" + dane[1] + "'");
+                    rs = stmt1.executeQuery();
+                    Log.i("Zap","5");
+                } if (dane[3].equals("0") & filtr2 == true & dane[0].equals("konta")) {
+                    filtr = false;
+                    PreparedStatement stmt1 = connection.prepareStatement("Select * from uzytkownik where imie like  '%" + dane[2] + "%' and qr_code = '" + dane[1] + "'");
+                    rs = stmt1.executeQuery();
+                    Log.i("Zap","6");
+                }
+
+                if (dane[3].equals("1") & dane[0].equals("historia")) {
+                    PreparedStatement stmt1 = connection.prepareStatement("Select * from samochod sam    ");
+                    rs = stmt1.executeQuery();
+                    Log.i("Zap","7");
+                }
+
+                if (dane[3].equals("1") & dane[0].equals("historia") & dane[4]!=null) {
+                    PreparedStatement stmt1 = connection.prepareStatement("Select * from samochod sam where qr_code = '" + dane[4] + "'  ");
+                    rs = stmt1.executeQuery();
+                    Log.i("Zap","17");
+                    Log.i("qr",String.valueOf(dane[1]));
+                }
+
+                if (dane[3].equals("1") & dane[0].equals("zgloszenie")) {
+                    PreparedStatement stmt1 = connection.prepareStatement("Select * from samochod sam   ");
+                    rs = stmt1.executeQuery();
+                    Log.i("Zap","8");
+                }
+                //pobieranie danych dla aministratora
+                if (dane[3].equals("1") & dane[0].equals("konta")) {
+                    PreparedStatement stmt1 = connection.prepareStatement("Select * from uzytkownik ");
+                    rs = stmt1.executeQuery();
+                    Log.i("Zap","9");
+                }if (dane[3].equals("1") & filtr == true & dane[0].equals("historia")) {
+                    filtr = false;
+
+                    //sprawdzenie poprawności maila
+                    if (dane[2].contains("@")) {
                         PreparedStatement stmt1 = connection.prepareStatement("select * from uzytkownik uzy join samochod sam on uzy.qr_code=sam.qr_code where sam.qr_code in (Select qr_code from samochod) " +
-                                "and uzy.email like '%" + dane[2] + "%' @");
+                                "and uzy.email like '%" + dane[2] + "%' ");
                         rs = stmt1.executeQuery();
-                    }
-                    else
-                    {
+                    } else {
                         PreparedStatement stmt1 = connection.prepareStatement("select * from uzytkownik uzy join samochod sam on uzy.qr_code=sam.qr_code where sam.qr_code in (Select qr_code from samochod) " +
                                 "and (nr_rejestracyjny like  '%" + dane[2] + "%' or marka like  '%" + dane[2] + "%' or model like  '%" + dane[2] + "%') ");
                         rs = stmt1.executeQuery();
                     }
-
+                    Log.i("Zap","10");
+                } if (dane[3].equals("1") & filtr2 == true & dane[0].equals("konta")) {
+                    PreparedStatement stmt1 = connection.prepareStatement("Select * from uzytkownik where imie like  '%" + dane[2] + "%' or email like  '%" + dane[2] + "%' ");
+                    rs = stmt1.executeQuery();
+                    Log.i("Zap","11");
                 }
 
+                // sam.id,sam.Marka,sam.nr_rejestracyjny,sam.qr_code
+                if (dane[0].equals("konta")){
+                    while (rs.next()) {
+                        String zm = rs.getString("email");
+
+                        if (zm != null) {
+                            Log.i("filtr_sql",""+rs.getString("email"));
+                            marka_a.add(rs.getString("email"));
+                            nr_rejestracyjny_a.add(rs.getString("imie"));
+                            aktywne.add("nie");
+
+                            status = true;
+                        }
+                    }
+                }else
+                {
 
 
                 while (rs.next()) {
@@ -240,23 +303,25 @@ public class Historia_pojazd extends AppCompatActivity {
 
                     if (zm != null) {
                         Id.add(rs.getString("Id"));
-                        marka_a.add(rs.getString("Marka")+" "+  rs.getString("model"));
+                        Log.i("Marka",""+rs.getString("Marka"));
+                        marka_a.add(rs.getString("Marka") + " " + rs.getString("model"));
                         nr_rejestracyjny_a.add(rs.getString("nr_rejestracyjny"));
                         qrcode_tab.add(rs.getString("qr_code"));
-                        if(dane[0].equals("konfiguracja")) {
+
+                        if (dane[0].equals("konfiguracja")) {
                             aktywne.add(rs.getString("wyswietl"));
-                        }else
-                        {
+                        } else {
                             aktywne.add("nie");
                         }
-                        status=true;
-                       // Log.i("historiapojazd","Status"+ status);
+                        status = true;
+                        // Log.i("historiapojazd","Status"+ status);
 
-                    } else  if (zm == null){
-                        status=false;
+                    } else if (zm == null) {
+                        status = false;
                     }
 
                 }
+            }
 
                 if(delete==true) {
                     delete=false;
@@ -322,6 +387,7 @@ public class Historia_pojazd extends AppCompatActivity {
                             "Left join zgloszenie zgl on sam.nr_rejestracyjny=zgl.nr_rejestracyjny " +
                             "where sam.qr_code = '" + dane[1] + "' and sam.nr_rejestracyjny = '" + dane[2] + "' order by zgl.id desc ");
                     rs = stmt2.executeQuery();
+                    Log.i("zap2","1");
                 }
 
                 if(dane[0].equals("zgloszenie_1") & dane[3].equals("1")) {
@@ -329,6 +395,7 @@ public class Historia_pojazd extends AppCompatActivity {
                             "Left join zgloszenie zgl on sam.nr_rejestracyjny=zgl.nr_rejestracyjny " +
                             "where sam.nr_rejestracyjny = '" + dane[2] + "' order by zgl.id desc ");
                     rs = stmt2.executeQuery();
+                    Log.i("zap2","2");
                 }
 
                 if(dane[0].equals("historia"))
@@ -337,6 +404,7 @@ public class Historia_pojazd extends AppCompatActivity {
                             "Left join zgloszenie zgl on sam.nr_rejestracyjny=zgl.nr_rejestracyjny " +
                             "where sam.qr_code = '" + dane[1] + "' and sam.nr_rejestracyjny like '%" + dane[2] + "%' order by zgl.id desc ");
                     rs = stmt2.executeQuery();
+                    Log.i("zap2","3");
                 }
 
                 if(dane[0].equals("historia") & dane[3].equals("1")) {
@@ -344,6 +412,7 @@ public class Historia_pojazd extends AppCompatActivity {
                             "Left join zgloszenie zgl on sam.nr_rejestracyjny=zgl.nr_rejestracyjny " +
                             "where sam.nr_rejestracyjny like '%" + dane[2] + "%' order by zgl.id desc ");
                     rs = stmt2.executeQuery();
+                    Log.i("zap2","4");
                 }
 
                 while (rs.next()) {
@@ -356,11 +425,11 @@ public class Historia_pojazd extends AppCompatActivity {
                         zm5.add(rs.getString("zgl.status"));
                         zm6.add(rs.getString("zgl.data_dod"));
                         zm8.add(rs.getString("zgl.nr_rejestracyjny"));
-                        zdjecie.add( rs.getBlob("zdjecie_przed"));
+                        zdjecie.add( rs.getBlob("zgl.zdjecie_przed"));
                         status=true;
 
                     } else  if (zm1 == null){
-                        Log.i("historiapojazd","nie"+ dane[2]);
+                      //  Log.i("historiapojazd","nie"+ dane[2]);
                         status=false;
                     }
 
@@ -419,7 +488,7 @@ public class Historia_pojazd extends AppCompatActivity {
             }
 
             try {
-                PreparedStatement stmt1 = connection.prepareStatement("select * from uzytkownik ");
+                PreparedStatement stmt1 = connection.prepareStatement("select email,imie from uzytkownik ");
                 rs = stmt1.executeQuery();
 
 
@@ -428,7 +497,7 @@ public class Historia_pojazd extends AppCompatActivity {
 
                         if (zm != null) {
                             marka_a.add(rs.getString("email"));
-                            nr_rejestracyjny_a.add(rs.getString("punkty"));
+                            nr_rejestracyjny_a.add(rs.getString("imie"));
                         }
                     }
 
@@ -452,9 +521,15 @@ public class Historia_pojazd extends AppCompatActivity {
     public void adapter_Zgloszenie()
     {
         if(zm1 != null) {
-            Custom_row_zgloszenie adapter1 = new Custom_row_zgloszenie(this, zm8, zm6, zm5, zdjecie);
-            lista_new.setAdapter(adapter1);
-            adapter1.notifyDataSetChanged();
+            Log.i("sprawdzenie_listy",String.valueOf(zm8));
+            Log.i("sprawdzenie_listy",String.valueOf(zm6));
+            Log.i("sprawdzenie_listy",String.valueOf(zm5));
+            Log.i("sprawdzenie_listy",String.valueOf(zdjecie));
+            if(zm8!=null) {
+                Custom_row_zgloszenie adapter1 = new Custom_row_zgloszenie(this, zm8, zm6, zm5, zdjecie);
+                lista_new.setAdapter(adapter1);
+                adapter1.notifyDataSetChanged();
+            }
         }
     }
 
@@ -490,10 +565,8 @@ public class Historia_pojazd extends AppCompatActivity {
 
         }catch (Exception e)
         {
-            Log.i("historiapojazd",""+e);
+            Log.i("historiapojazd2",""+e);
         }
-
-
 
 
         try {
@@ -502,7 +575,7 @@ public class Historia_pojazd extends AppCompatActivity {
             }
         }catch (Exception e)
         {
-            Log.i("historiapojazd",""+e);
+            Log.i("historiapojazd1",""+e);
         }
 
         //automatyczne ukrywanie klawiatury na starcie
@@ -546,34 +619,46 @@ public class Historia_pojazd extends AppCompatActivity {
         //konfiguracja konta
         } else if (dane[0].equals("konfiguracja"))
         {
+            SelectDataUser();
             liczba.setText("Samochody("+marka_a.size()+")");
             pole.setText("Konfiguracja konta");
             szukaj1.setVisibility(View.INVISIBLE);
             szukaj2.setVisibility(View.INVISIBLE);
             checkBox3.setVisibility(View.VISIBLE);
+            if(marka_a!=null) {
+                Custom_row_pojazd adapter2 = new Custom_row_pojazd(Historia_pojazd.this, marka_a, nr_rejestracyjny_a, aktywne);
+                lista_new.setAdapter(adapter2);
+                adapter2.notifyDataSetChanged();
+            }
         }
         else if (dane[0].equals("konta"))
         {
             pole.setText("Użytkownicy systemu");
-            szukaj1.setVisibility(View.INVISIBLE);
-            szukaj2.setVisibility(View.INVISIBLE);
+            szukaj1.setVisibility(View.VISIBLE);
+            szukaj2.setVisibility(View.VISIBLE);
             checkBox3.setVisibility(View.INVISIBLE);
         }
 
         //wyswietlanie pobranych danych w liscie
-         if (!dane[0].equals("zgloszenie_1") & !dane[0].equals("konta")) {
+         if ( dane[0].equals("historia") || dane[0].equals("zgloszenie")) {
             SelectDataUser();
              liczba.setText("Samochody("+marka_a.size()+")");
-            Custom_row_pojazd adapter2 = new Custom_row_pojazd(Historia_pojazd.this, marka_a, nr_rejestracyjny_a,aktywne);
-            lista_new.setAdapter(adapter2);
-            adapter2.notifyDataSetChanged();
-        }else if (dane[0].equals("konta"))
+             Log.i("lista",String.valueOf(marka_a));
+             Log.i("dane",String.valueOf(dane[0]));
+             if(marka_a!=null) {
+                 Custom_row_pojazd adapter2 = new Custom_row_pojazd(Historia_pojazd.this, marka_a, nr_rejestracyjny_a, aktywne);
+                 lista_new.setAdapter(adapter2);
+                 adapter2.notifyDataSetChanged();
+             }
+        }if (dane[0].equals("konta"))
          {
              SelectUser();
              liczba.setText("Użytkownicy("+marka_a.size()+")");
-             Custom_row adapter3 = new Custom_row(Historia_pojazd.this,marka_a,nr_rejestracyjny_a);
-             lista_new.setAdapter(adapter3);
-             adapter3.notifyDataSetChanged();
+             if(marka_a!=null) {
+                 Custom_row adapter3 = new Custom_row(Historia_pojazd.this, marka_a, nr_rejestracyjny_a);
+                 lista_new.setAdapter(adapter3);
+                 adapter3.notifyDataSetChanged();
+             }
 
          }
 
@@ -638,6 +723,7 @@ public class Historia_pojazd extends AppCompatActivity {
         lista_new.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+
                 final AlertDialog.Builder builder = new AlertDialog.Builder(Historia_pojazd.this);
                 click=true;
                 if(dane[0].equals("zgloszenie") || dane[0].equals("zgloszenie_1"))
@@ -708,19 +794,34 @@ public class Historia_pojazd extends AppCompatActivity {
             public void onClick(View v) {
                 dane[2]="";
                 dane[2]=szukaj2.getText().toString();
-                if(!dane[2].equals("") & filtr2==false) {
+                if (dane[0].equals("konta") & !dane[2].equals(""))
+                {
+                    filtr2=true;
+                    SelectDataUser();
+
+                    try {
+                        if(marka_a!=null) {
+                            Custom_row adapter3 = new Custom_row(Historia_pojazd.this, marka_a, nr_rejestracyjny_a);
+                            lista_new.setAdapter(adapter3);
+                            adapter3.notifyDataSetChanged();
+                        }
+                    }catch (Exception e){
+                        Log.i("filtr", ""+e);
+                }
+
+                    showToast("Zakończono wyszukiwanie");
+                }
+                else if (!dane[2].equals("") ) {
                     filtr = true;
                     SelectDataUser();
 
-                    Custom_row_pojazd adapter2 = new Custom_row_pojazd(Historia_pojazd.this, marka_a, nr_rejestracyjny_a, aktywne);
-                    lista_new.setAdapter(adapter2);
+                    if(marka_a!=null) {
+                        Custom_row_pojazd adapter2 = new Custom_row_pojazd(Historia_pojazd.this, marka_a, nr_rejestracyjny_a, aktywne);
+                        lista_new.setAdapter(adapter2);
+                    }
 
-                    if(dane[3].equals("1")) {
-                        showToast("Wyszukano samochochody uzytkowmników z emailem lub rejestracją");
-                    }
-                    else {
-                        showToast("Wyszukano pojazdy z rejestracją: " + dane[2]);
-                    }
+                    showToast("Zakończono wyszukiwanie");
+
                 }
             }
         });

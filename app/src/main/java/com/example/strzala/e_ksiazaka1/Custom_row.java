@@ -33,10 +33,10 @@ public View getView(int position, View view, ViewGroup parent) {
      //Log.i("uzytkownik",zm1.get(position)+zm2.get(position));
      tekst1.setText(zm1.get(position));
      try {
-         tekst2.setText("Punkty: " + zm2.get(position));
+         tekst2.setText(zm2.get(position));
      }catch (Exception e)
      {
-         tekst2.setText("Punkty: 0");
+         tekst2.setText("");
          Log.i("CustomRow",""+e);
      }
 

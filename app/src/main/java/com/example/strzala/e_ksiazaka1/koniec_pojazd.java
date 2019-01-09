@@ -2,6 +2,7 @@ package com.example.strzala.e_ksiazaka1;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
@@ -20,6 +21,10 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.StrictMode;
 import android.provider.MediaStore;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
+import android.speech.tts.TextToSpeech;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -27,6 +32,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -57,6 +63,7 @@ import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 
 import static android.Manifest.permission.CAMERA;
 
@@ -73,9 +80,10 @@ public class koniec_pojazd extends AppCompatActivity {
     TextView naprawa,opis;
     Switch przelacznik;
     Integer punkty_p,czesci_p,uslugi_p;
-
+    Boolean mowa=false;
     String dane[] = new String[18];
     public int polaczenie=0;
+    private int wartosc=0;
 
     static ResultSet rs;
     static Statement st;
@@ -91,7 +99,10 @@ public class koniec_pojazd extends AppCompatActivity {
 
     //dodanie opcji do menu
     public static final int PIERWSZY_ELEMENT = 1;
-    private static final int REQUEST_CAMERA = 1;
+    public static final int DRUGI_ELEMENT = 2;
+    public static final int TRZECI_ELEMENT = 3;
+    public static final int CZWARTY_ELEMENT = 4;
+    private static final int REQUEST_CAMERA = 5;
 
     File file=null;
      ProgressBar simpleProgressBar_new = null;
@@ -552,6 +563,45 @@ public class koniec_pojazd extends AppCompatActivity {
         }
     }
 
+    private void checkPermission2() {
+        String requiredPermission = Manifest.permission.RECORD_AUDIO;
+
+        // If the user previously denied this permission then show a message explaining why
+        // this permission is needed
+        if (koniec_pojazd.this.checkCallingOrSelfPermission(requiredPermission) == PackageManager.PERMISSION_GRANTED) {
+
+        } else {
+
+            //  Toast.makeText(getActivity(), "This app needs to record audio through the microphone....", Toast.LENGTH_SHORT).show();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                requestPermissions(new String[]{requiredPermission}, 101);
+            }
+        }
+
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        if (requestCode == 101 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            // This method is called when the  permissions are given
+        }
+    }
+
+    //instalowanie pakietu językowego
+    private void installVoiceData() {
+        Intent intent = new Intent(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setPackage("com.google.android.tts"/*replace with the package name of the target TTS engine*/);
+        try {
+            Log.v("blad", "Installing voice data: " + intent.toUri(0));
+            startActivity(intent);
+        } catch (ActivityNotFoundException ex) {
+            Log.e("blad_1", "Failed to install TTS data, no acitivty found for " + intent + ")");
+        }
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -638,6 +688,99 @@ public class koniec_pojazd extends AppCompatActivity {
         if(checkPermission()==false) {
             requestPermission();
         }
+
+
+
+        //inicjalizacja text speach
+        final SpeechRecognizer mSpeechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
+
+        final Intent mSpeechRecognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        mSpeechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        mSpeechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE,
+                Locale.getDefault());
+
+
+        mSpeechRecognizer.setRecognitionListener(new RecognitionListener() {
+            @Override
+            public void onReadyForSpeech(Bundle bundle) {
+
+            }
+
+            @Override
+            public void onBeginningOfSpeech() {
+
+            }
+
+            @Override
+            public void onRmsChanged(float v) {
+
+            }
+
+            @Override
+            public void onBufferReceived(byte[] bytes) {
+
+            }
+
+            @Override
+            public void onEndOfSpeech() {
+
+            }
+
+            @Override
+            public void onError(int i) {
+
+            }
+
+            @Override
+            public void onResults(Bundle bundle) {
+                //getting all the matches
+                ArrayList<String> matches = bundle
+                        .getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+
+                //displaying the first match
+                if(wartosc==1)
+                {
+                    if (matches != null) {
+                        Log.i("dupa", " wchodzi 3");
+                        uwagi.setText(matches.get(0));
+                    }
+                }
+            }
+
+            @Override
+            public void onPartialResults(Bundle bundle) {
+
+            }
+
+            @Override
+            public void onEvent(int i, Bundle bundle) {
+
+            }
+        });
+
+        uwagi.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                wartosc=1;
+                if(mowa) {
+                    switch (event.getAction()) {
+                        case MotionEvent.ACTION_UP:
+                            Log.i("dupa", " wchodzi 1");
+                            mSpeechRecognizer.stopListening();
+                            uwagi.setHint("Tutaj zobaczysz wprowadzoną wartość");
+                            break;
+                        case MotionEvent.ACTION_DOWN:
+                            Log.i("dupa", " wchodzi 2");
+                            mSpeechRecognizer.startListening(mSpeechRecognizerIntent);
+                            uwagi.setText("");
+                            uwagi.setHint("Słucham...");
+                            break;
+                    }
+                }
+                return false;
+            }
+        });
 
         punkty1.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -851,6 +994,9 @@ public class koniec_pojazd extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         menu.add(0, PIERWSZY_ELEMENT, 0, "Zapisz zdjęcie");
+        menu.add(1, DRUGI_ELEMENT, 0, "Włącz zamianę głosu na text");
+        menu.add(2, TRZECI_ELEMENT, 0, "Wyłącz zamianę głosu na text");
+        menu.add(3, CZWARTY_ELEMENT, 0, "Importowanie pakietów językowych");
         return true;
     }
 
@@ -858,35 +1004,60 @@ public class koniec_pojazd extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
             case PIERWSZY_ELEMENT:
-                try {
-                SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyHHmm");
-                String data_zdj = sdf.format(new Date());
+                if(zdjecie_przed!=null || zdjecie_po!=null) {
+                    try {
+                        SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyHHmm");
+                        String data_zdj = sdf.format(new Date());
 
-                file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), File.separator + data_zdj + "_trustcar.jpg");
+                        file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), File.separator + data_zdj + "_trustcar.jpg");
 
-                //save and compres picture
+                        //save and compres picture
 
-                    is = zdjecie_przed.getBinaryStream();
-                    Drawable d = Drawable.createFromStream(is , "src");
-                    bitmap = ((BitmapDrawable)d).getBitmap();
-                } catch (SQLException e) {
-                    e.printStackTrace();
+                        if(zdjecie_przed!=null) {
+                            is = zdjecie_przed.getBinaryStream();
+                        }else
+                        {
+                            is = zdjecie_po.getBinaryStream();
+                        }
+                        Drawable d = Drawable.createFromStream(is, "src");
+                        bitmap = ((BitmapDrawable) d).getBitmap();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    //galeria.setImageBitmap(BitmapFactory.decodeStream(is));
+
+
+                    try {
+                        FileOutputStream out = new FileOutputStream(file);
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+                        out.flush();
+                        out.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    showToast("Zdjęcie zostało zapisane w katalogu" + String.valueOf(file));
+                }else
+                {
+                    showToast("Brak zdjęcia do zapisania");
                 }
-                //galeria.setImageBitmap(BitmapFactory.decodeStream(is));
-
-
-                try {
-                    FileOutputStream out = new FileOutputStream(file);
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
-                    out.flush();
-                    out.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-                showToast("Zdjęcie zostało zapisane w katalogu" +String.valueOf(file));
 
                 break;
+
+            case DRUGI_ELEMENT:
+                //włączanie teksu na mowę
+                checkPermission2();
+                mowa=true;
+                break;
+            case TRZECI_ELEMENT:
+                //wyłączanie tekstu na mowę
+                mowa=false;
+                break;
+            case CZWARTY_ELEMENT:
+                //impoortowanie danych głosowych
+                installVoiceData();
+                break;
+
             default:
                 return super.onOptionsItemSelected(item);
         }

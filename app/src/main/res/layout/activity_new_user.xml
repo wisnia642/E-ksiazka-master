@@ -71,9 +71,10 @@
         android:id="@+id/checkBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignStart="@+id/qr_code"
-        android:layout_marginBottom="150dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="-3dp"
+        android:layout_marginBottom="133dp"
         android:text="Akceptuję "
         android:textAllCaps="false" />
 
@@ -119,5 +120,13 @@
         android:layout_marginStart="123dp"
         android:text="regulamin serwisu"
         android:textColor="@color/colorPrimaryDark" />
+
+    <CheckBox
+        android:id="@+id/log"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/checkBox"
+        android:layout_alignStart="@+id/checkBox"
+        android:text="Szybkie logowanie" />
 
 </RelativeLayout>

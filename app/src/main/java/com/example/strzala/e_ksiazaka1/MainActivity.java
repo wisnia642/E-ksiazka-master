@@ -143,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             try {
-                PreparedStatement stmt = connection.prepareStatement("select * from uzytkownik where email='"+msg_login+"' ");
+                PreparedStatement stmt = connection.prepareStatement("select email,haslo,zapisz_haslo,qr_code,admin from uzytkownik where email='"+msg_login+"' ");
                 rs = stmt.executeQuery();
 
 
@@ -155,8 +155,8 @@ public class MainActivity extends AppCompatActivity {
                         password = rs.getString("haslo");
                         dane[3] = rs.getString("zapisz_haslo");
                         qr_code = rs.getString("qr_code");
-                        //dane[6] = rs.getString("admin");
-                        dane[6] = rs.getString("czy_zapis");
+                        dane[6] = rs.getString("admin");
+                       // dane[6] = rs.getString("czy_zapis");
                         pass =   hash = "%02320%xwc48" + String.valueOf(password.hashCode());
 
                     }
@@ -404,7 +404,53 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if (activeNetwork()) {
                 simpleProgressBar.setVisibility(View.VISIBLE);
-                StartLog = true;
+
+                    login_act = email.getText().toString();
+                    password_act = haslo.getText().toString();
+
+                    login_act = login_act.replace(" ","");
+
+
+                    ImportLogin(login_act);
+
+
+                    if(!password_act.equals("%02320%xwc48")) {
+                        try {
+                            hash = "%02320%xwc48" + String.valueOf(password_act.hashCode());
+
+
+                        } catch (Exception e) {
+                            Log.i("hash", "" + e);
+                        }
+                    }
+
+                    if (login_act.equals(login) & login_act.contains("@")) {
+                        if (hash.equals(password) || (password.equals(password_act)) || (pass.equals(password_act))) {
+
+                            //sprawdzanie czy mam zapamiętać hasło
+                            if(checkBox.isChecked())
+                            {
+                                pamiec_hasla();
+                            }
+
+                            //importowanie danych
+                            // ImportLogin(login_act);
+
+                            Intent c = new Intent(MainActivity.this,MainMenu.class);
+                            c.putExtra("email",login);
+                            c.putExtra("admin",dane[6]);
+                            c.putExtra("qr_code",qr_code);
+                            startActivity(c);
+                            finish();
+                        }else
+                        {
+                            showToast("Nie poprawne hasło ");
+                        }
+
+                    }else
+                    {
+                        showToast("Nie poprawny email ");
+                    }
                 }
                  else {
                     showToast("Brak dostępu do internetu");
@@ -496,6 +542,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
 
         handler = new Handler()
         {

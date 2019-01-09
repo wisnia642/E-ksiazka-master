@@ -1,16 +1,26 @@
 package com.example.strzala.e_ksiazaka1;
 
+import android.Manifest;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.StrictMode;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
+import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -24,6 +34,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Locale;
 
 public class dane_pojazd extends AppCompatActivity {
 
@@ -41,6 +53,13 @@ public class dane_pojazd extends AppCompatActivity {
     FileInputStream fis = null;
     Connection connection = null;
     String status_rejestracji="";
+    private int wartosc=0;
+    Boolean mowa=false;
+
+    //elementy menu
+    public static final int PIERWSZY_ELEMENT = 1;
+    public static final int DRUGI_ELEMENT = 2;
+    public static final int TRZECI_ELEMENT = 3;
 
     public void showToast(String message) {
         Toast.makeText(getApplicationContext(),
@@ -110,7 +129,7 @@ public class dane_pojazd extends AppCompatActivity {
             }
 
             String sql2 = "UPDATE uzytkownik SET imie = '"+dane[0]+"',nazwisko = '"+dane[2]+"'," +
-                    "adres = '"+dane[3]+"',dane1 = '"+dane[8]+"',dane2 = '"+dane[5]+"'" +
+                    "adres = '"+dane[3]+"',dane2 = '"+dane[8]+"',dane1 = '"+dane[5]+"'" +
                     " WHERE email = '" + dane[1] + "'";
             try {
                 st.executeUpdate(sql2);
@@ -216,7 +235,7 @@ public class dane_pojazd extends AppCompatActivity {
             }
 
             try {
-                PreparedStatement stmt1 = connection.prepareStatement("select * from uzytkownik where qr_code like '%"+tekst+"%' ");
+                PreparedStatement stmt1 = connection.prepareStatement("select * from uzytkownik where qr_code = '"+tekst+"' ");
                 rs = stmt1.executeQuery();
 
                 if(tekst!=null) {
@@ -281,6 +300,7 @@ public class dane_pojazd extends AppCompatActivity {
                             dane[3] = rs.getString("adres");
                             dane[8] = rs.getString("dane1");
                             dane[5] = rs.getString("dane2");
+                            dane[7] = rs.getString("qr_code");
                             email = rs.getString("email");
                         }
 
@@ -301,6 +321,44 @@ public class dane_pojazd extends AppCompatActivity {
         }
     }
 
+    private void checkPermission() {
+        String requiredPermission = Manifest.permission.RECORD_AUDIO;
+
+        // If the user previously denied this permission then show a message explaining why
+        // this permission is needed
+        if (dane_pojazd.this.checkCallingOrSelfPermission(requiredPermission) == PackageManager.PERMISSION_GRANTED) {
+
+        } else {
+
+            //  Toast.makeText(getActivity(), "This app needs to record audio through the microphone....", Toast.LENGTH_SHORT).show();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                requestPermissions(new String[]{requiredPermission}, 101);
+            }
+        }
+
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        if (requestCode == 101 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            // This method is called when the  permissions are given
+        }
+    }
+
+    //instalowanie pakietu językowego
+    private void installVoiceData() {
+        Intent intent = new Intent(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setPackage("com.google.android.tts"/*replace with the package name of the target TTS engine*/);
+        try {
+            Log.v("blad", "Installing voice data: " + intent.toUri(0));
+            startActivity(intent);
+        } catch (ActivityNotFoundException ex) {
+            Log.e("blad_1", "Failed to install TTS data, no acitivty found for " + intent + ")");
+        }
+    }
 
 
 
@@ -372,8 +430,10 @@ public class dane_pojazd extends AppCompatActivity {
                 nr_rejestracyjny.setHint("Inne");
                 vin.setInputType(InputType.TYPE_CLASS_NUMBER);
                 Datauser();
+
                 //importowanie danych o kliencie
-                skan.setVisibility(View.INVISIBLE);
+                //skan.setVisibility(View.INVISIBLE);
+                skan.setText("Samochody");
                 qrCode.setVisibility(View.INVISIBLE);
                 napis.setText("Dane klienta");
                 model.setText(email);
@@ -402,6 +462,239 @@ public class dane_pojazd extends AppCompatActivity {
         {
             Log.i("BarCode",""+e);
         }
+
+        //inicjalizacja text speach
+        final SpeechRecognizer mSpeechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
+
+        final Intent mSpeechRecognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        mSpeechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        mSpeechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE,
+                Locale.getDefault());
+
+
+        mSpeechRecognizer.setRecognitionListener(new RecognitionListener() {
+            @Override
+            public void onReadyForSpeech(Bundle bundle) {
+
+            }
+
+            @Override
+            public void onBeginningOfSpeech() {
+
+            }
+
+            @Override
+            public void onRmsChanged(float v) {
+
+            }
+
+            @Override
+            public void onBufferReceived(byte[] bytes) {
+
+            }
+
+            @Override
+            public void onEndOfSpeech() {
+
+            }
+
+            @Override
+            public void onError(int i) {
+
+            }
+
+            @Override
+            public void onResults(Bundle bundle) {
+                //getting all the matches
+                ArrayList<String> matches = bundle
+                        .getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+
+                //displaying the first match
+                switch (wartosc) {
+
+                    case 1:
+                        if (matches != null) {
+                            Log.i("dupa", " wchodzi 3");
+                            marka.setText(matches.get(0));
+                        }
+                        break;
+                    case 2:
+                        if (matches != null) {
+                            model.setText(matches.get(0));
+                        }
+                        break;
+                    case 3:
+                        if (matches != null) {
+                            rocznik.setText(matches.get(0));
+                        }
+                        break;
+                    case 4:
+                        if (matches != null) {
+                            silnik.setText(matches.get(0));
+                        }
+                        break;
+                    case 5:
+                        if (matches != null) {
+                            nr_rejestracyjny.setText(matches.get(0));
+                        }
+                        break;
+                    case 6:
+                        if (matches != null) {
+                            vin.setText(matches.get(0));
+                        }
+                        break;
+                }
+            }
+
+            @Override
+            public void onPartialResults(Bundle bundle) {
+
+            }
+
+            @Override
+            public void onEvent(int i, Bundle bundle) {
+
+            }
+        });
+
+        marka.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                wartosc=1;
+                if(mowa) {
+                    switch (motionEvent.getAction()) {
+                        case MotionEvent.ACTION_UP:
+                            Log.i("dupa", " wchodzi 1");
+                            mSpeechRecognizer.stopListening();
+                            marka.setHint("Tutaj zobaczysz wprowadzoną wartość");
+                            break;
+                        case MotionEvent.ACTION_DOWN:
+                            Log.i("dupa", " wchodzi 2");
+                            mSpeechRecognizer.startListening(mSpeechRecognizerIntent);
+                            marka.setText("");
+                            marka.setHint("Słucham...");
+                            break;
+                    }
+                }
+                return false;
+            }
+        });
+
+        model.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                wartosc=2;
+                if(mowa) {
+                    switch (motionEvent.getAction())
+                    {
+                        case MotionEvent.ACTION_UP:
+                            Log.i("dupa"," wchodzi 1");
+                            mSpeechRecognizer.stopListening();
+                            model.setHint("Tutaj zobaczysz wprowadzoną wartość");
+                            break;
+                        case MotionEvent.ACTION_DOWN:
+                            Log.i("dupa"," wchodzi 2");
+                            mSpeechRecognizer.startListening(mSpeechRecognizerIntent);
+                            model.setText("");
+                            model.setHint("Słucham...");
+                            break;
+                    }}
+                return false;
+            }
+        });
+
+        rocznik.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                wartosc=3;
+                if(mowa) {
+                    switch (motionEvent.getAction()) {
+                        case MotionEvent.ACTION_UP:
+                            Log.i("dupa", " wchodzi 1");
+                            mSpeechRecognizer.stopListening();
+                            rocznik.setHint("Tutaj zobaczysz wprowadzoną wartość");
+                            break;
+                        case MotionEvent.ACTION_DOWN:
+                            Log.i("dupa", " wchodzi 2");
+                            mSpeechRecognizer.startListening(mSpeechRecognizerIntent);
+                            rocznik.setText("");
+                            rocznik.setHint("Słucham...");
+                            break;
+                    }
+                }
+                return false;
+            }
+        });
+
+        silnik.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                wartosc=4;
+                if(mowa) {
+                    switch (motionEvent.getAction())
+                    {
+                        case MotionEvent.ACTION_UP:
+                            Log.i("dupa"," wchodzi 1");
+                            mSpeechRecognizer.stopListening();
+                            silnik.setHint("Tutaj zobaczysz wprowadzoną wartość");
+                            break;
+                        case MotionEvent.ACTION_DOWN:
+                            Log.i("dupa"," wchodzi 2");
+                            mSpeechRecognizer.startListening(mSpeechRecognizerIntent);
+                            silnik.setText("");
+                            silnik.setHint("Słucham...");
+                            break;
+                    }}
+                return false;
+            }
+        });
+
+        nr_rejestracyjny.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                wartosc=5;
+                if(mowa) {
+                    switch (motionEvent.getAction())
+                    {
+                        case MotionEvent.ACTION_UP:
+                            Log.i("dupa"," wchodzi 1");
+                            mSpeechRecognizer.stopListening();
+                            nr_rejestracyjny.setHint("Tutaj zobaczysz wprowadzoną wartość");
+                            break;
+                        case MotionEvent.ACTION_DOWN:
+                            Log.i("dupa"," wchodzi 2");
+                            mSpeechRecognizer.startListening(mSpeechRecognizerIntent);
+                            nr_rejestracyjny.setText("");
+                            nr_rejestracyjny.setHint("Słucham...");
+                            break;
+                    }}
+                return false;
+            }
+        });
+
+        vin.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                wartosc=6;
+                if(mowa) {
+                    switch (motionEvent.getAction())
+                    {
+                        case MotionEvent.ACTION_UP:
+                            Log.i("dupa"," wchodzi 1");
+                            mSpeechRecognizer.stopListening();
+                            vin.setHint("Tutaj zobaczysz wprowadzoną wartość");
+                            break;
+                        case MotionEvent.ACTION_DOWN:
+                            Log.i("dupa"," wchodzi 2");
+                            mSpeechRecognizer.startListening(mSpeechRecognizerIntent);
+                            vin.setText("");
+                            vin.setHint("Słucham...");
+                            break;
+                    }}
+                return false;
+            }
+        });
 
         vin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -434,6 +727,7 @@ public class dane_pojazd extends AppCompatActivity {
                     dane[3] = silnik.getText().toString();
                     dane[5] = nr_rejestracyjny.getText().toString();
                     dane[8] = vin.getText().toString();
+                    dane[6] = qrCode.getText().toString();
                     SelectUser(dane[6]);
                     if (!dane[0].equals("")) {
 
@@ -499,17 +793,28 @@ public class dane_pojazd extends AppCompatActivity {
                 dane[5] = nr_rejestracyjny.getText().toString();
                 dane[8] = vin.getText().toString();
 
-                Intent i = new Intent(dane_pojazd.this, BarCodeScaner.class);
-                i.putExtra("ekran","pojazd_dane");
-                i.putExtra("marka",dane[0]);
-                i.putExtra("model",dane[1]);
-                i.putExtra("rocznik",dane[2]);
-                i.putExtra("silnik",dane[3]);
-                i.putExtra("qr_code",dane[4]);
-                i.putExtra("admin",'1');
-                i.putExtra("rejestracja",dane[5]);
-                i.putExtra("vin",dane[8]);
-                startActivity(i);
+                if(dane[9]==null) {
+                    Intent i = new Intent(dane_pojazd.this, BarCodeScaner.class);
+                    i.putExtra("ekran", "pojazd_dane");
+                    i.putExtra("marka", dane[0]);
+                    i.putExtra("model", dane[1]);
+                    i.putExtra("rocznik", dane[2]);
+                    i.putExtra("silnik", dane[3]);
+                    i.putExtra("qr_code", dane[4]);
+                    i.putExtra("admin", dane[10]);
+                    i.putExtra("rejestracja", dane[5]);
+                    i.putExtra("vin", dane[8]);
+                    startActivity(i);
+                }else
+                {
+                    Intent i = new Intent(dane_pojazd.this,Historia_pojazd.class);
+                    i.putExtra("menu","historia");
+                    i.putExtra("qr_code",dane[4]);
+                    i.putExtra("admin",dane[10]);
+                    //wyświetlanie samochodów użytkownika
+                    i.putExtra("rejestracyjny",dane[7]);
+                    startActivity(i);
+                }
             }
         });
 
@@ -525,5 +830,37 @@ public class dane_pojazd extends AppCompatActivity {
                 startActivity(i);
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        menu.add(0, PIERWSZY_ELEMENT, 0, "Włącz zamianę głosu na text");
+        menu.add(1, DRUGI_ELEMENT, 0, "Wyłącz zamianę głosu na text");
+        menu.add(2, TRZECI_ELEMENT, 0, "Importowanie pakietów językowych");
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+
+            case PIERWSZY_ELEMENT:
+                //włączanie teksu na mowę
+                checkPermission();
+                mowa=true;
+                break;
+            case DRUGI_ELEMENT:
+                //wyłączanie tekstu na mowę
+                mowa=false;
+                break;
+            case TRZECI_ELEMENT:
+                //impoortowanie danych głosowych
+                installVoiceData();
+                break;
+            default:
+
+        }
+        return true;
     }
 }

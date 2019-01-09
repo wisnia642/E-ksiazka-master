@@ -17,7 +17,6 @@
         android:layout_marginStart="32dp"
         android:layout_marginTop="64dp"
         android:ems="10"
-        android:hint="Wpisz Nr. rejestracyjny"
         android:inputType="text"
         tools:layout_editor_absoluteX="33dp"
         tools:layout_editor_absoluteY="63dp" />

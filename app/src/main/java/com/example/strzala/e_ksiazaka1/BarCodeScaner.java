@@ -38,239 +38,239 @@ public class BarCodeScaner extends AppCompatActivity implements ZXingScannerView
 
 
 
-    private static final int REQUEST_CAMERA = 1;
-    private ZXingScannerView scannerView;
+        private static final int REQUEST_CAMERA = 1;
+        private ZXingScannerView scannerView;
 
-    public String ekran="",myResult="";
-    public String dane[] = new String[15];
-  //  private static int camId = Camera.CameraInfo.CAMERA_FACING_BACK;
+        public String ekran="",myResult="";
+        public String dane[] = new String[15];
+        //  private static int camId = Camera.CameraInfo.CAMERA_FACING_BACK;
 
-    static ResultSet rs;
-    static Statement st;
-    PreparedStatement ps;
-    FileInputStream fis = null;
-    Connection connection = null;
+        static ResultSet rs;
+        static Statement st;
+        PreparedStatement ps;
+        FileInputStream fis = null;
+        Connection connection = null;
 
-    public boolean activeNetwork () {
-        ConnectivityManager cm = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+        public boolean activeNetwork () {
+            ConnectivityManager cm = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
 
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        boolean isConnected = activeNetwork != null &&
-                activeNetwork.isConnected();
+            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+            boolean isConnected = activeNetwork != null &&
+                    activeNetwork.isConnected();
 
-        return isConnected;
+            return isConnected;
 
-    }
+        }
 
-    private void showToast(String message) {
-        Toast.makeText(getApplicationContext(),
-                message,
-                Toast.LENGTH_LONG).show();
-    }
+        private void showToast(String message) {
+            Toast.makeText(getApplicationContext(),
+                    message,
+                    Toast.LENGTH_LONG).show();
+        }
 
-    public void podlaczenieDB()
-    {
-        if(activeNetwork()) {
-            //tworzenie polaczenia z baza danych
-            String url ="jdbc:mysql://s56.linuxpl.com:3306/trustcar_app";
-            String user = "trustcar_admin";
-            String pass = "Kubamobile2001!";
-            //  Log.i("login", getResources().getString(R.string.loginMySQL));
-            // Log.i("haslo", getResources().getString(R.string.hasloMySQL));
-            // Log.i("url", getResources().getString(R.string.url));
-
-
-            StrictMode.ThreadPolicy policy = null;
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.GINGERBREAD) {
-                policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-            }
-            StrictMode.setThreadPolicy(policy);
-
-
-            try {
-                Class.forName("com.mysql.jdbc.Driver");
-            } catch (ClassNotFoundException e) {
-                //   showToast("brak polaczenia z internetem");
-                Log.i("aaa", String.valueOf(e));
-
-            }
-
-            try {
-                connection = DriverManager.getConnection(url, user, pass);
-            } catch (SQLException e) {
-                showToast("brak polaczenia z internetem");
-                Log.i("aaa", String.valueOf(e));
-
-            }
-
-        }else
+        public void podlaczenieDB()
         {
-            connection = null;
-            // showToast("Brak podłączenia do intrernetu");
-        }
-
-    }
-
-    private void SelectDataUser(String tekst)
-    {
-        podlaczenieDB();
-        dane[8]="";
-        if (connection != null) {
-
-            try {
-                st = connection.createStatement();
-            } catch (SQLException e1) {
-                e1.printStackTrace();
-                Log.i("myTag", "1" + e1);
-            }
-
-            try {
-                PreparedStatement stmt1 = connection.prepareStatement("select * from qr_code where kod='"+tekst+"' and aktywne='1' ");
-                rs = stmt1.executeQuery();
+            if(activeNetwork()) {
+                //tworzenie polaczenia z baza danych
+                String url ="jdbc:mysql://s56.linuxpl.com:3306/trustcar_app";
+                String user = "trustcar_admin";
+                String pass = "Kubamobile2001!";
+                //  Log.i("login", getResources().getString(R.string.loginMySQL));
+                // Log.i("haslo", getResources().getString(R.string.hasloMySQL));
+                // Log.i("url", getResources().getString(R.string.url));
 
 
-                while (rs.next()) {
-                    String zm = rs.getString("kod");
+                StrictMode.ThreadPolicy policy = null;
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.GINGERBREAD) {
+                    policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+                }
+                StrictMode.setThreadPolicy(policy);
 
-                    if (zm != null) {
-                        dane[8] = rs.getString("kod");
 
-                    }else
-                    {
-
-                    }
+                try {
+                    Class.forName("com.mysql.jdbc.Driver");
+                } catch (ClassNotFoundException e) {
+                    //   showToast("brak polaczenia z internetem");
+                    Log.i("aaa", String.valueOf(e));
 
                 }
-            } catch (SQLException e1) {
-                e1.printStackTrace();
-                Log.i("myTag", "3" + e1);
-            }
 
-            try {
-                if (connection != null)
-                connection.close();
-            } catch (SQLException se) {
-                Log.i("myTag", "4" + se);
-
-            }
-
-        }
-    }
-
-    private void SelectUser(String tekst)
-    {
-        podlaczenieDB();
-        dane[9]="";
-        if (connection != null) {
-
-            try {
-                st = connection.createStatement();
-            } catch (SQLException e1) {
-                e1.printStackTrace();
-                Log.i("myTag", "1" + e1);
-            }
-
-            try {
-                PreparedStatement stmt1 = connection.prepareStatement("select * from uzytkownik where qr_code='"+tekst+"' ");
-                rs = stmt1.executeQuery();
-
-
-                while (rs.next()) {
-                    String zm = rs.getString("qr_code");
-
-                    if (zm != null) {
-                        dane[9] = rs.getString("qr_code");
-                        dane[10] = rs.getString("email");
-                        dane[11] = rs.getString("admin");
-
-                    }else
-                    {
-
-
-                    }
+                try {
+                    connection = DriverManager.getConnection(url, user, pass);
+                } catch (SQLException e) {
+                    showToast("brak polaczenia z internetem");
+                    Log.i("aaa", String.valueOf(e));
 
                 }
-            } catch (SQLException e1) {
-                e1.printStackTrace();
-                Log.i("myTag", "3" + e1);
-            }
 
-            try {
-                if (connection != null)
-                    connection.close();
-            } catch (SQLException se) {
-                Log.i("myTag", "4" + se);
-
-            }
-
-        }
-    }
-
-
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-
-        try {
-            ekran = getIntent().getStringExtra("ekran");
-            if(ekran.equals("uzytkownik")) {
-                dane[0] = getIntent().getStringExtra("email");
-                dane[1] = getIntent().getStringExtra("haslo");
-                dane[2] = getIntent().getStringExtra("haslo_pow");
-                dane[12] = getIntent().getStringExtra("qr_code");
-                dane[14] = getIntent().getStringExtra("admin");
-            }
-            if(ekran.equals("pojazd_dane"))
+            }else
             {
-                dane[0] = getIntent().getStringExtra("marka");
-                dane[1] = getIntent().getStringExtra("model");
-                dane[2] = getIntent().getStringExtra("rocznik");
-                dane[3] = getIntent().getStringExtra("silnik");
-                dane[5] = getIntent().getStringExtra("rejestracja");
-                dane[12] = getIntent().getStringExtra("qr_code");
-                dane[14] = getIntent().getStringExtra("admin");
-                dane[13] = getIntent().getStringExtra("vin");
+                connection = null;
+                // showToast("Brak podłączenia do intrernetu");
             }
 
-        }catch (Exception e)
+        }
+
+        private void SelectDataUser(String tekst)
         {
-            Log.i("BarCode",""+e);
+            podlaczenieDB();
+            dane[8]="";
+            if (connection != null) {
+
+                try {
+                    st = connection.createStatement();
+                } catch (SQLException e1) {
+                    e1.printStackTrace();
+                    Log.i("myTag", "1" + e1);
+                }
+
+                try {
+                    PreparedStatement stmt1 = connection.prepareStatement("select * from qr_code where kod='"+tekst+"' and aktywne='1' ");
+                    rs = stmt1.executeQuery();
+
+
+                    while (rs.next()) {
+                        String zm = rs.getString("kod");
+
+                        if (zm != null) {
+                            dane[8] = rs.getString("kod");
+
+                        }else
+                        {
+
+                        }
+
+                    }
+                } catch (SQLException e1) {
+                    e1.printStackTrace();
+                    Log.i("myTag", "3" + e1);
+                }
+
+                try {
+                    if (connection != null)
+                        connection.close();
+                } catch (SQLException se) {
+                    Log.i("myTag", "4" + se);
+
+                }
+
+            }
+        }
+
+        private void SelectUser(String tekst)
+        {
+            podlaczenieDB();
+            dane[9]="";
+            if (connection != null) {
+
+                try {
+                    st = connection.createStatement();
+                } catch (SQLException e1) {
+                    e1.printStackTrace();
+                    Log.i("myTag", "1" + e1);
+                }
+
+                try {
+                    PreparedStatement stmt1 = connection.prepareStatement("select * from uzytkownik where qr_code='"+tekst+"' ");
+                    rs = stmt1.executeQuery();
+
+
+                    while (rs.next()) {
+                        String zm = rs.getString("qr_code");
+
+                        if (zm != null) {
+                            dane[9] = rs.getString("qr_code");
+                            dane[10] = rs.getString("email");
+                            dane[11] = rs.getString("admin");
+
+                        }else
+                        {
+
+
+                        }
+
+                    }
+                } catch (SQLException e1) {
+                    e1.printStackTrace();
+                    Log.i("myTag", "3" + e1);
+                }
+
+                try {
+                    if (connection != null)
+                        connection.close();
+                } catch (SQLException se) {
+                    Log.i("myTag", "4" + se);
+
+                }
+
+            }
         }
 
 
-        try {
-            scannerView = new ZXingScannerView(BarCodeScaner.this);
-            setContentView(scannerView);
-        }catch (Exception e)
-        {
-            Log.i("camera",""+e);
-        }
+
+        @Override
+        protected void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
 
 
-        int currentApiVersion = Build.VERSION.SDK_INT;
+            try {
+                ekran = getIntent().getStringExtra("ekran");
+                if(ekran.equals("uzytkownik")) {
+                    dane[0] = getIntent().getStringExtra("email");
+                    dane[1] = getIntent().getStringExtra("haslo");
+                    dane[2] = getIntent().getStringExtra("haslo_pow");
+                    dane[12] = getIntent().getStringExtra("qr_code");
+                    dane[14] = getIntent().getStringExtra("admin");
+                }
+                if(ekran.equals("pojazd_dane"))
+                {
+                    dane[0] = getIntent().getStringExtra("marka");
+                    dane[1] = getIntent().getStringExtra("model");
+                    dane[2] = getIntent().getStringExtra("rocznik");
+                    dane[3] = getIntent().getStringExtra("silnik");
+                    dane[5] = getIntent().getStringExtra("rejestracja");
+                    dane[12] = getIntent().getStringExtra("qr_code");
+                    dane[14] = getIntent().getStringExtra("admin");
+                    dane[13] = getIntent().getStringExtra("vin");
+                }
+
+            }catch (Exception e)
+            {
+                Log.i("BarCode",""+e);
+            }
+
+
+            try {
+                scannerView = new ZXingScannerView(BarCodeScaner.this);
+                setContentView(scannerView);
+            }catch (Exception e)
+            {
+                Log.i("camera",""+e);
+            }
+
+
+            int currentApiVersion = Build.VERSION.SDK_INT;
 
             if(checkPermission())
                 requestPermission();
-            }
+        }
 
 
 
 
-    private boolean checkPermission()
-    {
-        return (ContextCompat.checkSelfPermission(getApplicationContext(), CAMERA) == PackageManager.PERMISSION_GRANTED);
-    }
+        private boolean checkPermission()
+        {
+            return (ContextCompat.checkSelfPermission(getApplicationContext(), CAMERA) == PackageManager.PERMISSION_GRANTED);
+        }
 
-    private void requestPermission()
-    {
-        ActivityCompat.requestPermissions(this, new String[]{CAMERA}, REQUEST_CAMERA);
-    }
+        private void requestPermission()
+        {
+            ActivityCompat.requestPermissions(this, new String[]{CAMERA}, REQUEST_CAMERA);
+        }
 
-    @Override
-    public void onResume() {
-        super.onResume();
+        @Override
+        public void onResume() {
+            super.onResume();
 
             if (checkPermission()) {
                 if(scannerView == null) {
@@ -283,54 +283,54 @@ public class BarCodeScaner extends AppCompatActivity implements ZXingScannerView
                 requestPermission();
             }
 
-    }
+        }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        scannerView.stopCamera();
-    }
+        @Override
+        public void onDestroy() {
+            super.onDestroy();
+            scannerView.stopCamera();
+        }
 
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case REQUEST_CAMERA:
-                if (grantResults.length > 0) {
+        public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+            switch (requestCode) {
+                case REQUEST_CAMERA:
+                    if (grantResults.length > 0) {
 
-                    boolean cameraAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
-                    if (cameraAccepted){
+                        boolean cameraAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                        if (cameraAccepted){
 
-                     //   Toast.makeText(getApplicationContext(), "Permission Granted, Now you can access camera", Toast.LENGTH_LONG).show();
-                    }else {
-                     //   Toast.makeText(getApplicationContext(), "Permission Denied, You cannot access and camera", Toast.LENGTH_LONG).show();
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            if (shouldShowRequestPermissionRationale(CAMERA)) {
-                                showMessageOKCancel("You need to allow access to both the permissions",
-                                        new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                                    requestPermissions(new String[]{CAMERA},
-                                                            REQUEST_CAMERA);
+                            //   Toast.makeText(getApplicationContext(), "Permission Granted, Now you can access camera", Toast.LENGTH_LONG).show();
+                        }else {
+                            //   Toast.makeText(getApplicationContext(), "Permission Denied, You cannot access and camera", Toast.LENGTH_LONG).show();
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                if (shouldShowRequestPermissionRationale(CAMERA)) {
+                                    showMessageOKCancel("You need to allow access to both the permissions",
+                                            new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                                        requestPermissions(new String[]{CAMERA},
+                                                                REQUEST_CAMERA);
+                                                    }
                                                 }
-                                            }
-                                        });
-                                return;
+                                            });
+                                    return;
+                                }
                             }
                         }
                     }
-                }
-                break;
+                    break;
+            }
         }
-    }
 
-    private void showMessageOKCancel(String message, DialogInterface.OnClickListener okListener) {
-        new android.support.v7.app.AlertDialog.Builder(BarCodeScaner.this)
-                .setMessage(message)
-                .setPositiveButton("OK", okListener)
-                .setNegativeButton("Cancel", null)
-                .create()
-                .show();
-    }
+        private void showMessageOKCancel(String message, DialogInterface.OnClickListener okListener) {
+            new android.support.v7.app.AlertDialog.Builder(BarCodeScaner.this)
+                    .setMessage(message)
+                    .setPositiveButton("OK", okListener)
+                    .setNegativeButton("Cancel", null)
+                    .create()
+                    .show();
+        }
 
     @Override
     public void handleResult(final Result result) {
@@ -338,6 +338,7 @@ public class BarCodeScaner extends AppCompatActivity implements ZXingScannerView
         if(!result.equals("")) {
             myResult = result.getText();
             Log.d("QRCodeScanner", result.getText());
+
 
             //ekran uruchamiany z poziomu logowania
             if(ekran.equals("logowanie")) {

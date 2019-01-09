@@ -38,7 +38,7 @@ public class Custom_row_pojazd extends ArrayAdapter<String> {
         this.zm2 = zma;
         this.zm1 = zma1;
     }
-    public View getView(final int position, View view, ViewGroup parent) {
+    public View getView(final int position, final View view, ViewGroup parent) {
         LayoutInflater inflater=context.getLayoutInflater();
         View rowView2=inflater.inflate(R.layout.activity_custom_row_pojazd, null,true);
 
@@ -55,7 +55,7 @@ public class Custom_row_pojazd extends ArrayAdapter<String> {
             ///TODO do sprawdzenia status checkbox
             checkBox2.setVisibility(View.VISIBLE);
             checkBox2.setChecked(true);
-            //
+
 
         }else if(!zm3.get(position).equals("nie"))
         {
@@ -192,7 +192,7 @@ public class Custom_row_pojazd extends ArrayAdapter<String> {
                 }
             }
         }
-
+/*
         handler = new Handler()
         {
             public void handleMessage(android.os.Message msg)
@@ -204,12 +204,16 @@ public class Custom_row_pojazd extends ArrayAdapter<String> {
                     {
                         ///TODO Do sprawdzenia dlaczego nie działą
                         Log.i("Custom_row_pojazd1",zm1.get(position));
+                        Log.i("pozycja",String.valueOf(position));
+
                         //Historia_pojazd.getInstance().update_konfiguracj(zm1.get(position), "1");
                     }
                     else if (!checkBox2.isChecked())
                     {
                         ///TODO Do sprawdzenia dlaczego nie działą
                         Log.i("Custom_row_pojazd2",zm1.get(position));
+                        Log.i("pozycja",String.valueOf(position));
+
                        // Historia_pojazd.getInstance().update_konfiguracj(zm1.get(position), "0");
                     }
                     StartLog=false;
@@ -222,7 +226,7 @@ public class Custom_row_pojazd extends ArrayAdapter<String> {
         };
 
         handler.sendEmptyMessage(0);
-
+*/
         return rowView2;
     }
 }
