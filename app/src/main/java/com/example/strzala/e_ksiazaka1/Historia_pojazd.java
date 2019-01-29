@@ -50,7 +50,8 @@ public class Historia_pojazd extends AppCompatActivity {
     CheckBox checkBox3;
 
     String dane[] = new String[10];
-    Boolean status=false,delete=false,click=false,filtr=false,filtr2=false;
+    String dane_samochod[] = new String[10];
+    Boolean status=false,delete=false,click=false,filtr=false,filtr2=false,edytuj=false;
     private Handler handler = new Handler();
 
     static ResultSet rs;
@@ -210,7 +211,7 @@ public class Historia_pojazd extends AppCompatActivity {
                     //powbieranie wszystkich samochodów dla admina
                 }
                 if (dane[3].equals("1") & dane[0].equals("konfiguracja")) {
-                    PreparedStatement stmt1 = connection.prepareStatement("Select * from samochod  ");
+                    PreparedStatement stmt1 = connection.prepareStatement("Select * from samochod ");
                     rs = stmt1.executeQuery();
                     Log.i("Zap","12");
                     //powbieranie wszystkich samochodów dla admina
@@ -333,6 +334,34 @@ public class Historia_pojazd extends AppCompatActivity {
                         showToast("Samochód został usunięty");
                     } catch (SQLException e) {
                         Log.i("koniecpojazd", "" + e);
+                    }
+                }
+
+                if(edytuj==true) {
+                    edytuj=false;
+
+                    try {
+                        Log.i("Historia_pojazd_edit", "start_edit"+Id.get(pozycja) );
+                        PreparedStatement stmt1 = connection.prepareStatement("Select marka,model,rocznik,silnik,vin,nr_rejestracyjny,qr_code from samochod where Id='" + Id.get(pozycja) + "'");
+                        rs = stmt1.executeQuery();
+
+                            while (rs.next()) {
+                                String zm = rs.getString("qr_code");
+
+                                if (zm != null) {
+                                    dane_samochod[0] = rs.getString("marka");
+                                    dane_samochod[1] = rs.getString("model");
+                                    dane_samochod[2] = rs.getString("rocznik");
+                                    dane_samochod[3] = rs.getString("silnik");
+                                    dane_samochod[4] = rs.getString("vin");
+                                    dane_samochod[5] = rs.getString("nr_rejestracyjny");
+                                    dane_samochod[6] = rs.getString("qr_code");
+                                }
+                            }
+
+                    } catch (SQLException e1) {
+                        e1.printStackTrace();
+                        Log.i("Historia_pojazd_edit", "3" + e1);
                     }
                 }
 
@@ -719,71 +748,128 @@ public class Historia_pojazd extends AppCompatActivity {
         });
 
 
-
+        //okno dialogowe do modyfikowania lub usuwqania samoichodu lub zgłoszenia
         lista_new.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
 
-                final AlertDialog.Builder builder = new AlertDialog.Builder(Historia_pojazd.this);
-                click=true;
-                if(dane[0].equals("zgloszenie") || dane[0].equals("zgloszenie_1"))
-                {
-                    builder.setTitle("Czy na pewno chcesz usunąć Zgłoszenie ");
-                }
-                //przejcie z widoku zgłoszenia
-                else if(dane[0].equals("historia"))
-                {
-                    builder.setTitle("Czy na pewno chcesz usunąć samochód ");
-                }
+                if (!dane[0].equals("konta") ) {
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(Historia_pojazd.this);
+                    click = true;
+                    if (dane[0].equals("zgloszenie") || dane[0].equals("zgloszenie_1")) {
+                        builder.setTitle("Czy na pewno chcesz usunąć Zgłoszenie ");
+                    }
+                    //przejcie z widoku zgłoszenia
+                    else if (dane[0].equals("historia")) {
+                        builder.setTitle("Usuń lub edytuj samochód");
+                    }
 
-                builder.setPositiveButton("Tak", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        pozycja=position;
-                        delete=true;
+                    builder.setNeutralButton("Usuń", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            pozycja = position;
+                            delete = true;
+                            Log.i("koniecpoj", "zm" + dane[0]);
+                            if (dane[0].equals("zgloszenie_1")) {
+                                click = false;
+                                Log.i("koniecpojazd_delete", "zm");
+                                Log.i("test", "czy_przechodzi");
+                                SelectDataUserSkan();
 
-                        if(dane[0].equals("zgloszenie_1"))
-                        {
-                            click=false;
-                            Log.i("koniecpojazd_delete","zm");
-                            SelectDataUserSkan();
+                                Intent i = new Intent(Historia_pojazd.this, MainMenu.class);
+                                i.putExtra("menu", "historia");
+                                i.putExtra("admin", dane[3]);
+                                i.putExtra("qr_code", dane[1]);
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                                    finishAffinity();
+                                }
+                                startActivity(i);
+                                dialog.cancel();
 
-                            ///TODO do sprawdzenia
-                            Intent i = new Intent(Historia_pojazd.this, MainMenu.class);
-                            i.putExtra("menu", "historia");
-                            i.putExtra("admin", dane[3]);
-                            i.putExtra("qr_code", dane[1]);
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                                finishAffinity();
                             }
-                            startActivity(i);
-                            dialog.cancel();
+                            //przejcie z widoku zgłoszenia
+                            else if (dane[0].equals("historia")) {
+                                click = false;
+                                Log.i("koniecpojazd_delete", "zm1");
+                                SelectDataUser();
+
+                                Intent i = new Intent(Historia_pojazd.this, MainMenu.class);
+                                i.putExtra("menu", "historia");
+                                i.putExtra("admin", dane[3]);
+                                i.putExtra("qr_code", dane[1]);
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                                    finishAffinity();
+                                }
+                                startActivity(i);
+                                dialog.cancel();
+
+                            }
 
                         }
-                        //przejcie z widoku zgłoszenia
-                        else if(dane[0].equals("historia"))
-                        {
-                            click=false;
-                            Log.i("koniecpojazd_delete","zm1");
-                            SelectDataUser();
-                            dialog.cancel();
+                    });
+
+
+                    builder.setPositiveButton("Edytuj", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            pozycja = position;
+                            edytuj = true;
+
+                            if (dane[0].equals("zgloszenie_1")) {
+                                click = false;
+                                Log.i("koniecpojazd_delete", "zm");
+                                showToast("Przejdż do widoku pojedyńczego zgłoszenia aby móc je edytować");
+                                dialog.cancel();
+
+                            }
+                            //przejcie z widoku zgłoszenia
+                            else if (dane[0].equals("historia")) {
+                                click = false;
+                                Log.i("koniecpojazd_edytuj", "zm1");
+                                //pobieranie danych do ekranu
+
+                                SelectDataUser();
+
+                                // Log.i("koniecpojazd_edytuj","zm1"+dane_samochod[0]);
+
+                                Intent i = new Intent(Historia_pojazd.this, dane_pojazd.class);
+                                i.putExtra("ekran", "pojazd_dane");
+                                i.putExtra("marka", dane_samochod[0]);
+                                i.putExtra("model", dane_samochod[1]);
+                                i.putExtra("rocznik", dane_samochod[2]);
+                                i.putExtra("silnik", dane_samochod[3]);
+                                i.putExtra("qr_code_kod", dane_samochod[6]);
+                                i.putExtra("admin", dane[3]);
+                                i.putExtra("rejestracja", dane_samochod[5]);
+                                i.putExtra("vin", dane_samochod[4]);
+                                i.putExtra("qr_code", dane[1]);
+                                i.putExtra("menu", "zapis_dane");
+                                i.putExtra("id", Id.get(pozycja));
+
+                                startActivity(i);
+
+                                dialog.cancel();
+
+                            }
 
                         }
+                    });
 
-                    }
-                });
-                builder.setNeutralButton("Nie", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        lista_new.setClickable(true);
-                        dialog.cancel();
-                    }
-                });
+                    builder.setNegativeButton("Anuluj", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            lista_new.setClickable(true);
+                            dialog.cancel();
+                        }
+                    });
 
-                AlertDialog alert1 = builder.create();
-                alert1.show();
+                    AlertDialog alert1 = builder.create();
+                    alert1.show();
+                }
 
                 return false;
+
+
             }
         });
 
